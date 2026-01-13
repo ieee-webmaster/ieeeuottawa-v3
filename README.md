@@ -223,7 +223,7 @@ Note that often times when making big schema changes you can run the risk of los
 
 #### Local development
 
-Ideally we recommend running a local copy of your database so that schema updates are as fast as possible. By default the Postgres adapter has `push: true` for development environments. This will let you add, modify and remove fields and collections without needing to run any data migrations.
+Ideally we recommend running a local copy of your database so that schema updates are as fast as possible. By default the Postgres adapter has `push: true` for development environments. This will let you add, modify and remove fields and collections without needing to run any data migrations. In development, you can set this to true to auto-push schema changes. (Don't commit this change).
 
 If your database is pointed to production you will want to set `push: false` otherwise you will risk losing data or having your migrations out of sync.
 
