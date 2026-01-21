@@ -5122,7 +5122,8 @@
         },
         "hosted_by": {
           "name": "hosted_by",
-          "type": "varchar",
+          "type": "enum_events_hosted_by",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": false
         },
@@ -5394,7 +5395,8 @@
         },
         "version_hosted_by": {
           "name": "version_hosted_by",
-          "type": "varchar",
+          "type": "enum__events_v_version_hosted_by",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": false
         },
@@ -5893,8 +5895,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.committee_ieee_positions": {
-      "name": "committee_ieee_positions",
+    "public.teams_positions": {
+      "name": "teams_positions",
       "schema": "",
       "columns": {
         "_order": {
@@ -5917,36 +5919,21 @@
         },
         "role": {
           "name": "role",
-          "type": "enum_committee_ieee_positions_role",
+          "type": "enum_teams_positions_role",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
         },
         "position_title": {
           "name": "position_title",
-          "type": "enum_committee_ieee_positions_position_title",
-          "typeSchema": "public",
+          "type": "varchar",
           "primaryKey": false,
-          "notNull": false
-        },
-        "commissioner_title": {
-          "name": "commissioner_title",
-          "type": "enum_committee_ieee_positions_commissioner_title",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "coordinator_title": {
-          "name": "coordinator_title",
-          "type": "enum_committee_ieee_positions_coordinator_title",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {
-        "committee_ieee_positions_order_idx": {
-          "name": "committee_ieee_positions_order_idx",
+        "teams_positions_order_idx": {
+          "name": "teams_positions_order_idx",
           "columns": [
             {
               "expression": "_order",
@@ -5960,8 +5947,8 @@
           "method": "btree",
           "with": {}
         },
-        "committee_ieee_positions_parent_id_idx": {
-          "name": "committee_ieee_positions_parent_id_idx",
+        "teams_positions_parent_id_idx": {
+          "name": "teams_positions_parent_id_idx",
           "columns": [
             {
               "expression": "_parent_id",
@@ -5977,10 +5964,10 @@
         }
       },
       "foreignKeys": {
-        "committee_ieee_positions_parent_id_fk": {
-          "name": "committee_ieee_positions_parent_id_fk",
-          "tableFrom": "committee_ieee_positions",
-          "tableTo": "committee",
+        "teams_positions_parent_id_fk": {
+          "name": "teams_positions_parent_id_fk",
+          "tableFrom": "teams_positions",
+          "tableTo": "teams",
           "columnsFrom": [
             "_parent_id"
           ],
@@ -5997,8 +5984,128 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.committee_mdsc_positions": {
-      "name": "committee_mdsc_positions",
+    "public.teams": {
+      "name": "teams",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cover_image_id": {
+          "name": "cover_image_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "teams_name_idx": {
+          "name": "teams_name_idx",
+          "columns": [
+            {
+              "expression": "name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "teams_cover_image_idx": {
+          "name": "teams_cover_image_idx",
+          "columns": [
+            {
+              "expression": "cover_image_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "teams_updated_at_idx": {
+          "name": "teams_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "teams_created_at_idx": {
+          "name": "teams_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "teams_cover_image_id_media_id_fk": {
+          "name": "teams_cover_image_id_media_id_fk",
+          "tableFrom": "teams",
+          "tableTo": "media",
+          "columnsFrom": [
+            "cover_image_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.committee_teams_members": {
+      "name": "committee_teams_members",
       "schema": "",
       "columns": {
         "_order": {
@@ -6009,7 +6116,7 @@
         },
         "_parent_id": {
           "name": "_parent_id",
-          "type": "integer",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
@@ -6021,29 +6128,20 @@
         },
         "role": {
           "name": "role",
-          "type": "enum_committee_mdsc_positions_role",
-          "typeSchema": "public",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
-        "position_title": {
-          "name": "position_title",
-          "type": "enum_committee_mdsc_positions_position_title",
-          "typeSchema": "public",
+        "person_id": {
+          "name": "person_id",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": false
-        },
-        "commissioner_title": {
-          "name": "commissioner_title",
-          "type": "enum_committee_mdsc_positions_commissioner_title",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {
-        "committee_mdsc_positions_order_idx": {
-          "name": "committee_mdsc_positions_order_idx",
+        "committee_teams_members_order_idx": {
+          "name": "committee_teams_members_order_idx",
           "columns": [
             {
               "expression": "_order",
@@ -6057,8 +6155,8 @@
           "method": "btree",
           "with": {}
         },
-        "committee_mdsc_positions_parent_id_idx": {
-          "name": "committee_mdsc_positions_parent_id_idx",
+        "committee_teams_members_parent_id_idx": {
+          "name": "committee_teams_members_parent_id_idx",
           "columns": [
             {
               "expression": "_parent_id",
@@ -6071,13 +6169,41 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "committee_teams_members_person_idx": {
+          "name": "committee_teams_members_person_idx",
+          "columns": [
+            {
+              "expression": "person_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
-        "committee_mdsc_positions_parent_id_fk": {
-          "name": "committee_mdsc_positions_parent_id_fk",
-          "tableFrom": "committee_mdsc_positions",
-          "tableTo": "committee",
+        "committee_teams_members_person_id_people_id_fk": {
+          "name": "committee_teams_members_person_id_people_id_fk",
+          "tableFrom": "committee_teams_members",
+          "tableTo": "people",
+          "columnsFrom": [
+            "person_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "committee_teams_members_parent_id_fk": {
+          "name": "committee_teams_members_parent_id_fk",
+          "tableFrom": "committee_teams_members",
+          "tableTo": "committee_teams",
           "columnsFrom": [
             "_parent_id"
           ],
@@ -6094,8 +6220,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.committee_wie_positions": {
-      "name": "committee_wie_positions",
+    "public.committee_teams": {
+      "name": "committee_teams",
       "schema": "",
       "columns": {
         "_order": {
@@ -6116,31 +6242,16 @@
           "primaryKey": true,
           "notNull": true
         },
-        "role": {
-          "name": "role",
-          "type": "enum_committee_wie_positions_role",
-          "typeSchema": "public",
+        "team_id": {
+          "name": "team_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
-        },
-        "position_title": {
-          "name": "position_title",
-          "type": "enum_committee_wie_positions_position_title",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "commissioner_title": {
-          "name": "commissioner_title",
-          "type": "enum_committee_wie_positions_commissioner_title",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false
         }
       },
       "indexes": {
-        "committee_wie_positions_order_idx": {
-          "name": "committee_wie_positions_order_idx",
+        "committee_teams_order_idx": {
+          "name": "committee_teams_order_idx",
           "columns": [
             {
               "expression": "_order",
@@ -6154,8 +6265,8 @@
           "method": "btree",
           "with": {}
         },
-        "committee_wie_positions_parent_id_idx": {
-          "name": "committee_wie_positions_parent_id_idx",
+        "committee_teams_parent_id_idx": {
+          "name": "committee_teams_parent_id_idx",
           "columns": [
             {
               "expression": "_parent_id",
@@ -6168,102 +6279,40 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "committee_teams_team_idx": {
+          "name": "committee_teams_team_idx",
+          "columns": [
+            {
+              "expression": "team_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
-        "committee_wie_positions_parent_id_fk": {
-          "name": "committee_wie_positions_parent_id_fk",
-          "tableFrom": "committee_wie_positions",
-          "tableTo": "committee",
+        "committee_teams_team_id_teams_id_fk": {
+          "name": "committee_teams_team_id_teams_id_fk",
+          "tableFrom": "committee_teams",
+          "tableTo": "teams",
           "columnsFrom": [
-            "_parent_id"
+            "team_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
+          "onDelete": "set null",
           "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.committee_cegsc_positions": {
-      "name": "committee_cegsc_positions",
-      "schema": "",
-      "columns": {
-        "_order": {
-          "name": "_order",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
         },
-        "_parent_id": {
-          "name": "_parent_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "id": {
-          "name": "id",
-          "type": "varchar",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "role": {
-          "name": "role",
-          "type": "enum_committee_cegsc_positions_role",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "position_title": {
-          "name": "position_title",
-          "type": "enum_committee_cegsc_positions_position_title",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {
-        "committee_cegsc_positions_order_idx": {
-          "name": "committee_cegsc_positions_order_idx",
-          "columns": [
-            {
-              "expression": "_order",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "committee_cegsc_positions_parent_id_idx": {
-          "name": "committee_cegsc_positions_parent_id_idx",
-          "columns": [
-            {
-              "expression": "_parent_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "committee_cegsc_positions_parent_id_fk": {
-          "name": "committee_cegsc_positions_parent_id_fk",
-          "tableFrom": "committee_cegsc_positions",
+        "committee_teams_parent_id_fk": {
+          "name": "committee_teams_parent_id_fk",
+          "tableFrom": "committee_teams",
           "tableTo": "committee",
           "columnsFrom": [
             "_parent_id"
@@ -6345,137 +6394,6 @@
         }
       },
       "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.committee_rels": {
-      "name": "committee_rels",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "order": {
-          "name": "order",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "parent_id": {
-          "name": "parent_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "path": {
-          "name": "path",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "people_id": {
-          "name": "people_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {
-        "committee_rels_order_idx": {
-          "name": "committee_rels_order_idx",
-          "columns": [
-            {
-              "expression": "order",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "committee_rels_parent_idx": {
-          "name": "committee_rels_parent_idx",
-          "columns": [
-            {
-              "expression": "parent_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "committee_rels_path_idx": {
-          "name": "committee_rels_path_idx",
-          "columns": [
-            {
-              "expression": "path",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "committee_rels_people_id_idx": {
-          "name": "committee_rels_people_id_idx",
-          "columns": [
-            {
-              "expression": "people_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "committee_rels_parent_fk": {
-          "name": "committee_rels_parent_fk",
-          "tableFrom": "committee_rels",
-          "tableTo": "committee",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "committee_rels_people_fk": {
-          "name": "committee_rels_people_fk",
-          "tableFrom": "committee_rels",
-          "tableTo": "people",
-          "columnsFrom": [
-            "people_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -9898,6 +9816,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "teams_id": {
+          "name": "teams_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
         "committee_id": {
           "name": "committee_id",
           "type": "integer",
@@ -10082,6 +10006,21 @@
           "columns": [
             {
               "expression": "people_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "payload_locked_documents_rels_teams_id_idx": {
+          "name": "payload_locked_documents_rels_teams_id_idx",
+          "columns": [
+            {
+              "expression": "teams_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -10296,6 +10235,19 @@
           "tableTo": "people",
           "columnsFrom": [
             "people_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "payload_locked_documents_rels_teams_fk": {
+          "name": "payload_locked_documents_rels_teams_fk",
+          "tableFrom": "payload_locked_documents_rels",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "teams_id"
           ],
           "columnsTo": [
             "id"
@@ -11495,12 +11447,28 @@
         "published"
       ]
     },
+    "public.enum_events_hosted_by": {
+      "name": "enum_events_hosted_by",
+      "schema": "public",
+      "values": [
+        "ieee",
+        "other"
+      ]
+    },
     "public.enum_events_status": {
       "name": "enum_events_status",
       "schema": "public",
       "values": [
         "draft",
         "published"
+      ]
+    },
+    "public.enum__events_v_version_hosted_by": {
+      "name": "enum__events_v_version_hosted_by",
+      "schema": "public",
+      "values": [
+        "ieee",
+        "other"
       ]
     },
     "public.enum__events_v_version_status": {
@@ -11511,135 +11479,13 @@
         "published"
       ]
     },
-    "public.enum_committee_ieee_positions_role": {
-      "name": "enum_committee_ieee_positions_role",
+    "public.enum_teams_positions_role": {
+      "name": "enum_teams_positions_role",
       "schema": "public",
       "values": [
         "exec",
         "commish",
         "coord"
-      ]
-    },
-    "public.enum_committee_ieee_positions_position_title": {
-      "name": "enum_committee_ieee_positions_position_title",
-      "schema": "public",
-      "values": [
-        "chair",
-        "cochair",
-        "vicechair",
-        "treasurer",
-        "mcndirector",
-        "secretary",
-        "external",
-        "academic",
-        "social",
-        "equity",
-        "merch",
-        "comms",
-        "webmaster"
-      ]
-    },
-    "public.enum_committee_ieee_positions_commissioner_title": {
-      "name": "enum_committee_ieee_positions_commissioner_title",
-      "schema": "public",
-      "values": [
-        "ieee-elg-commish",
-        "ieee-ceg-commish",
-        "ieee-seg-commish",
-        "ieee-mdsc-commish",
-        "ieee-comptech-commish",
-        "ieee-design-commish",
-        "ieee-translations-commish"
-      ]
-    },
-    "public.enum_committee_ieee_positions_coordinator_title": {
-      "name": "enum_committee_ieee_positions_coordinator_title",
-      "schema": "public",
-      "values": [
-        "ieee-first-year-coord",
-        "ieee-media-coord",
-        "ieee-industry-coord",
-        "ieee-tech-coord",
-        "ieee-sw-tech-coord"
-      ]
-    },
-    "public.enum_committee_mdsc_positions_role": {
-      "name": "enum_committee_mdsc_positions_role",
-      "schema": "public",
-      "values": [
-        "exec",
-        "commish",
-        "coord"
-      ]
-    },
-    "public.enum_committee_mdsc_positions_position_title": {
-      "name": "enum_committee_mdsc_positions_position_title",
-      "schema": "public",
-      "values": [
-        "mdsc-chair",
-        "mdsc-cochair",
-        "mdsc-vicechair",
-        "mdsc-events",
-        "mdsc-comms"
-      ]
-    },
-    "public.enum_committee_mdsc_positions_commissioner_title": {
-      "name": "enum_committee_mdsc_positions_commissioner_title",
-      "schema": "public",
-      "values": [
-        "mdsc-pm",
-        "mdsc-epp",
-        "mdsc-swd",
-        "mdsc-sustain",
-        "mdsc-first-year-rep"
-      ]
-    },
-    "public.enum_committee_wie_positions_role": {
-      "name": "enum_committee_wie_positions_role",
-      "schema": "public",
-      "values": [
-        "exec",
-        "commish",
-        "coord"
-      ]
-    },
-    "public.enum_committee_wie_positions_position_title": {
-      "name": "enum_committee_wie_positions_position_title",
-      "schema": "public",
-      "values": [
-        "wie-chair",
-        "wie-cochair",
-        "wie-vicechair",
-        "wie-finance",
-        "wie-external",
-        "wie-internal"
-      ]
-    },
-    "public.enum_committee_wie_positions_commissioner_title": {
-      "name": "enum_committee_wie_positions_commissioner_title",
-      "schema": "public",
-      "values": [
-        "wie-design-commish"
-      ]
-    },
-    "public.enum_committee_cegsc_positions_role": {
-      "name": "enum_committee_cegsc_positions_role",
-      "schema": "public",
-      "values": [
-        "exec",
-        "commish",
-        "coord"
-      ]
-    },
-    "public.enum_committee_cegsc_positions_position_title": {
-      "name": "enum_committee_cegsc_positions_position_title",
-      "schema": "public",
-      "values": [
-        "cegsc-chair",
-        "cegsc-cochair",
-        "cegsc-vicechair",
-        "cegsc-events",
-        "cegsc-comms"
       ]
     },
     "public.enum_redirects_to_type": {
@@ -11718,6 +11564,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "280c4099-cf9e-475b-a094-feb8472d7ef4",
+  "id": "d32d2884-dceb-4bbc-a171-d3493e668e15",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }
