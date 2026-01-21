@@ -78,7 +78,11 @@ export const Events: CollectionConfig<'events'> = {
     },
     {
       name: 'hosted-by',
-      type: 'text',
+      type: 'select',
+      options: [
+        { label: 'IEEE UOttawa', value: 'ieee' },
+        { label: 'WIE', value: 'other' },
+      ],
       required: true,
     },
     {

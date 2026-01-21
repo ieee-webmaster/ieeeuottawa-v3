@@ -74,6 +74,7 @@ export interface Config {
     users: User;
     events: Event;
     people: Person;
+    teams: Team;
     committee: Committee;
     docs: Doc;
     redirects: Redirect;
@@ -100,6 +101,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
     people: PeopleSelect<false> | PeopleSelect<true>;
+    teams: TeamsSelect<false> | TeamsSelect<true>;
     committee: CommitteeSelect<false> | CommitteeSelect<true>;
     docs: DocsSelect<false> | DocsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
@@ -413,7 +415,7 @@ export interface Event {
   title: string;
   date: string;
   location: string;
-  'hosted-by': string;
+  'hosted-by': 'ieee' | 'other';
   signupLink?: string | null;
   heroImage?: (number | null) | Media;
   content: {
@@ -856,92 +858,42 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teams".
+ */
+export interface Team {
+  id: number;
+  name: string;
+  coverImage?: (number | null) | Media;
+  positions?:
+    | {
+        role: 'exec' | 'commish' | 'coord';
+        positionTitle: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "committee".
  */
 export interface Committee {
   id: number;
   Year: string;
-  ieeePositions?:
+  teams?:
     | {
-        role: 'exec' | 'commish' | 'coord';
-        positionTitle?:
-          | (
-              | 'chair'
-              | 'cochair'
-              | 'vicechair'
-              | 'treasurer'
-              | 'mcndirector'
-              | 'secretary'
-              | 'external'
-              | 'academic'
-              | 'social'
-              | 'equity'
-              | 'merch'
-              | 'comms'
-              | 'webmaster'
-            )
+        team: number | Team;
+        members?:
+          | {
+              /**
+               * Select a position from the selected team
+               */
+              role: string;
+              person: number | Person;
+              id?: string | null;
+            }[]
           | null;
-        commissionerTitle?:
-          | (
-              | 'ieee-elg-commish'
-              | 'ieee-ceg-commish'
-              | 'ieee-seg-commish'
-              | 'ieee-mdsc-commish'
-              | 'ieee-comptech-commish'
-              | 'ieee-design-commish'
-              | 'ieee-translations-commish'
-            )
-          | null;
-        coordinatorTitle?:
-          | (
-              | 'ieee-first-year-coord'
-              | 'ieee-media-coord'
-              | 'ieee-industry-coord'
-              | 'ieee-tech-coord'
-              | 'ieee-sw-tech-coord'
-            )
-          | null;
-        /**
-         * Assign people to this position
-         */
-        people?: (number | Person)[] | null;
-        id?: string | null;
-      }[]
-    | null;
-  mdscPositions?:
-    | {
-        role: 'exec' | 'commish' | 'coord';
-        positionTitle?: ('mdsc-chair' | 'mdsc-cochair' | 'mdsc-vicechair' | 'mdsc-events' | 'mdsc-comms') | null;
-        commissionerTitle?: ('mdsc-pm' | 'mdsc-epp' | 'mdsc-swd' | 'mdsc-sustain' | 'mdsc-first-year-rep') | null;
-        /**
-         * Assign people to this position
-         */
-        people?: (number | Person)[] | null;
-        id?: string | null;
-      }[]
-    | null;
-  wiePositions?:
-    | {
-        role: 'exec' | 'commish' | 'coord';
-        positionTitle?:
-          | ('wie-chair' | 'wie-cochair' | 'wie-vicechair' | 'wie-finance' | 'wie-external' | 'wie-internal')
-          | null;
-        commissionerTitle?: 'wie-design-commish' | null;
-        /**
-         * Assign people to this position
-         */
-        people?: (number | Person)[] | null;
-        id?: string | null;
-      }[]
-    | null;
-  cegscPositions?:
-    | {
-        role: 'exec' | 'commish' | 'coord';
-        positionTitle?: ('cegsc-chair' | 'cegsc-cochair' | 'cegsc-vicechair' | 'cegsc-events' | 'cegsc-comms') | null;
-        /**
-         * Assign people to this position
-         */
-        people?: (number | Person)[] | null;
         id?: string | null;
       }[]
     | null;
@@ -1230,6 +1182,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'people';
         value: number | Person;
+      } | null)
+    | ({
+        relationTo: 'teams';
+        value: number | Team;
       } | null)
     | ({
         relationTo: 'committee';
@@ -1645,44 +1601,38 @@ export interface PeopleSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teams_select".
+ */
+export interface TeamsSelect<T extends boolean = true> {
+  name?: T;
+  coverImage?: T;
+  positions?:
+    | T
+    | {
+        role?: T;
+        positionTitle?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "committee_select".
  */
 export interface CommitteeSelect<T extends boolean = true> {
   Year?: T;
-  ieeePositions?:
+  teams?:
     | T
     | {
-        role?: T;
-        positionTitle?: T;
-        commissionerTitle?: T;
-        coordinatorTitle?: T;
-        people?: T;
-        id?: T;
-      };
-  mdscPositions?:
-    | T
-    | {
-        role?: T;
-        positionTitle?: T;
-        commissionerTitle?: T;
-        people?: T;
-        id?: T;
-      };
-  wiePositions?:
-    | T
-    | {
-        role?: T;
-        positionTitle?: T;
-        commissionerTitle?: T;
-        people?: T;
-        id?: T;
-      };
-  cegscPositions?:
-    | T
-    | {
-        role?: T;
-        positionTitle?: T;
-        people?: T;
+        team?: T;
+        members?:
+          | T
+          | {
+              role?: T;
+              person?: T;
+              id?: T;
+            };
         id?: T;
       };
   updatedAt?: T;
