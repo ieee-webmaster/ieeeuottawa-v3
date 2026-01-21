@@ -74,6 +74,8 @@ export interface Config {
     users: User;
     events: Event;
     execs: Exec;
+    people: Person;
+    committee: Committee;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -87,7 +89,7 @@ export interface Config {
   };
   collectionsJoins: {
     'payload-folders': {
-      documentsAndFolders: 'payload-folders' | 'media' | 'events' | 'execs';
+      documentsAndFolders: 'payload-folders' | 'media' | 'events' | 'execs' | 'people';
     };
   };
   collectionsSelect: {
@@ -98,6 +100,8 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
     execs: ExecsSelect<false> | ExecsSelect<true>;
+    people: PeopleSelect<false> | PeopleSelect<true>;
+    committee: CommitteeSelect<false> | CommitteeSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -392,11 +396,15 @@ export interface FolderInterface {
           relationTo?: 'execs';
           value: number | Exec;
         }
+      | {
+          relationTo?: 'people';
+          value: number | Person;
+        }
     )[];
     hasNextPage?: boolean;
     totalDocs?: number;
   };
-  folderType?: ('media' | 'events' | 'execs')[] | null;
+  folderType?: ('media' | 'events' | 'execs' | 'people')[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -492,6 +500,21 @@ export interface Exec {
   'MDSC Exec Position'?: ('mdsc-chair' | 'mdsc-cochair' | 'mdsc-vicechair' | 'mdsc-events' | 'mdsc-comms') | null;
   'MDSC Commissioner Position'?: ('mdsc-pm' | 'mdsc-epp' | 'mdsc-swd' | 'mdsc-sustain' | 'mdsc-first-year-rep') | null;
   'CEGSC Exec Position'?: ('cegsc-chair' | 'cegsc-cochair' | 'cegsc-vicechair' | 'cegsc-events' | 'cegsc-comms') | null;
+  headshot?: (number | null) | Media;
+  'Contact Email'?: string | null;
+  'Linkedin Profile'?: string | null;
+  folder?: (number | null) | FolderInterface;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "people".
+ */
+export interface Person {
+  id: number;
+  'First Name': string;
+  'Last Name': string;
   headshot?: (number | null) | Media;
   'Contact Email'?: string | null;
   'Linkedin Profile'?: string | null;
@@ -892,6 +915,100 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "committee".
+ */
+export interface Committee {
+  id: number;
+  Year: string;
+  ieeePositions?:
+    | {
+        role: 'exec' | 'commish' | 'coord';
+        positionTitle?:
+          | (
+              | 'chair'
+              | 'cochair'
+              | 'vicechair'
+              | 'treasurer'
+              | 'mcndirector'
+              | 'secretary'
+              | 'external'
+              | 'academic'
+              | 'social'
+              | 'equity'
+              | 'merch'
+              | 'comms'
+              | 'webmaster'
+            )
+          | null;
+        commissionerTitle?:
+          | (
+              | 'ieee-elg-commish'
+              | 'ieee-ceg-commish'
+              | 'ieee-seg-commish'
+              | 'ieee-mdsc-commish'
+              | 'ieee-comptech-commish'
+              | 'ieee-design-commish'
+              | 'ieee-translations-commish'
+            )
+          | null;
+        coordinatorTitle?:
+          | (
+              | 'ieee-first-year-coord'
+              | 'ieee-media-coord'
+              | 'ieee-industry-coord'
+              | 'ieee-tech-coord'
+              | 'ieee-sw-tech-coord'
+            )
+          | null;
+        /**
+         * Assign people to this position
+         */
+        people?: (number | Person)[] | null;
+        id?: string | null;
+      }[]
+    | null;
+  mdscPositions?:
+    | {
+        role: 'exec' | 'commish' | 'coord';
+        positionTitle?: ('mdsc-chair' | 'mdsc-cochair' | 'mdsc-vicechair' | 'mdsc-events' | 'mdsc-comms') | null;
+        commissionerTitle?: ('mdsc-pm' | 'mdsc-epp' | 'mdsc-swd' | 'mdsc-sustain' | 'mdsc-first-year-rep') | null;
+        /**
+         * Assign people to this position
+         */
+        people?: (number | Person)[] | null;
+        id?: string | null;
+      }[]
+    | null;
+  wiePositions?:
+    | {
+        role: 'exec' | 'commish' | 'coord';
+        positionTitle?:
+          | ('wie-chair' | 'wie-cochair' | 'wie-vicechair' | 'wie-finance' | 'wie-external' | 'wie-internal')
+          | null;
+        commissionerTitle?: 'wie-design-commish' | null;
+        /**
+         * Assign people to this position
+         */
+        people?: (number | Person)[] | null;
+        id?: string | null;
+      }[]
+    | null;
+  cegscPositions?:
+    | {
+        role: 'exec' | 'commish' | 'coord';
+        positionTitle?: ('cegsc-chair' | 'cegsc-cochair' | 'cegsc-vicechair' | 'cegsc-events' | 'cegsc-comms') | null;
+        /**
+         * Assign people to this position
+         */
+        people?: (number | Person)[] | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1107,6 +1224,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'execs';
         value: number | Exec;
+      } | null)
+    | ({
+        relationTo: 'people';
+        value: number | Person;
+      } | null)
+    | ({
+        relationTo: 'committee';
+        value: number | Committee;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1519,6 +1644,65 @@ export interface ExecsSelect<T extends boolean = true> {
   'Contact Email'?: T;
   'Linkedin Profile'?: T;
   folder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "people_select".
+ */
+export interface PeopleSelect<T extends boolean = true> {
+  'First Name'?: T;
+  'Last Name'?: T;
+  headshot?: T;
+  'Contact Email'?: T;
+  'Linkedin Profile'?: T;
+  folder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "committee_select".
+ */
+export interface CommitteeSelect<T extends boolean = true> {
+  Year?: T;
+  ieeePositions?:
+    | T
+    | {
+        role?: T;
+        positionTitle?: T;
+        commissionerTitle?: T;
+        coordinatorTitle?: T;
+        people?: T;
+        id?: T;
+      };
+  mdscPositions?:
+    | T
+    | {
+        role?: T;
+        positionTitle?: T;
+        commissionerTitle?: T;
+        people?: T;
+        id?: T;
+      };
+  wiePositions?:
+    | T
+    | {
+        role?: T;
+        positionTitle?: T;
+        commissionerTitle?: T;
+        people?: T;
+        id?: T;
+      };
+  cegscPositions?:
+    | T
+    | {
+        role?: T;
+        positionTitle?: T;
+        people?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

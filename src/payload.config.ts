@@ -18,6 +18,7 @@ import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import { Execs } from './collections/Execs'
+import { Committees } from './collections/Committees'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -66,7 +67,7 @@ export default buildConfig({
       connectionString: process.env.POSTGRES_URL || '',
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Users, Events, Execs, People],
+  collections: [Pages, Posts, Media, Categories, Users, Events, Execs, People, Committees],
   cors: [getServerSideURL()].filter(Boolean),
   plugins: [
     ...plugins,
