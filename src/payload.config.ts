@@ -12,6 +12,7 @@ import { Users } from './collections/Users'
 import { Events } from './collections/Events'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
+import { People } from './collections/People'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
@@ -65,7 +66,7 @@ export default buildConfig({
       connectionString: process.env.POSTGRES_URL || '',
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Users, Events, Execs],
+  collections: [Pages, Posts, Media, Categories, Users, Events, Execs, People],
   cors: [getServerSideURL()].filter(Boolean),
   plugins: [
     ...plugins,
