@@ -87,7 +87,7 @@ export interface Config {
   };
   collectionsJoins: {
     'payload-folders': {
-      documentsAndFolders: 'payload-folders' | 'media';
+      documentsAndFolders: 'payload-folders' | 'media' | 'events' | 'execs';
     };
   };
   collectionsSelect: {
@@ -384,11 +384,118 @@ export interface FolderInterface {
           relationTo?: 'media';
           value: number | Media;
         }
+      | {
+          relationTo?: 'events';
+          value: number | Event;
+        }
+      | {
+          relationTo?: 'execs';
+          value: number | Exec;
+        }
     )[];
     hasNextPage?: boolean;
     totalDocs?: number;
   };
-  folderType?: 'media'[] | null;
+  folderType?: ('media' | 'events' | 'execs')[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events".
+ */
+export interface Event {
+  id: number;
+  title: string;
+  date: string;
+  location: string;
+  'hosted-by': string;
+  signupLink?: string | null;
+  heroImage?: (number | null) | Media;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  folder?: (number | null) | FolderInterface;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "execs".
+ */
+export interface Exec {
+  id: number;
+  Name: string;
+  team?: ('ieee' | 'mdsc' | 'wie' | 'cegsc') | null;
+  role?: ('exec' | 'commish' | 'coord') | null;
+  'IEEE Exec Position'?:
+    | (
+        | 'chair'
+        | 'cochair'
+        | 'vicechair'
+        | 'treasurer'
+        | 'mcndirector'
+        | 'secretary'
+        | 'external'
+        | 'academic'
+        | 'social'
+        | 'equity'
+        | 'merch'
+        | 'comms'
+        | 'webmaster'
+      )
+    | null;
+  'IEEE Commissioner Position'?:
+    | (
+        | 'ieee-elg-commish'
+        | 'ieee-ceg-commish'
+        | 'ieee-seg-commish'
+        | 'ieee-mdsc-commish'
+        | 'ieee-comptech-commish'
+        | 'ieee-design-commish'
+        | 'ieee-translations-commish'
+      )
+    | null;
+  'IEEE Coordinator Position'?:
+    | ('ieee-first-year-coord' | 'ieee-media-coord' | 'ieee-industry-coord' | 'ieee-tech-coord' | 'ieee-sw-tech-coord')
+    | null;
+  'WIE Exec Position'?:
+    | ('wie-chair' | 'wie-cochair' | 'wie-vicechair' | 'wie-finance' | 'wie-external' | 'wie-internal')
+    | null;
+  'WIE Commissioner Position'?: 'wie-design-commish' | null;
+  'MDSC Exec Position'?: ('mdsc-chair' | 'mdsc-cochair' | 'mdsc-vicechair' | 'mdsc-events' | 'mdsc-comms') | null;
+  'MDSC Commissioner Position'?: ('mdsc-pm' | 'mdsc-epp' | 'mdsc-swd' | 'mdsc-sustain' | 'mdsc-first-year-rep') | null;
+  'CEGSC Exec Position'?: ('cegsc-chair' | 'cegsc-cochair' | 'cegsc-vicechair' | 'cegsc-events' | 'cegsc-comms') | null;
+  headshot?: (number | null) | Media;
+  'Contact Email'?: string | null;
+  'Linkedin Profile'?: string | null;
+  folder?: (number | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
 }
@@ -780,103 +887,6 @@ export interface Form {
         id?: string | null;
       }[]
     | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "events".
- */
-export interface Event {
-  id: number;
-  title: string;
-  date: string;
-  location: string;
-  'hosted-by': string;
-  signupLink?: string | null;
-  heroImage?: (number | null) | Media;
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  meta?: {
-    title?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (number | null) | Media;
-    description?: string | null;
-  };
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "execs".
- */
-export interface Exec {
-  id: number;
-  Name: string;
-  team?: ('ieee' | 'mdsc' | 'wie' | 'cegsc') | null;
-  role?: ('exec' | 'commish' | 'coord') | null;
-  'IEEE Exec Position'?:
-    | (
-        | 'chair'
-        | 'cochair'
-        | 'vicechair'
-        | 'treasurer'
-        | 'mcndirector'
-        | 'secretary'
-        | 'external'
-        | 'academic'
-        | 'social'
-        | 'equity'
-        | 'merch'
-        | 'comms'
-        | 'webmaster'
-      )
-    | null;
-  'IEEE Commissioner Position'?:
-    | (
-        | 'ieee-elg-commish'
-        | 'ieee-ceg-commish'
-        | 'ieee-seg-commish'
-        | 'ieee-mdsc-commish'
-        | 'ieee-comptech-commish'
-        | 'ieee-design-commish'
-        | 'ieee-translations-commish'
-      )
-    | null;
-  'IEEE Coordinator Position'?:
-    | ('ieee-first-year-coord' | 'ieee-media-coord' | 'ieee-industry-coord' | 'ieee-tech-coord' | 'ieee-sw-tech-coord')
-    | null;
-  'WIE Exec Position'?:
-    | ('wie-chair' | 'wie-cochair' | 'wie-vicechair' | 'wie-finance' | 'wie-external' | 'wie-internal')
-    | null;
-  'WIE Commissioner Position'?: 'wie-design-commish' | null;
-  'MDSC Exec Position'?: ('mdsc-chair' | 'mdsc-cochair' | 'mdsc-vicechair' | 'mdsc-events' | 'mdsc-comms') | null;
-  'MDSC Commissioner Position'?: ('mdsc-pm' | 'mdsc-epp' | 'mdsc-swd' | 'mdsc-sustain' | 'mdsc-first-year-rep') | null;
-  'CEGSC Exec Position'?: ('cegsc-chair' | 'cegsc-cochair' | 'cegsc-vicechair' | 'cegsc-events' | 'cegsc-comms') | null;
-  headshot?: (number | null) | Media;
-  'Contact Email'?: string | null;
-  'Linkedin Profile'?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1484,6 +1494,7 @@ export interface EventsSelect<T extends boolean = true> {
       };
   generateSlug?: T;
   slug?: T;
+  folder?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1507,6 +1518,7 @@ export interface ExecsSelect<T extends boolean = true> {
   headshot?: T;
   'Contact Email'?: T;
   'Linkedin Profile'?: T;
+  folder?: T;
   updatedAt?: T;
   createdAt?: T;
 }

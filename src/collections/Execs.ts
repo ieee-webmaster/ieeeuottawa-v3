@@ -4,6 +4,7 @@ import { anyone } from '@/access/anyone'
 
 export const Execs: CollectionConfig = {
   slug: 'execs',
+  folders: true,
   access: {
     create: authenticated,
     delete: authenticated,

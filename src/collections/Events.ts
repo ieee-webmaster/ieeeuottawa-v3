@@ -27,6 +27,7 @@ import { slugField } from 'payload'
 
 export const Events: CollectionConfig<'events'> = {
   slug: 'events',
+  folders: true,
   access: {
     create: authenticated,
     delete: authenticated,
