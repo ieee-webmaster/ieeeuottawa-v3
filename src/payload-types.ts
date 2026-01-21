@@ -73,7 +73,6 @@ export interface Config {
     categories: Category;
     users: User;
     events: Event;
-    execs: Exec;
     people: Person;
     committee: Committee;
     docs: Doc;
@@ -90,7 +89,7 @@ export interface Config {
   };
   collectionsJoins: {
     'payload-folders': {
-      documentsAndFolders: 'payload-folders' | 'media' | 'events' | 'execs' | 'people';
+      documentsAndFolders: 'payload-folders' | 'media' | 'events' | 'people';
     };
   };
   collectionsSelect: {
@@ -100,7 +99,6 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
-    execs: ExecsSelect<false> | ExecsSelect<true>;
     people: PeopleSelect<false> | PeopleSelect<true>;
     committee: CommitteeSelect<false> | CommitteeSelect<true>;
     docs: DocsSelect<false> | DocsSelect<true>;
@@ -395,10 +393,6 @@ export interface FolderInterface {
           value: number | Event;
         }
       | {
-          relationTo?: 'execs';
-          value: number | Exec;
-        }
-      | {
           relationTo?: 'people';
           value: number | Person;
         }
@@ -406,7 +400,7 @@ export interface FolderInterface {
     hasNextPage?: boolean;
     totalDocs?: number;
   };
-  folderType?: ('media' | 'events' | 'execs' | 'people')[] | null;
+  folderType?: ('media' | 'events' | 'people')[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -454,60 +448,6 @@ export interface Event {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "execs".
- */
-export interface Exec {
-  id: number;
-  Name: string;
-  team?: ('ieee' | 'mdsc' | 'wie' | 'cegsc') | null;
-  role?: ('exec' | 'commish' | 'coord') | null;
-  'IEEE Exec Position'?:
-    | (
-        | 'chair'
-        | 'cochair'
-        | 'vicechair'
-        | 'treasurer'
-        | 'mcndirector'
-        | 'secretary'
-        | 'external'
-        | 'academic'
-        | 'social'
-        | 'equity'
-        | 'merch'
-        | 'comms'
-        | 'webmaster'
-      )
-    | null;
-  'IEEE Commissioner Position'?:
-    | (
-        | 'ieee-elg-commish'
-        | 'ieee-ceg-commish'
-        | 'ieee-seg-commish'
-        | 'ieee-mdsc-commish'
-        | 'ieee-comptech-commish'
-        | 'ieee-design-commish'
-        | 'ieee-translations-commish'
-      )
-    | null;
-  'IEEE Coordinator Position'?:
-    | ('ieee-first-year-coord' | 'ieee-media-coord' | 'ieee-industry-coord' | 'ieee-tech-coord' | 'ieee-sw-tech-coord')
-    | null;
-  'WIE Exec Position'?:
-    | ('wie-chair' | 'wie-cochair' | 'wie-vicechair' | 'wie-finance' | 'wie-external' | 'wie-internal')
-    | null;
-  'WIE Commissioner Position'?: 'wie-design-commish' | null;
-  'MDSC Exec Position'?: ('mdsc-chair' | 'mdsc-cochair' | 'mdsc-vicechair' | 'mdsc-events' | 'mdsc-comms') | null;
-  'MDSC Commissioner Position'?: ('mdsc-pm' | 'mdsc-epp' | 'mdsc-swd' | 'mdsc-sustain' | 'mdsc-first-year-rep') | null;
-  'CEGSC Exec Position'?: ('cegsc-chair' | 'cegsc-cochair' | 'cegsc-vicechair' | 'cegsc-events' | 'cegsc-comms') | null;
-  headshot?: (number | null) | Media;
-  'Contact Email'?: string | null;
-  'Linkedin Profile'?: string | null;
-  folder?: (number | null) | FolderInterface;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1288,10 +1228,6 @@ export interface PayloadLockedDocument {
         value: number | Event;
       } | null)
     | ({
-        relationTo: 'execs';
-        value: number | Exec;
-      } | null)
-    | ({
         relationTo: 'people';
         value: number | Person;
       } | null)
@@ -1693,29 +1629,6 @@ export interface EventsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "execs_select".
- */
-export interface ExecsSelect<T extends boolean = true> {
-  Name?: T;
-  team?: T;
-  role?: T;
-  'IEEE Exec Position'?: T;
-  'IEEE Commissioner Position'?: T;
-  'IEEE Coordinator Position'?: T;
-  'WIE Exec Position'?: T;
-  'WIE Commissioner Position'?: T;
-  'MDSC Exec Position'?: T;
-  'MDSC Commissioner Position'?: T;
-  'CEGSC Exec Position'?: T;
-  headshot?: T;
-  'Contact Email'?: T;
-  'Linkedin Profile'?: T;
-  folder?: T;
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
