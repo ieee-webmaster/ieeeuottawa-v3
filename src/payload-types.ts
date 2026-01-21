@@ -1014,9 +1014,62 @@ export interface Committee {
  */
 export interface Doc {
   id: number;
-  title: string;
-  description: string;
-  googleDocsUrl: string;
+  /**
+   * The academic year for these documents (e.g., 2024-2025)
+   */
+  year: string;
+  /**
+   * General documents, bylaws, constitutions, etc.
+   */
+  generalDocuments?:
+    | {
+        /**
+         * Name of the document (e.g., "IEEE Constitution")
+         */
+        name: string;
+        /**
+         * Optional description of the document
+         */
+        description?: string | null;
+        googleDocsUrl: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Meeting minutes and agendas
+   */
+  meetingMinutes?:
+    | {
+        /**
+         * Name of the meeting (e.g., "General Meeting - October 2024")
+         */
+        name: string;
+        /**
+         * Date the meeting took place
+         */
+        meetingDate?: string | null;
+        /**
+         * Optional description or summary of the meeting
+         */
+        description?: string | null;
+        googleDocsUrl: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Any other documents that don't fit into the above categories
+   */
+  otherDocuments?:
+    | {
+        name: string;
+        /**
+         * Optional description of the document
+         */
+        description?: string | null;
+        googleDocsUrl: string;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1727,9 +1780,32 @@ export interface CommitteeSelect<T extends boolean = true> {
  * via the `definition` "docs_select".
  */
 export interface DocsSelect<T extends boolean = true> {
-  title?: T;
-  description?: T;
-  googleDocsUrl?: T;
+  year?: T;
+  generalDocuments?:
+    | T
+    | {
+        name?: T;
+        description?: T;
+        googleDocsUrl?: T;
+        id?: T;
+      };
+  meetingMinutes?:
+    | T
+    | {
+        name?: T;
+        meetingDate?: T;
+        description?: T;
+        googleDocsUrl?: T;
+        id?: T;
+      };
+  otherDocuments?:
+    | T
+    | {
+        name?: T;
+        description?: T;
+        googleDocsUrl?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
