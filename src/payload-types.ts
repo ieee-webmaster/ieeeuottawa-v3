@@ -76,6 +76,7 @@ export interface Config {
     execs: Exec;
     people: Person;
     committee: Committee;
+    docs: Doc;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -102,6 +103,7 @@ export interface Config {
     execs: ExecsSelect<false> | ExecsSelect<true>;
     people: PeopleSelect<false> | PeopleSelect<true>;
     committee: CommitteeSelect<false> | CommitteeSelect<true>;
+    docs: DocsSelect<false> | DocsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -1009,6 +1011,18 @@ export interface Committee {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "docs".
+ */
+export interface Doc {
+  id: number;
+  title: string;
+  description: string;
+  googleDocsUrl: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1232,6 +1246,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'committee';
         value: number | Committee;
+      } | null)
+    | ({
+        relationTo: 'docs';
+        value: number | Doc;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1703,6 +1721,17 @@ export interface CommitteeSelect<T extends boolean = true> {
         people?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "docs_select".
+ */
+export interface DocsSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  googleDocsUrl?: T;
   updatedAt?: T;
   createdAt?: T;
 }
