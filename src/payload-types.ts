@@ -415,8 +415,8 @@ export interface Event {
   title: string;
   date: string;
   location: string;
-  'hosted-by': 'ieee' | 'other';
-  signupLink?: string | null;
+  'hosted-by': number | Team;
+  Link?: string | null;
   heroImage?: (number | null) | Media;
   content: {
     root: {
@@ -450,6 +450,24 @@ export interface Event {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teams".
+ */
+export interface Team {
+  id: number;
+  name: string;
+  coverImage?: (number | null) | Media;
+  positions?:
+    | {
+        role: 'exec' | 'commish' | 'coord';
+        positionTitle: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -850,24 +868,6 @@ export interface Form {
           };
           [k: string]: unknown;
         } | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "teams".
- */
-export interface Team {
-  id: number;
-  name: string;
-  coverImage?: (number | null) | Media;
-  positions?:
-    | {
-        role: 'exec' | 'commish' | 'coord';
-        positionTitle: string;
         id?: string | null;
       }[]
     | null;
@@ -1569,7 +1569,7 @@ export interface EventsSelect<T extends boolean = true> {
   date?: T;
   location?: T;
   'hosted-by'?: T;
-  signupLink?: T;
+  Link?: T;
   heroImage?: T;
   content?: T;
   meta?:

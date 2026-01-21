@@ -78,15 +78,12 @@ export const Events: CollectionConfig<'events'> = {
     },
     {
       name: 'hosted-by',
-      type: 'select',
-      options: [
-        { label: 'IEEE UOttawa', value: 'ieee' },
-        { label: 'WIE', value: 'other' },
-      ],
+      type: 'relationship',
+      relationTo: 'teams',
       required: true,
     },
     {
-      name: 'signupLink',
+      name: 'Link',
       type: 'text',
       required: false,
     },
