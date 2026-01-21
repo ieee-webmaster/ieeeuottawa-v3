@@ -5,6 +5,9 @@ import { anyone } from '@/access/anyone'
 export const People: CollectionConfig = {
   slug: 'people',
   folders: true,
+  admin: {
+    useAsTitle: "fullName",
+  },
   access: {
     create: authenticated,
     delete: authenticated,
@@ -13,12 +16,8 @@ export const People: CollectionConfig = {
   },
   fields: [
     {
-      name: 'First Name',
-      type: 'text',
-      required: true,
-    },
-    {
-      name: 'Last Name',
+      name: 'fullName',
+      label: 'Full Name',
       type: 'text',
       required: true,
     },

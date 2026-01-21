@@ -515,8 +515,7 @@ export interface Exec {
  */
 export interface Person {
   id: number;
-  'First Name': string;
-  'Last Name': string;
+  fullName: string;
   headshot?: (number | null) | Media;
   'Contact Email'?: string | null;
   'Linkedin Profile'?: string | null;
@@ -1670,8 +1669,7 @@ export interface ExecsSelect<T extends boolean = true> {
  * via the `definition` "people_select".
  */
 export interface PeopleSelect<T extends boolean = true> {
-  'First Name'?: T;
-  'Last Name'?: T;
+  fullName?: T;
   headshot?: T;
   'Contact Email'?: T;
   'Linkedin Profile'?: T;
