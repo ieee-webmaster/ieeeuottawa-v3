@@ -14,7 +14,7 @@ export async function Footer() {
   const navItems = footerData?.navItems || []
 
   return (
-    <footer className="mt-auto border-t border-border bg-black dark:bg-card text-white">
+    <footer className="mt-auto border-t border-primary bg-primary text-primary-foreground">
       <div className="container py-8 gap-8 flex flex-col md:flex-row md:justify-between">
         <Link className="flex items-center" href="/">
           <Logo />
@@ -26,6 +26,11 @@ export async function Footer() {
             {navItems.map(({ link }, i) => {
               return <CMSLink className="text-white" key={i} {...link} />
             })}
+
+            <a href= "https://www.instagram.com/ieeeuottawa/" className = "text-white">Instagram</a>
+            <a href= "https://www.linkedin.com/company/ieeeuottawa/posts/?feedView=all" className = "text-white">LinkedIn</a>
+            <a href="https://www.youtube.com/channel/UCSv1Vna97rKa8w2ktRG8wRw/videos" className = "text-white">YouTube</a>
+            <a href="https://discord.gg/kyTRZ6Ke6J" className = "text-white">Discord</a>
           </nav>
         </div>
       </div>
