@@ -1,6 +1,7 @@
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { notFound } from 'next/navigation'
+import type { Committee, Team, Person } from '@/payload-types'
 
 /*
 In the future:
@@ -24,7 +25,7 @@ export default async function CommitteePage({ params }: { params: Promise<{ year
     limit: 1,
   })
 
-  const committee = result.docs[0]
+  const committee = result.docs[0] as Committee
 
   if (!committee) {
     notFound()
@@ -34,13 +35,13 @@ export default async function CommitteePage({ params }: { params: Promise<{ year
     <div>
       <h1>{committee.Year} Committee</h1>
 
-      {committee.teams?.map((teamEntry: any) => (
+      {committee.teams?.map((teamEntry) => (
         <div key={teamEntry.id}>
-          <h2>{teamEntry.team.name}</h2>
+          <h2>{(teamEntry.team as Team).name}</h2>
 
-          {teamEntry.members?.map((member: any) => (
+          {teamEntry.members?.map((member) => (
             <div key={member.id}>
-              <strong>{member.role}:</strong> {member.person.name}
+              <strong>{member.role}:</strong> {(member.person as Person).fullName}
             </div>
           ))}
         </div>
