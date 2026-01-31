@@ -18,6 +18,8 @@ export const Committees: CollectionConfig = {
       name: 'Year',
       type: 'text',
       required: true,
+      unique: true, // ensures its unique
+      index: true, // perf boost
     },
     {
       name: 'teams',
