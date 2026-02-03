@@ -17,8 +17,8 @@ export const Logo = (props: Props) => {
     /* eslint-disable @next/next/no-img-element */
     <img
       alt="IEEE Logo"
-      width={193}
-      height={34}
+      width={193*(1.5)}
+      height={34*(1.5)}
       loading={loading}
       fetchPriority={priority}
       decoding="async"
