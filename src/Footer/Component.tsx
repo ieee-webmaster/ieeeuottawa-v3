@@ -7,7 +7,7 @@ import type { Footer } from '@/payload-types'
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo/Logo'
-let currentYear = new Date().getFullYear()
+const currentYear = new Date().getFullYear()
 
 export async function Footer() {
   const footerData: Footer = await getCachedGlobal('footer', 1)()
