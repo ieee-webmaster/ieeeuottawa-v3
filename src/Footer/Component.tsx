@@ -7,13 +7,14 @@ import type { Footer } from '@/payload-types'
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo/Logo'
+let currentYear = new Date().getFullYear()
 
 export async function Footer() {
   const footerData: Footer = await getCachedGlobal('footer', 1)()
 
   const navItems = footerData?.navItems || []
 
-  let currentYear = new Date().getFullYear()
+  
 
   return (
     <footer className="mt-auto border-t border-primary bg-primary text-primary-foreground">
