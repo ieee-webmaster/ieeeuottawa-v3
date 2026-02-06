@@ -84,7 +84,13 @@ export const Events: CollectionConfig<'events'> = {
     },
     {
       name: 'Link',
-      type: 'text',
+      type: 'text', // was surprised to find out that PayloadCMS doesn't have a url field. for now, no verification.
+      required: false,
+    },
+    {
+      name: 'Media',
+      type: 'relationship',
+      relationTo: 'media',
       required: false,
     },
     {
