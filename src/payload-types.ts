@@ -417,6 +417,7 @@ export interface Event {
   location: string;
   'hosted-by': number | Team;
   Link?: string | null;
+  Media?: (number | null) | Media;
   heroImage?: (number | null) | Media;
   content: {
     root: {
@@ -1570,6 +1571,7 @@ export interface EventsSelect<T extends boolean = true> {
   location?: T;
   'hosted-by'?: T;
   Link?: T;
+  Media?: T;
   heroImage?: T;
   content?: T;
   meta?:
