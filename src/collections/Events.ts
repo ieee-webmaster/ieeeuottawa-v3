@@ -84,8 +84,21 @@ export const Events: CollectionConfig<'events'> = {
     },
     {
       name: 'Link',
-      type: 'text', // was surprised to find out that PayloadCMS doesn't have a url field. for now, no verification.
+      type: 'text',
       required: false,
+      validate: (value: string | null | undefined) => {
+        // hopefully a fix for the XSS Copilot was warning against. Realistically, the attack surface is quite small, it'd have to be an insider.
+        if (!value) return true
+        try {
+          const url = new URL(value)
+          if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+            return 'Link must start with http:// or https://'
+          }
+          return true
+        } catch {
+          return 'Link must be a valid URL'
+        }
+      },
     },
     {
       name: 'Media',

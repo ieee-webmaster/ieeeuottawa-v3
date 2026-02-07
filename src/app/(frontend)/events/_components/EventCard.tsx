@@ -1,21 +1,11 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import type { Event, Media } from '@/payload-types'
+import type { Event } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 // I want this removed once we have more frontend components
 
 type Props = {
   event: Event
-}
-
-const getEventImage = (event: Event): Media | null => {
-  const heroImage = event.heroImage
-  if (heroImage && typeof heroImage === 'object') return heroImage
-
-  const media = event.Media
-  if (media && typeof media === 'object') return media
-
-  return null
 }
 
 export const EventCard = ({ event }: Props) => {
@@ -33,12 +23,12 @@ export const EventCard = ({ event }: Props) => {
         <Link href={`/events/${event.slug}`}>{event.title}</Link>
       </div>
 
-      <div>{new Date(event.date).toLocaleDateString()}</div>
+      <div>{eventDate.toLocaleDateString()}</div>
       <div>{event.location}</div>
 
       {!isPast && event.Link ? (
         <div style={{ marginTop: 6 }}>
-          <a href={event.Link} target="_blank" rel="noreferrer">
+          <a href={event.Link} target="_blank" rel="noopener noreferrer">
             Sign up / Learn more
           </a>
         </div>
