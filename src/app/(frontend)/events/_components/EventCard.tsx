@@ -15,48 +15,39 @@ export const EventCard = ({ event }: Props) => {
   const mediaSrc = media?.url ? getMediaUrl(media.url, media.updatedAt) : null
   const now = new Date()
   const eventDate = new Date(event.date)
-  const isPast = !Number.isNaN(eventDate.valueOf()) && eventDate < now
+  const validDate = !Number.isNaN(eventDate.valueOf())
+  const month = validDate ? eventDate.toLocaleString('en-US', { month: 'short' }).toUpperCase() : ''
+  const day = validDate ? String(eventDate.getDate()) : ''
 
   return (
-    <div style={{ padding: '12px 0', borderBottom: '1px solid #ddd' }}>
-      <div style={{ fontWeight: 700, marginBottom: 4 }}>
-        <Link href={`/events/${event.slug}`}>{event.title}</Link>
-      </div>
-
-      <div>{eventDate.toLocaleDateString()}</div>
-      <div>{event.location}</div>
-
-      {!isPast && event.Link ? (
-        <div style={{ marginTop: 6 }}>
-          <a href={event.Link} target="_blank" rel="noopener noreferrer">
-            Sign up / Learn more
-          </a>
-        </div>
+    <article className="rounded-lg overflow-hidden shadow-sm bg-[#222]">
+      {heroSrc ? (
+        <Image
+          src={heroSrc}
+          alt={heroMedia?.alt || event.title || 'Event image'}
+          width={1200}
+          height={630}
+          className="w-full h-56 object-cover"
+        />
       ) : (
-        mediaSrc && (
-          <div style={{ marginTop: 10 }}>
-            <Image
-              src={mediaSrc}
-              alt={media?.alt || ''}
-              width={media?.width || 1200}
-              height={media?.height || 630}
-              style={{ maxWidth: 320, height: 'auto', display: 'block' }}
-            />
-          </div>
-        )
+        <div className="w-full h-56 bg-gray-400" />
       )}
 
-      {heroSrc && (
-        <div style={{ marginTop: 10 }}>
-          <Image
-            src={heroSrc}
-            alt={heroMedia?.alt || ''}
-            width={heroMedia?.width || 1200}
-            height={heroMedia?.height || 630}
-            style={{ maxWidth: 320, height: 'auto', display: 'block' }}
-          />
+      <div className="px-4 py-3 flex items-start justify-between">
+        <div className="flex-1 pr-4">
+          <h3 className="text-lg font-semibold leading-tight">
+            <Link href={`/events/${event.slug}`}>{event.title}</Link>
+          </h3>
+          <div className="text-sm text-gray-400 mt-1">{event.location}</div>
         </div>
-      )}
-    </div>
+
+        {validDate && (
+          <div className="flex flex-col items-end text-right">
+            <div className="text-xs text-gray-400">{month}</div>
+            <div className="text-2xl font-bold leading-none">{day}</div>
+          </div>
+        )}
+      </div>
+    </article>
   )
 }
