@@ -28,25 +28,49 @@ export default async function EventsPage() {
     }
   }
 
+  // sort past events newest-first
+  past.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
   return (
-    <div>
-      <h1>Events</h1>
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <header className="mb-8">
+        <h1 className="text-5xl font-extrabold tracking-tight text-center">Events</h1>
+        <p className="mt-2 text-gray-300 text-center">Browse upcoming and past events organized by IEEE UOttawa.</p>
+      </header>
 
-      <h2>Upcoming</h2>
-      {upcoming.length === 0 ? (
-        <div>No upcoming events.</div>
-      ) : (
-        upcoming.map((event) => <EventCard key={event.id} event={event} />)
-      )}
+      <section className="mb-12">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-semibold">Upcoming</h2>
+          <div className="text-sm text-gray-500">{upcoming.length} event{upcoming.length !== 1 ? 's' : ''}</div>
+        </div>
 
-      <h2>Past</h2>
-      {past.length === 0 ? (
-        <div>No past events.</div>
-      ) : (
-        past
-          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-          .map((event) => <EventCard key={event.id} event={event} />)
-      )}
-    </div>
+        {upcoming.length === 0 ? (
+          <div className="rounded-lg border border-dashed border-gray-200 p-8 text-center text-gray-600">No upcoming events.</div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {upcoming.map((event) => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-semibold">Past</h2>
+          <div className="text-sm text-gray-500">{past.length} event{past.length !== 1 ? 's' : ''}</div>
+        </div>
+
+        {past.length === 0 ? (
+          <div className="rounded-lg border border-dashed border-gray-200 p-8 text-center text-gray-600">No past events.</div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {past.map((event) => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </div>
+        )}
+      </section>
+    </main>
   )
 }
