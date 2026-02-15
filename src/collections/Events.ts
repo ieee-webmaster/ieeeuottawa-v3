@@ -15,6 +15,7 @@ import { Banner } from '../blocks/Banner/config'
 import { Code } from '../blocks/Code/config'
 import { MediaBlock } from '../blocks/MediaBlock/config'
 import { generatePreviewPath } from '../utilities/generatePreviewPath'
+import { validateHttpUrl } from '../utilities/validateHttpUrl'
 
 import {
   MetaDescriptionField,
@@ -80,32 +81,20 @@ export const Events: CollectionConfig<'events'> = {
       name: 'hosted-by',
       type: 'relationship',
       relationTo: 'teams',
+      hasMany: true,
       required: true,
     },
     {
-      name: 'Link',
+      name: 'SignupLink',
       type: 'text',
       required: false,
-      validate: (value: string | null | undefined) => {
-        // hopefully a fix for the XSS Copilot was warning against. Realistically, the attack surface is quite small, it'd have to be an insider.
-        if (!value) return true
-        try {
-          const url = new URL(value)
-          if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-            return 'Link must start with http:// or https://'
-          }
-          return true
-        } catch {
-          return 'Link must be a valid URL'
-        }
-      },
+      validate: validateHttpUrl,
     },
     {
-      name: 'Media',
-      type: 'relationship',
-      hasMany: true,
-      relationTo: 'media',
+      name: 'MediaLink',
+      type: 'text',
       required: false,
+      validate: validateHttpUrl,
     },
     {
       type: 'tabs',
