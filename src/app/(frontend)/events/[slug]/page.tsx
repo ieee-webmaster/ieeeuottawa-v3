@@ -52,13 +52,15 @@ export default async function EventPage({ params: paramsPromise }: Args) {
 
   const eventDate = new Date(event.date)
   const isPastEvent = !Number.isNaN(eventDate.valueOf()) && eventDate < new Date()
-  const eventMedia = Array.isArray(event.Media)
-    ? event.Media.filter((item): item is NonNullable<typeof item> & { id: number } => {
-        return typeof item === 'object' && item !== null && 'id' in item
-      })
-    : event.Media && typeof event.Media === 'object'
-      ? [event.Media]
-      : []
+  const hostedBy = event['hosted-by'].filter(
+    (item): item is NonNullable<(typeof event)['hosted-by'][number]> & { name: string } => {
+      return (
+        typeof item === 'object' && item !== null && 'name' in item && typeof item.name === 'string'
+      )
+    },
+  )
+  const hostedByLabel =
+    hostedBy.length > 0 ? hostedBy.map((team) => team.name).join(', ') : 'IEEE uOttawa'
 
   return (
     <article className="pt-16 pb-16">
@@ -86,17 +88,13 @@ export default async function EventPage({ params: paramsPromise }: Args) {
 
               <div className="flex flex-col gap-1">
                 <p className="text-sm">Hosted By</p>
-                <p>
-                  {typeof event['hosted-by'] === 'object' && event['hosted-by'] !== null
-                    ? event['hosted-by'].name
-                    : 'IEEE uOttawa'}
-                </p>
+                <p>{hostedByLabel}</p>
               </div>
 
-              {!isPastEvent && event.Link && (
+              {!isPastEvent && event.SignupLink && (
                 <div className="flex flex-col gap-1">
                   <p className="text-sm">Register</p>
-                  <a href={event.Link} rel="noopener noreferrer" target="_blank">
+                  <a href={event.SignupLink} rel="noopener noreferrer" target="_blank">
                     Sign up / Learn more
                   </a>
                 </div>
@@ -122,11 +120,16 @@ export default async function EventPage({ params: paramsPromise }: Args) {
         <div className="container">
           <RichText className="max-w-[48rem] mx-auto" data={event.content} enableGutter={false} />
 
-          {isPastEvent && eventMedia.length > 0 && (
-            <div className="max-w-[48rem] mx-auto mt-8 flex flex-col gap-6">
-              {eventMedia.map((mediaItem) => (
-                <PayloadMedia key={mediaItem.id} resource={mediaItem} />
-              ))}
+          {isPastEvent && event.MediaLink && (
+            <div className="max-w-[48rem] mx-auto mt-8">
+              <a
+                className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+                href={event.MediaLink}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                View Event Media
+              </a>
             </div>
           )}
         </div>
