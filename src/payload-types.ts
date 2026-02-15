@@ -417,7 +417,7 @@ export interface Event {
   location: string;
   'hosted-by': number | Team;
   Link?: string | null;
-  Media?: (number | null) | Media;
+  Media?: (number | Media)[] | null;
   heroImage?: (number | null) | Media;
   content: {
     root: {

@@ -103,6 +103,7 @@ export const Events: CollectionConfig<'events'> = {
     {
       name: 'Media',
       type: 'relationship',
+      hasMany: true,
       relationTo: 'media',
       required: false,
     },
