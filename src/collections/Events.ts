@@ -83,7 +83,12 @@ export const Events: CollectionConfig<'events'> = {
       required: true,
     },
     {
-      name: 'Link',
+      name: 'SignupLink',
+      type: 'text',
+      required: false,
+    },
+    {
+      name: 'MediaLink',
       type: 'text',
       required: false,
     },
