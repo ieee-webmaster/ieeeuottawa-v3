@@ -5120,14 +5120,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "hosted_by_id": {
-          "name": "hosted_by_id",
-          "type": "integer",
+        "signup_link": {
+          "name": "signup_link",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
-        "link": {
-          "name": "link",
+        "media_link": {
+          "name": "media_link",
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
@@ -5205,21 +5205,6 @@
         }
       },
       "indexes": {
-        "events_hosted_by_idx": {
-          "name": "events_hosted_by_idx",
-          "columns": [
-            {
-              "expression": "hosted_by_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "events_hero_image_idx": {
           "name": "events_hero_image_idx",
           "columns": [
@@ -5327,19 +5312,6 @@
         }
       },
       "foreignKeys": {
-        "events_hosted_by_id_teams_id_fk": {
-          "name": "events_hosted_by_id_teams_id_fk",
-          "tableFrom": "events",
-          "tableTo": "teams",
-          "columnsFrom": [
-            "hosted_by_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
         "events_hero_image_id_media_id_fk": {
           "name": "events_hero_image_id_media_id_fk",
           "tableFrom": "events",
@@ -5386,6 +5358,137 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.events_rels": {
+      "name": "events_rels",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "path": {
+          "name": "path",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "teams_id": {
+          "name": "teams_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "events_rels_order_idx": {
+          "name": "events_rels_order_idx",
+          "columns": [
+            {
+              "expression": "order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "events_rels_parent_idx": {
+          "name": "events_rels_parent_idx",
+          "columns": [
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "events_rels_path_idx": {
+          "name": "events_rels_path_idx",
+          "columns": [
+            {
+              "expression": "path",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "events_rels_teams_id_idx": {
+          "name": "events_rels_teams_id_idx",
+          "columns": [
+            {
+              "expression": "teams_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "events_rels_parent_fk": {
+          "name": "events_rels_parent_fk",
+          "tableFrom": "events_rels",
+          "tableTo": "events",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "events_rels_teams_fk": {
+          "name": "events_rels_teams_fk",
+          "tableFrom": "events_rels",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "teams_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public._events_v": {
       "name": "_events_v",
       "schema": "",
@@ -5420,14 +5523,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "version_hosted_by_id": {
-          "name": "version_hosted_by_id",
-          "type": "integer",
+        "version_signup_link": {
+          "name": "version_signup_link",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
-        "version_link": {
-          "name": "version_link",
+        "version_media_link": {
+          "name": "version_media_link",
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
@@ -5534,21 +5637,6 @@
           "columns": [
             {
               "expression": "parent_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "_events_v_version_version_hosted_by_idx": {
-          "name": "_events_v_version_version_hosted_by_idx",
-          "columns": [
-            {
-              "expression": "version_hosted_by_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -5739,19 +5827,6 @@
           "onDelete": "set null",
           "onUpdate": "no action"
         },
-        "_events_v_version_hosted_by_id_teams_id_fk": {
-          "name": "_events_v_version_hosted_by_id_teams_id_fk",
-          "tableFrom": "_events_v",
-          "tableTo": "teams",
-          "columnsFrom": [
-            "version_hosted_by_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
         "_events_v_version_hero_image_id_media_id_fk": {
           "name": "_events_v_version_hero_image_id_media_id_fk",
           "tableFrom": "_events_v",
@@ -5789,6 +5864,137 @@
             "id"
           ],
           "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public._events_v_rels": {
+      "name": "_events_v_rels",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "path": {
+          "name": "path",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "teams_id": {
+          "name": "teams_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "_events_v_rels_order_idx": {
+          "name": "_events_v_rels_order_idx",
+          "columns": [
+            {
+              "expression": "order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_events_v_rels_parent_idx": {
+          "name": "_events_v_rels_parent_idx",
+          "columns": [
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_events_v_rels_path_idx": {
+          "name": "_events_v_rels_path_idx",
+          "columns": [
+            {
+              "expression": "path",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_events_v_rels_teams_id_idx": {
+          "name": "_events_v_rels_teams_id_idx",
+          "columns": [
+            {
+              "expression": "teams_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "_events_v_rels_parent_fk": {
+          "name": "_events_v_rels_parent_fk",
+          "tableFrom": "_events_v_rels",
+          "tableTo": "_events_v",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "_events_v_rels_teams_fk": {
+          "name": "_events_v_rels_teams_fk",
+          "tableFrom": "_events_v_rels",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "teams_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -6416,6 +6622,21 @@
         }
       },
       "indexes": {
+        "committee_year_idx": {
+          "name": "committee_year_idx",
+          "columns": [
+            {
+              "expression": "year",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "committee_updated_at_idx": {
           "name": "committee_updated_at_idx",
           "columns": [
@@ -11602,6 +11823,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "0d159eca-4f3e-4779-afc1-42e8cce2a947",
+  "id": "0161a15d-a8b0-42aa-96a6-e6f1ca402136",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }
