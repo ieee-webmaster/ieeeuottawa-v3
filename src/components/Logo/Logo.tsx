@@ -1,29 +1,21 @@
 import clsx from 'clsx'
+import Image from 'next/image'
 import React from 'react'
 
 interface Props {
   className?: string
-  loading?: 'lazy' | 'eager'
-  priority?: 'auto' | 'high' | 'low'
+  priority?: boolean
 }
 
-export const Logo = (props: Props) => {
-  const { loading: loadingFromProps, priority: priorityFromProps, className } = props
-
-  const loading = loadingFromProps || 'lazy'
-  const priority = priorityFromProps || 'low'
-
+export const Logo = ({ className, priority = false }: Props) => {
   return (
-    /* eslint-disable @next/next/no-img-element */
-    <img
+    <Image
+      src="/ieeelogo_gradient.svg"
       alt="IEEE Logo"
-      width={193*(1.5)}
-      height={34*(1.5)}
-      loading={loading}
-      fetchPriority={priority}
-      decoding="async"
-      className={clsx('max-w-[9.375rem] w-full h-[34px]', className)}
-      src="ieeelogo_gradient.svg"
+      width={193 * 1.5}
+      height={34 * 1.5}
+      priority={priority}
+      className={clsx('max-w-[9.375rem] w-full h-auto', className)}
     />
   )
 }
