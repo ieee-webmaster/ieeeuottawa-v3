@@ -2,9 +2,7 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-vercel-postg
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
-   CREATE TYPE "public"."enum_events_hosted_by" AS ENUM('ieee', 'other');
-  CREATE TYPE "public"."enum_events_status" AS ENUM('draft', 'published');
-  CREATE TYPE "public"."enum__events_v_version_hosted_by" AS ENUM('ieee', 'other');
+   CREATE TYPE "public"."enum_events_status" AS ENUM('draft', 'published');
   CREATE TYPE "public"."enum__events_v_version_status" AS ENUM('draft', 'published');
   CREATE TYPE "public"."enum_teams_positions_role" AS ENUM('exec', 'commish', 'coord');
   ALTER TYPE "public"."enum_payload_folders_folder_type" ADD VALUE 'events';
@@ -14,8 +12,8 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"title" varchar,
   	"date" timestamp(3) with time zone,
   	"location" varchar,
-  	"hosted_by" "enum_events_hosted_by",
   	"signup_link" varchar,
+  	"media_link" varchar,
   	"hero_image_id" integer,
   	"content" jsonb,
   	"meta_title" varchar,
@@ -29,14 +27,22 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"_status" "enum_events_status" DEFAULT 'draft'
   );
   
+  CREATE TABLE "events_rels" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"order" integer,
+  	"parent_id" integer NOT NULL,
+  	"path" varchar NOT NULL,
+  	"teams_id" integer
+  );
+  
   CREATE TABLE "_events_v" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"parent_id" integer,
   	"version_title" varchar,
   	"version_date" timestamp(3) with time zone,
   	"version_location" varchar,
-  	"version_hosted_by" "enum__events_v_version_hosted_by",
   	"version_signup_link" varchar,
+  	"version_media_link" varchar,
   	"version_hero_image_id" integer,
   	"version_content" jsonb,
   	"version_meta_title" varchar,
@@ -52,6 +58,14 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"latest" boolean,
   	"autosave" boolean
+  );
+  
+  CREATE TABLE "_events_v_rels" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"order" integer,
+  	"parent_id" integer NOT NULL,
+  	"path" varchar NOT NULL,
+  	"teams_id" integer
   );
   
   CREATE TABLE "people" (
@@ -146,10 +160,14 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "events" ADD CONSTRAINT "events_hero_image_id_media_id_fk" FOREIGN KEY ("hero_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "events" ADD CONSTRAINT "events_meta_image_id_media_id_fk" FOREIGN KEY ("meta_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "events" ADD CONSTRAINT "events_folder_id_payload_folders_id_fk" FOREIGN KEY ("folder_id") REFERENCES "public"."payload_folders"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "events_rels" ADD CONSTRAINT "events_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."events"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "events_rels" ADD CONSTRAINT "events_rels_teams_fk" FOREIGN KEY ("teams_id") REFERENCES "public"."teams"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "_events_v" ADD CONSTRAINT "_events_v_parent_id_events_id_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."events"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "_events_v" ADD CONSTRAINT "_events_v_version_hero_image_id_media_id_fk" FOREIGN KEY ("version_hero_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "_events_v" ADD CONSTRAINT "_events_v_version_meta_image_id_media_id_fk" FOREIGN KEY ("version_meta_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "_events_v" ADD CONSTRAINT "_events_v_version_folder_id_payload_folders_id_fk" FOREIGN KEY ("version_folder_id") REFERENCES "public"."payload_folders"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "_events_v_rels" ADD CONSTRAINT "_events_v_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."_events_v"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "_events_v_rels" ADD CONSTRAINT "_events_v_rels_teams_fk" FOREIGN KEY ("teams_id") REFERENCES "public"."teams"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "people" ADD CONSTRAINT "people_headshot_id_media_id_fk" FOREIGN KEY ("headshot_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "people" ADD CONSTRAINT "people_folder_id_payload_folders_id_fk" FOREIGN KEY ("folder_id") REFERENCES "public"."payload_folders"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "teams_positions" ADD CONSTRAINT "teams_positions_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."teams"("id") ON DELETE cascade ON UPDATE no action;
@@ -168,6 +186,10 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "events_updated_at_idx" ON "events" USING btree ("updated_at");
   CREATE INDEX "events_created_at_idx" ON "events" USING btree ("created_at");
   CREATE INDEX "events__status_idx" ON "events" USING btree ("_status");
+  CREATE INDEX "events_rels_order_idx" ON "events_rels" USING btree ("order");
+  CREATE INDEX "events_rels_parent_idx" ON "events_rels" USING btree ("parent_id");
+  CREATE INDEX "events_rels_path_idx" ON "events_rels" USING btree ("path");
+  CREATE INDEX "events_rels_teams_id_idx" ON "events_rels" USING btree ("teams_id");
   CREATE INDEX "_events_v_parent_idx" ON "_events_v" USING btree ("parent_id");
   CREATE INDEX "_events_v_version_version_hero_image_idx" ON "_events_v" USING btree ("version_hero_image_id");
   CREATE INDEX "_events_v_version_meta_version_meta_image_idx" ON "_events_v" USING btree ("version_meta_image_id");
@@ -180,6 +202,10 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "_events_v_updated_at_idx" ON "_events_v" USING btree ("updated_at");
   CREATE INDEX "_events_v_latest_idx" ON "_events_v" USING btree ("latest");
   CREATE INDEX "_events_v_autosave_idx" ON "_events_v" USING btree ("autosave");
+  CREATE INDEX "_events_v_rels_order_idx" ON "_events_v_rels" USING btree ("order");
+  CREATE INDEX "_events_v_rels_parent_idx" ON "_events_v_rels" USING btree ("parent_id");
+  CREATE INDEX "_events_v_rels_path_idx" ON "_events_v_rels" USING btree ("path");
+  CREATE INDEX "_events_v_rels_teams_id_idx" ON "_events_v_rels" USING btree ("teams_id");
   CREATE INDEX "people_headshot_idx" ON "people" USING btree ("headshot_id");
   CREATE INDEX "people_folder_idx" ON "people" USING btree ("folder_id");
   CREATE INDEX "people_updated_at_idx" ON "people" USING btree ("updated_at");
@@ -196,6 +222,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "committee_teams_order_idx" ON "committee_teams" USING btree ("_order");
   CREATE INDEX "committee_teams_parent_id_idx" ON "committee_teams" USING btree ("_parent_id");
   CREATE INDEX "committee_teams_team_idx" ON "committee_teams" USING btree ("team_id");
+  CREATE UNIQUE INDEX "committee_year_idx" ON "committee" USING btree ("year");
   CREATE INDEX "committee_updated_at_idx" ON "committee" USING btree ("updated_at");
   CREATE INDEX "committee_created_at_idx" ON "committee" USING btree ("created_at");
   CREATE INDEX "docs_general_documents_order_idx" ON "docs_general_documents" USING btree ("_order");
@@ -222,7 +249,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
   await db.execute(sql`
    ALTER TABLE "events" DISABLE ROW LEVEL SECURITY;
+  ALTER TABLE "events_rels" DISABLE ROW LEVEL SECURITY;
   ALTER TABLE "_events_v" DISABLE ROW LEVEL SECURITY;
+  ALTER TABLE "_events_v_rels" DISABLE ROW LEVEL SECURITY;
   ALTER TABLE "people" DISABLE ROW LEVEL SECURITY;
   ALTER TABLE "teams_positions" DISABLE ROW LEVEL SECURITY;
   ALTER TABLE "teams" DISABLE ROW LEVEL SECURITY;
@@ -234,7 +263,9 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   ALTER TABLE "docs_other_documents" DISABLE ROW LEVEL SECURITY;
   ALTER TABLE "docs" DISABLE ROW LEVEL SECURITY;
   DROP TABLE "events" CASCADE;
+  DROP TABLE "events_rels" CASCADE;
   DROP TABLE "_events_v" CASCADE;
+  DROP TABLE "_events_v_rels" CASCADE;
   DROP TABLE "people" CASCADE;
   DROP TABLE "teams_positions" CASCADE;
   DROP TABLE "teams" CASCADE;
@@ -269,9 +300,7 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "teams_id";
   ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "committee_id";
   ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "docs_id";
-  DROP TYPE "public"."enum_events_hosted_by";
   DROP TYPE "public"."enum_events_status";
-  DROP TYPE "public"."enum__events_v_version_hosted_by";
   DROP TYPE "public"."enum__events_v_version_status";
   DROP TYPE "public"."enum_teams_positions_role";`)
 }

@@ -415,8 +415,9 @@ export interface Event {
   title: string;
   date: string;
   location: string;
-  'hosted-by': number | Team;
-  Link?: string | null;
+  'hosted-by': (number | Team)[];
+  SignupLink?: string | null;
+  MediaLink?: string | null;
   heroImage?: (number | null) | Media;
   content: {
     root: {
@@ -1569,7 +1570,8 @@ export interface EventsSelect<T extends boolean = true> {
   date?: T;
   location?: T;
   'hosted-by'?: T;
-  Link?: T;
+  SignupLink?: T;
+  MediaLink?: T;
   heroImage?: T;
   content?: T;
   meta?:

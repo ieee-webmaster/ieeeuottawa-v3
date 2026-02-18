@@ -15,6 +15,7 @@ import { Banner } from '../blocks/Banner/config'
 import { Code } from '../blocks/Code/config'
 import { MediaBlock } from '../blocks/MediaBlock/config'
 import { generatePreviewPath } from '../utilities/generatePreviewPath'
+import { validateHttpUrl } from '../utilities/validateHttpUrl'
 
 import {
   MetaDescriptionField,
@@ -80,12 +81,20 @@ export const Events: CollectionConfig<'events'> = {
       name: 'hosted-by',
       type: 'relationship',
       relationTo: 'teams',
+      hasMany: true,
       required: true,
     },
     {
-      name: 'Link',
+      name: 'SignupLink',
       type: 'text',
       required: false,
+      validate: validateHttpUrl,
+    },
+    {
+      name: 'MediaLink',
+      type: 'text',
+      required: false,
+      validate: validateHttpUrl,
     },
     {
       type: 'tabs',
