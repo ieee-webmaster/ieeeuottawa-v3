@@ -5,9 +5,10 @@ import React from 'react'
 interface Props {
   className?: string
   priority?: boolean
+  loading?: 'lazy' | 'eager'
 }
 
-export const Logo = ({ className, priority = false }: Props) => {
+export const Logo = ({ className, priority = false, loading }: Props) => {
   return (
     <div className={clsx('w-[9.375rem] h-auto relative', className)}>
       <Image
@@ -16,6 +17,7 @@ export const Logo = ({ className, priority = false }: Props) => {
         width={193 * 1.5}
         height={34 * 1.5}
         priority={priority}
+        loading={loading}
         className="block dark:hidden"
       />
 
@@ -25,6 +27,7 @@ export const Logo = ({ className, priority = false }: Props) => {
         width={193 * 1.5}
         height={34 * 1.5}
         priority={priority}
+        loading={loading}
         className="hidden dark:block"
       />
     </div>
