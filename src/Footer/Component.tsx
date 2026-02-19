@@ -3,7 +3,6 @@ import Link from 'next/link'
 import React from 'react'
 
 import type { Footer } from '@/payload-types'
-
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo/Logo'
@@ -26,13 +25,13 @@ export async function Footer() {
             <ThemeSelector />
             <nav className="flex gap-4">
               {navItems.map(({ link }, i) => (
-                <CMSLink className="text-white" key={i} {...link} />
+                <CMSLink key={i} {...link} />
               ))}
             </nav>
           </div>
         </div>
 
-        <p className="text-xs text-white/70 text-center md:text-left">
+        <p className="text-xs opacity-70 text-center md:text-left">
           &copy; {currentYear} IEEE UOttawa. All rights reserved.
         </p>
       </div>
