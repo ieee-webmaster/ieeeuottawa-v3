@@ -1,7 +1,6 @@
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import Link from 'next/link'
 import React from 'react'
-
 import type { Footer } from '@/payload-types'
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { CMSLink } from '@/components/Link'
@@ -16,24 +15,25 @@ export async function Footer() {
   return (
     <footer className="mt-auto border-t border-primary bg-primary text-primary-foreground">
       <div className="container py-8 flex flex-col gap-6">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 w-full">
           <Link className="flex items-center" href="/">
             <Logo />
           </Link>
 
-          <div className="flex flex-col-reverse md:flex-row gap-4 md:items-center">
-            <ThemeSelector />
-            <nav className="flex gap-4">
-              {navItems.map(({ link }, i) => (
-                <CMSLink key={i} {...link} />
-              ))}
-            </nav>
-          </div>
+          <nav className="flex flex-wrap gap-4 md:justify-end">
+            {navItems.map(({ link }, i) => (
+              <CMSLink key={i} {...link} />
+            ))}
+          </nav>
         </div>
 
-        <p className="text-xs opacity-70 text-center md:text-left">
-          &copy; {currentYear} IEEE UOttawa. All rights reserved.
-        </p>
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+          <p className="text-xs opacity-70 text-center md:text-left">
+            &copy; {currentYear} IEEE UOttawa. All rights reserved.
+          </p>
+
+          <ThemeSelector />
+        </div>
       </div>
     </footer>
   )
