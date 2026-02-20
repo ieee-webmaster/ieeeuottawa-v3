@@ -15,3 +15,22 @@ type DocsType = {
   meetingMinutes?: (DocItem & { meetingDate?: string })[]
   otherDocuments?: DocItem[]
 }
+
+export default async function DocsPage({ params }: { params: { slug: string } }) {
+  const year = params.slug
+
+  const payload = await getPayload({ config: configPromise })
+
+  const result = await payload.find({
+    collection: 'docs',
+    where: { year: { equals: year } },
+    depth: 1,
+    limit: 1,
+  })
+
+  const docs = result.docs[0] as DocsType
+
+  if (!docs) {
+    return notFound()
+  }
+}
