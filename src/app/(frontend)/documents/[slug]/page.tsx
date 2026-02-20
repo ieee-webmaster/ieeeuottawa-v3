@@ -33,4 +33,10 @@ export default async function DocsPage({ params }: { params: { slug: string } })
   if (!docs) {
     return notFound()
   }
+
+  return (
+    <main className="container mx-auto py-10">
+      <h1 className="text-3xl font-bold mb-4">{docs.year} Documents</h1>
+    </main>
+  )
 }
