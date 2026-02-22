@@ -40,7 +40,7 @@ export const Media: CollectionConfig = {
       localized: true,
       label: {
         en: 'Caption',
-        fr: 'Legende',
+        fr: 'Légende',
       },
       editor: lexicalEditor({
         features: ({ rootFeatures }) => {

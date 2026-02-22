@@ -39,11 +39,11 @@ export const CallToAction: Block = {
   labels: {
     plural: {
       en: 'Calls to Action',
-      fr: 'Appels a l action',
+      fr: "Appels à l'action",
     },
     singular: {
       en: 'Call to Action',
-      fr: 'Appel a l action',
+      fr: "Appel à l'action",
     },
   },
 }

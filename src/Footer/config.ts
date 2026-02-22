@@ -14,7 +14,7 @@ export const Footer: GlobalConfig = {
       type: 'array',
       label: {
         en: 'Navigation Items',
-        fr: 'Elements de navigation',
+        fr: 'Éléments de navigation',
       },
       fields: [
         link({

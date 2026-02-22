@@ -25,7 +25,7 @@ const columnFields: Field[] = [
       {
         label: {
           en: 'Half',
-          fr: 'Moitie',
+          fr: 'Moitié',
         },
         value: 'half',
       },
@@ -39,7 +39,7 @@ const columnFields: Field[] = [
       {
         label: {
           en: 'Full',
-          fr: 'Plein',
+          fr: 'Complet',
         },
         value: 'full',
       },

@@ -11,7 +11,6 @@ import { defaultLocale } from '@/i18n/config'
 import { getRequestLocale } from '@/i18n/server'
 import { getMessages } from '@/i18n/messages'
 
-export const dynamic = 'force-dynamic'
 export const revalidate = 600
 
 export default async function Page() {

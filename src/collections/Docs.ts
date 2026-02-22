@@ -19,7 +19,7 @@ export const Docs: CollectionConfig = {
       name: 'year',
       label: {
         en: 'Year',
-        fr: 'Annee',
+        fr: 'Année',
       },
       type: 'text',
       required: true,
@@ -27,7 +27,7 @@ export const Docs: CollectionConfig = {
       admin: {
         description: {
           en: 'The academic year for these documents (e.g., 2024-2025)',
-          fr: 'L annee academique pour ces documents (ex.: 2024-2025)',
+          fr: "L'année académique pour ces documents (ex. : 2024-2025)",
         },
       },
     },
@@ -36,12 +36,12 @@ export const Docs: CollectionConfig = {
       type: 'array',
       label: {
         en: 'General Documents',
-        fr: 'Documents generaux',
+        fr: 'Documents généraux',
       },
       admin: {
         description: {
           en: 'General documents, bylaws, constitutions, etc.',
-          fr: 'Documents generaux, reglements, constitutions, etc.',
+          fr: 'Documents généraux, règlements, constitutions, etc.',
         },
       },
       fields: [
@@ -88,12 +88,12 @@ export const Docs: CollectionConfig = {
       type: 'array',
       label: {
         en: 'Meeting Minutes',
-        fr: 'Proces-verbaux',
+        fr: 'Procès-verbaux',
       },
       admin: {
         description: {
           en: 'Meeting minutes and agendas',
-          fr: 'Proces-verbaux et ordres du jour',
+          fr: 'Procès-verbaux et ordres du jour',
         },
       },
       fields: [
@@ -103,13 +103,13 @@ export const Docs: CollectionConfig = {
           localized: true,
           label: {
             en: 'Meeting Name',
-            fr: 'Nom de la reunion',
+            fr: 'Nom de la réunion',
           },
           required: true,
           admin: {
             description: {
               en: 'Name of the meeting (e.g., "General Meeting - October 2024")',
-              fr: 'Nom de la reunion (ex.: "Reunion generale - Octobre 2024")',
+              fr: 'Nom de la réunion (ex. : "Réunion générale - Octobre 2024")',
             },
           },
         },
@@ -118,12 +118,12 @@ export const Docs: CollectionConfig = {
           type: 'date',
           label: {
             en: 'Meeting Date',
-            fr: 'Date de reunion',
+            fr: 'Date de réunion',
           },
           admin: {
             description: {
               en: 'Date the meeting took place',
-              fr: 'Date de la reunion',
+              fr: 'Date de la réunion',
             },
           },
         },
@@ -138,7 +138,7 @@ export const Docs: CollectionConfig = {
           admin: {
             description: {
               en: 'Optional description or summary of the meeting',
-              fr: 'Description ou resume optionnel de la reunion',
+              fr: 'Description ou résumé optionnel de la réunion',
             },
           },
         },
@@ -159,7 +159,7 @@ export const Docs: CollectionConfig = {
       admin: {
         description: {
           en: "Any other documents that don't fit into the above categories",
-          fr: 'Tout autre document qui ne correspond pas aux categories ci-dessus',
+          fr: 'Tout autre document qui ne correspond pas aux catégories ci-dessus',
         },
       },
       fields: [

@@ -27,7 +27,7 @@ export const Archive: Block = {
       }),
       label: {
         en: 'Intro Content',
-        fr: 'Contenu d introduction',
+        fr: "Contenu d'introduction",
       },
     },
     {
@@ -45,7 +45,7 @@ export const Archive: Block = {
         {
           label: {
             en: 'Individual Selection',
-            fr: 'Selection individuelle',
+            fr: 'Sélection individuelle',
           },
           value: 'selection',
         },
@@ -60,7 +60,7 @@ export const Archive: Block = {
       defaultValue: 'posts',
       label: {
         en: 'Collections To Show',
-        fr: 'Collections a afficher',
+        fr: 'Collections à afficher',
       },
       options: [
         {
@@ -81,7 +81,7 @@ export const Archive: Block = {
       hasMany: true,
       label: {
         en: 'Categories To Show',
-        fr: 'Categories a afficher',
+        fr: 'Catégories à afficher',
       },
       relationTo: 'categories',
     },
@@ -107,7 +107,7 @@ export const Archive: Block = {
       hasMany: true,
       label: {
         en: 'Selection',
-        fr: 'Selection',
+        fr: 'Sélection',
       },
       relationTo: ['posts'],
     },

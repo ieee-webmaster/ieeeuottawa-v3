@@ -6,11 +6,11 @@ export const MediaBlock: Block = {
   labels: {
     singular: {
       en: 'Media Block',
-      fr: 'Bloc media',
+      fr: 'Bloc média',
     },
     plural: {
       en: 'Media Blocks',
-      fr: 'Blocs media',
+      fr: 'Blocs média',
     },
   },
   fields: [

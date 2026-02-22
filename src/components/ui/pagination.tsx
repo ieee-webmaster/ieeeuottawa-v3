@@ -6,8 +6,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/utilities/ui'
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
 import * as React from 'react'
-import { usePathname } from 'next/navigation'
-import { getLocaleFromPathname } from '@/i18n/config'
+import type { AppLocale } from '@/i18n/config'
 import { getMessages } from '@/i18n/messages'
 
 const Pagination = ({ className, ...props }: React.ComponentProps<'nav'>) => (
@@ -50,9 +49,9 @@ const PaginationLink = ({ className, isActive, size = 'icon', ...props }: Pagina
 
 const PaginationPrevious = ({
   className,
+  locale = 'en',
   ...props
-}: React.ComponentProps<typeof PaginationLink>) => {
-  const locale = getLocaleFromPathname(usePathname())
+}: React.ComponentProps<typeof PaginationLink> & { locale?: AppLocale }) => {
   const messages = getMessages(locale)
 
   return (
@@ -68,8 +67,11 @@ const PaginationPrevious = ({
   )
 }
 
-const PaginationNext = ({ className, ...props }: React.ComponentProps<typeof PaginationLink>) => {
-  const locale = getLocaleFromPathname(usePathname())
+const PaginationNext = ({
+  className,
+  locale = 'en',
+  ...props
+}: React.ComponentProps<typeof PaginationLink> & { locale?: AppLocale }) => {
   const messages = getMessages(locale)
 
   return (
@@ -85,8 +87,11 @@ const PaginationNext = ({ className, ...props }: React.ComponentProps<typeof Pag
   )
 }
 
-const PaginationEllipsis = ({ className, ...props }: React.ComponentProps<'span'>) => {
-  const locale = getLocaleFromPathname(usePathname())
+const PaginationEllipsis = ({
+  className,
+  locale = 'en',
+  ...props
+}: React.ComponentProps<'span'> & { locale?: AppLocale }) => {
   const messages = getMessages(locale)
 
   return (

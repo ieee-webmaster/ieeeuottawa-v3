@@ -22,7 +22,7 @@ export const FormBlock: Block = {
       type: 'checkbox',
       label: {
         en: 'Enable Intro Content',
-        fr: 'Activer le contenu d introduction',
+        fr: "Activer le contenu d'introduction",
       },
     },
     {
@@ -44,7 +44,7 @@ export const FormBlock: Block = {
       }),
       label: {
         en: 'Intro Content',
-        fr: 'Contenu d introduction',
+        fr: "Contenu d'introduction",
       },
     },
   ],

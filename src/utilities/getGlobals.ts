@@ -23,11 +23,9 @@ async function getGlobal(slug: Global, depth = 0, locale: AppLocale = defaultLoc
 /**
  * Returns a unstable_cache function mapped with the cache tag for the slug
  */
-export const getCachedGlobal = (slug: Global, depth = 0) =>
-  unstable_cache(
-    async (locale: AppLocale = defaultLocale) => getGlobal(slug, depth, locale),
-    [slug],
-    {
+export const getCachedGlobal =
+  (slug: Global, depth = 0) =>
+  (locale: AppLocale = defaultLocale) =>
+    unstable_cache(async () => getGlobal(slug, depth, locale), [slug, locale], {
       tags: [`global_${slug}`],
-    },
-  )
+    })()

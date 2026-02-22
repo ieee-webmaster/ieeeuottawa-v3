@@ -99,7 +99,7 @@ export const Events: CollectionConfig<'events'> = {
       required: true,
       label: {
         en: 'Hosted By',
-        fr: 'Organise par',
+        fr: 'Organisé par',
       },
     },
     {
@@ -109,7 +109,7 @@ export const Events: CollectionConfig<'events'> = {
       validate: validateHttpUrl,
       label: {
         en: 'Signup Link',
-        fr: 'Lien d inscription',
+        fr: "Lien d'inscription",
       },
     },
     {
@@ -119,7 +119,7 @@ export const Events: CollectionConfig<'events'> = {
       validate: validateHttpUrl,
       label: {
         en: 'Media Link',
-        fr: 'Lien media',
+        fr: 'Lien média',
       },
     },
     {
@@ -133,7 +133,7 @@ export const Events: CollectionConfig<'events'> = {
               relationTo: 'media',
               label: {
                 en: 'Hero Image',
-                fr: 'Image hero',
+                fr: 'Image héro',
               },
             },
             {

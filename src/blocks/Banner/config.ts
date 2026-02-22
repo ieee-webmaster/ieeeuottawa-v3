@@ -38,7 +38,7 @@ export const Banner: Block = {
         {
           label: {
             en: 'Success',
-            fr: 'Succes',
+            fr: 'Succès',
           },
           value: 'success',
         },

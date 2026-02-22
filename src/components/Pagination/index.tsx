@@ -44,6 +44,7 @@ export const Pagination: React.FC<{
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
+              locale={locale}
               disabled={!hasPrevPage}
               onClick={() => {
                 router.push(getPostsPagePath(page - 1))
@@ -53,7 +54,7 @@ export const Pagination: React.FC<{
 
           {hasExtraPrevPages && (
             <PaginationItem>
-              <PaginationEllipsis />
+              <PaginationEllipsis locale={locale} />
             </PaginationItem>
           )}
 
@@ -94,12 +95,13 @@ export const Pagination: React.FC<{
 
           {hasExtraNextPages && (
             <PaginationItem>
-              <PaginationEllipsis />
+              <PaginationEllipsis locale={locale} />
             </PaginationItem>
           )}
 
           <PaginationItem>
             <PaginationNext
+              locale={locale}
               disabled={!hasNextPage}
               onClick={() => {
                 router.push(getPostsPagePath(page + 1))

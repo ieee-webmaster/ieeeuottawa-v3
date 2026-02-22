@@ -140,7 +140,7 @@ export const Pages: CollectionConfig<'pages'> = {
       type: 'date',
       label: {
         en: 'Published At',
-        fr: 'Publie le',
+        fr: 'Publié le',
       },
       admin: {
         position: 'sidebar',

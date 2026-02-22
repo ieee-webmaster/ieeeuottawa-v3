@@ -23,11 +23,9 @@ export async function getRedirects(depth = 1, locale: AppLocale = defaultLocale)
  *
  * Cache all redirects together to avoid multiple fetches.
  */
-export const getCachedRedirects = () =>
-  unstable_cache(
-    async (locale: AppLocale = defaultLocale) => getRedirects(1, locale),
-    ['redirects'],
-    {
+export const getCachedRedirects =
+  () =>
+  (locale: AppLocale = defaultLocale) =>
+    unstable_cache(async () => getRedirects(1, locale), ['redirects', locale], {
       tags: ['redirects'],
-    },
-  )
+    })()

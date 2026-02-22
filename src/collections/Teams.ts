@@ -18,7 +18,7 @@ export const Teams: CollectionConfig = {
       name: 'name',
       label: {
         en: 'Team Name',
-        fr: 'Nom de l equipe',
+        fr: "Nom de l'équipe",
       },
       type: 'text',
       localized: true,
@@ -42,13 +42,13 @@ export const Teams: CollectionConfig = {
           required: true,
           label: {
             en: 'Role',
-            fr: 'Role',
+            fr: 'Rôle',
           },
           options: [
             {
               label: {
                 en: 'Executive',
-                fr: 'Executif',
+                fr: 'Exécutif',
               },
               value: 'exec',
             },

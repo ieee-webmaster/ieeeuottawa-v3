@@ -87,7 +87,7 @@ export const Posts: CollectionConfig<'posts'> = {
               relationTo: 'media',
               label: {
                 en: 'Hero Image',
-                fr: 'Image hero',
+                fr: 'Image héro',
               },
             },
             {
@@ -147,7 +147,7 @@ export const Posts: CollectionConfig<'posts'> = {
               relationTo: 'categories',
               label: {
                 en: 'Categories',
-                fr: 'Categories',
+                fr: 'Catégories',
               },
             },
           ],
@@ -200,7 +200,7 @@ export const Posts: CollectionConfig<'posts'> = {
       type: 'date',
       label: {
         en: 'Published At',
-        fr: 'Publie le',
+        fr: 'Publié le',
       },
       admin: {
         date: {
@@ -240,7 +240,7 @@ export const Posts: CollectionConfig<'posts'> = {
       type: 'array',
       label: {
         en: 'Populated Authors',
-        fr: 'Auteurs resolves',
+        fr: 'Auteurs résolus',
       },
       access: {
         update: () => false,

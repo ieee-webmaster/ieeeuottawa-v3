@@ -22,7 +22,7 @@ export const Committees: CollectionConfig = {
       index: true, // perf boost
       label: {
         en: 'Year',
-        fr: 'Annee',
+        fr: 'Année',
       },
     },
     {
@@ -30,7 +30,7 @@ export const Committees: CollectionConfig = {
       type: 'array',
       label: {
         en: 'Teams',
-        fr: 'Equipes',
+        fr: 'Équipes',
       },
       fields: [
         {
@@ -40,7 +40,7 @@ export const Committees: CollectionConfig = {
           required: true,
           label: {
             en: 'Team',
-            fr: 'Equipe',
+            fr: 'Équipe',
           },
         },
         {
@@ -63,7 +63,7 @@ export const Committees: CollectionConfig = {
               admin: {
                 description: {
                   en: 'Select a position from the selected team',
-                  fr: 'Selectionnez un poste de l equipe choisie',
+                  fr: "Sélectionnez un poste de l'équipe choisie",
                 },
                 components: {
                   Field: '/components/CommitteePositionSelect#CommitteePositionSelect',

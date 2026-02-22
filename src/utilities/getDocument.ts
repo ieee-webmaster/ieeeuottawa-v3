@@ -33,11 +33,13 @@ async function getDocument(
 /**
  * Returns a unstable_cache function mapped with the cache tag for the slug
  */
-export const getCachedDocument = (collection: Collection, slug: string) =>
-  unstable_cache(
-    async (locale: AppLocale = defaultLocale) => getDocument(collection, slug, 0, locale),
-    [collection, slug],
-    {
-      tags: [`${collection}_${slug}`],
-    },
-  )
+export const getCachedDocument =
+  (collection: Collection, slug: string) =>
+  (locale: AppLocale = defaultLocale) =>
+    unstable_cache(
+      async () => getDocument(collection, slug, 0, locale),
+      [collection, slug, locale],
+      {
+        tags: [`${collection}_${slug}`],
+      },
+    )()

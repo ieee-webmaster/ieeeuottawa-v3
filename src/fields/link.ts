@@ -51,7 +51,7 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
               {
                 label: {
                   en: 'Custom URL',
-                  fr: 'URL personnalisee',
+                  fr: 'URL personnalisée',
                 },
                 value: 'custom',
               },
@@ -85,7 +85,7 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
       },
       label: {
         en: 'Document to link to',
-        fr: 'Document a lier',
+        fr: 'Document à lier',
       },
       relationTo: ['pages', 'posts'],
       required: true,
@@ -98,7 +98,7 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
       },
       label: {
         en: 'Custom URL',
-        fr: 'URL personnalisee',
+        fr: 'URL personnalisée',
       },
       required: true,
     },
@@ -126,7 +126,7 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
           },
           label: {
             en: 'Label',
-            fr: 'Libelle',
+            fr: 'Libellé',
           },
           required: true,
         },
@@ -149,7 +149,7 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
       admin: {
         description: {
           en: 'Choose how the link should be rendered.',
-          fr: 'Choisissez comment le lien doit etre affiche.',
+          fr: 'Choisissez comment le lien doit être affiché.',
         },
       },
       defaultValue: 'default',
