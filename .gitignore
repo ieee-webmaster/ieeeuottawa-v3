@@ -20,6 +20,4 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 
-
-# TypeScript stuff
 tsconfig.tsbuildinfo
