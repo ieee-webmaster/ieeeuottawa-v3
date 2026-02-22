@@ -69,7 +69,12 @@ export const Posts: CollectionConfig<'posts'> = {
     {
       name: 'title',
       type: 'text',
+      localized: true,
       required: true,
+      label: {
+        en: 'Title',
+        fr: 'Titre',
+      },
     },
     {
       type: 'tabs',
@@ -80,10 +85,15 @@ export const Posts: CollectionConfig<'posts'> = {
               name: 'heroImage',
               type: 'upload',
               relationTo: 'media',
+              label: {
+                en: 'Hero Image',
+                fr: 'Image hero',
+              },
             },
             {
               name: 'content',
               type: 'richText',
+              localized: true,
               editor: lexicalEditor({
                 features: ({ rootFeatures }) => {
                   return [
@@ -100,7 +110,10 @@ export const Posts: CollectionConfig<'posts'> = {
               required: true,
             },
           ],
-          label: 'Content',
+          label: {
+            en: 'Content',
+            fr: 'Contenu',
+          },
         },
         {
           fields: [
@@ -119,6 +132,10 @@ export const Posts: CollectionConfig<'posts'> = {
               },
               hasMany: true,
               relationTo: 'posts',
+              label: {
+                en: 'Related Posts',
+                fr: 'Articles connexes',
+              },
             },
             {
               name: 'categories',
@@ -128,13 +145,23 @@ export const Posts: CollectionConfig<'posts'> = {
               },
               hasMany: true,
               relationTo: 'categories',
+              label: {
+                en: 'Categories',
+                fr: 'Categories',
+              },
             },
           ],
-          label: 'Meta',
+          label: {
+            en: 'Meta',
+            fr: 'Meta',
+          },
         },
         {
           name: 'meta',
-          label: 'SEO',
+          label: {
+            en: 'SEO',
+            fr: 'SEO',
+          },
           fields: [
             OverviewField({
               titlePath: 'meta.title',
@@ -143,12 +170,19 @@ export const Posts: CollectionConfig<'posts'> = {
             }),
             MetaTitleField({
               hasGenerateFn: true,
+              overrides: {
+                localized: true,
+              },
             }),
             MetaImageField({
               relationTo: 'media',
             }),
 
-            MetaDescriptionField({}),
+            MetaDescriptionField({
+              overrides: {
+                localized: true,
+              },
+            }),
             PreviewField({
               // if the `generateUrl` function is configured
               hasGenerateFn: true,
@@ -164,6 +198,10 @@ export const Posts: CollectionConfig<'posts'> = {
     {
       name: 'publishedAt',
       type: 'date',
+      label: {
+        en: 'Published At',
+        fr: 'Publie le',
+      },
       admin: {
         date: {
           pickerAppearance: 'dayAndTime',
@@ -184,6 +222,10 @@ export const Posts: CollectionConfig<'posts'> = {
     {
       name: 'authors',
       type: 'relationship',
+      label: {
+        en: 'Authors',
+        fr: 'Auteurs',
+      },
       admin: {
         position: 'sidebar',
       },
@@ -196,6 +238,10 @@ export const Posts: CollectionConfig<'posts'> = {
     {
       name: 'populatedAuthors',
       type: 'array',
+      label: {
+        en: 'Populated Authors',
+        fr: 'Auteurs resolves',
+      },
       access: {
         update: () => false,
       },
@@ -207,10 +253,18 @@ export const Posts: CollectionConfig<'posts'> = {
         {
           name: 'id',
           type: 'text',
+          label: {
+            en: 'ID',
+            fr: 'ID',
+          },
         },
         {
           name: 'name',
           type: 'text',
+          label: {
+            en: 'Name',
+            fr: 'Nom',
+          },
         },
       ],
     },

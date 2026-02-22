@@ -6,6 +6,8 @@ import React from 'react'
 import RichText from '@/components/RichText'
 
 import { CollectionArchive } from '@/components/CollectionArchive'
+import { defaultLocale } from '@/i18n/config'
+import { getRequestLocale } from '@/i18n/server'
 
 export const ArchiveBlock: React.FC<
   ArchiveBlockProps & {
@@ -20,6 +22,7 @@ export const ArchiveBlock: React.FC<
 
   if (populateBy === 'collection') {
     const payload = await getPayload({ config: configPromise })
+    const locale = await getRequestLocale()
 
     const flattenedCategories = categories?.map((category) => {
       if (typeof category === 'object') return category.id
@@ -28,6 +31,8 @@ export const ArchiveBlock: React.FC<
 
     const fetchedPosts = await payload.find({
       collection: 'posts',
+      locale: locale as never,
+      fallbackLocale: defaultLocale as never,
       depth: 1,
       limit,
       ...(flattenedCategories && flattenedCategories.length > 0

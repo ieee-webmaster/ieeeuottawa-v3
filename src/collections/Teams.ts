@@ -16,16 +16,20 @@ export const Teams: CollectionConfig = {
   fields: [
     {
       name: 'name',
-      label: 'Team Name',
+      label: {
+        en: 'Team Name',
+        fr: 'Nom de l equipe',
+      },
       type: 'text',
+      localized: true,
       required: true,
       unique: true,
     },
     {
-        name: 'coverImage',
-        type: 'upload',
-        relationTo: 'media',
-        label: 'Cover Image',
+      name: 'coverImage',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Cover Image',
     },
     {
       name: 'positions',
@@ -36,17 +40,43 @@ export const Teams: CollectionConfig = {
           name: 'role',
           type: 'select',
           required: true,
+          label: {
+            en: 'Role',
+            fr: 'Role',
+          },
           options: [
-            { label: 'Executive', value: 'exec' },
-            { label: 'Commissioner', value: 'commish' },
-            { label: 'Coordinator', value: 'coord' },
+            {
+              label: {
+                en: 'Executive',
+                fr: 'Executif',
+              },
+              value: 'exec',
+            },
+            {
+              label: {
+                en: 'Commissioner',
+                fr: 'Commissaire',
+              },
+              value: 'commish',
+            },
+            {
+              label: {
+                en: 'Coordinator',
+                fr: 'Coordonnateur',
+              },
+              value: 'coord',
+            },
           ],
         },
         {
           name: 'positionTitle',
           type: 'text',
+          localized: true,
           required: true,
-          label: 'Position Title',
+          label: {
+            en: 'Position Title',
+            fr: 'Titre du poste',
+          },
         },
       ],
     },

@@ -7,15 +7,22 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
 import PageClient from './page.client'
+import { defaultLocale } from '@/i18n/config'
+import { getRequestLocale } from '@/i18n/server'
+import { getMessages } from '@/i18n/messages'
 
-export const dynamic = 'force-static'
+export const dynamic = 'force-dynamic'
 export const revalidate = 600
 
 export default async function Page() {
   const payload = await getPayload({ config: configPromise })
+  const locale = await getRequestLocale()
+  const messages = getMessages(locale)
 
   const posts = await payload.find({
     collection: 'posts',
+    locale: locale as never,
+    fallbackLocale: defaultLocale as never,
     depth: 1,
     limit: 12,
     overrideAccess: false,
@@ -32,7 +39,7 @@ export default async function Page() {
       <PageClient />
       <div className="container mb-16">
         <div className="prose dark:prose-invert max-w-none">
-          <h1>Posts</h1>
+          <h1>{messages.postsPage.title}</h1>
         </div>
       </div>
 
@@ -41,6 +48,7 @@ export default async function Page() {
           collection="posts"
           currentPage={posts.page}
           limit={12}
+          locale={locale}
           totalDocs={posts.totalDocs}
         />
       </div>
@@ -49,15 +57,18 @@ export default async function Page() {
 
       <div className="container">
         {posts.totalPages > 1 && posts.page && (
-          <Pagination page={posts.page} totalPages={posts.totalPages} />
+          <Pagination locale={locale} page={posts.page} totalPages={posts.totalPages} />
         )}
       </div>
     </div>
   )
 }
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale()
+  const messages = getMessages(locale)
+
   return {
-    title: `Payload Website Template Posts`,
+    title: messages.postsPage.metadataTitle,
   }
 }

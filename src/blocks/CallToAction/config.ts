@@ -16,6 +16,7 @@ export const CallToAction: Block = {
     {
       name: 'richText',
       type: 'richText',
+      localized: true,
       editor: lexicalEditor({
         features: ({ rootFeatures }) => {
           return [
@@ -36,7 +37,13 @@ export const CallToAction: Block = {
     }),
   ],
   labels: {
-    plural: 'Calls to Action',
-    singular: 'Call to Action',
+    plural: {
+      en: 'Calls to Action',
+      fr: 'Appels a l action',
+    },
+    singular: {
+      en: 'Call to Action',
+      fr: 'Appel a l action',
+    },
   },
 }

@@ -12,6 +12,10 @@ export const Header: GlobalConfig = {
     {
       name: 'navItems',
       type: 'array',
+      label: {
+        en: 'Navigation Items',
+        fr: 'Elements de navigation',
+      },
       fields: [
         link({
           appearances: false,

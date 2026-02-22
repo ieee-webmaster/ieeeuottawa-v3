@@ -2,6 +2,7 @@ import { Button, type ButtonProps } from '@/components/ui/button'
 import { cn } from '@/utilities/ui'
 import Link from 'next/link'
 import React from 'react'
+import { defaultLocale, type AppLocale, prefixLocalePath } from '@/i18n/config'
 
 import type { Page, Post } from '@/payload-types'
 
@@ -18,6 +19,7 @@ type CMSLinkType = {
   size?: ButtonProps['size'] | null
   type?: 'custom' | 'reference' | null
   url?: string | null
+  locale?: AppLocale
 }
 
 export const CMSLink: React.FC<CMSLinkType> = (props) => {
@@ -31,6 +33,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     reference,
     size: sizeFromProps,
     url,
+    locale = defaultLocale,
   } = props
 
   const href =
@@ -40,6 +43,8 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
         }`
       : url
 
+  const localizedHref = href && href.startsWith('/') ? prefixLocalePath(locale, href) : href
+
   if (!href) return null
 
   const size = appearance === 'link' ? 'clear' : sizeFromProps
@@ -48,7 +53,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   /* Ensure we don't break any styles set by richText */
   if (appearance === 'inline') {
     return (
-      <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
+      <Link className={cn(className)} href={localizedHref || url || ''} {...newTabProps}>
         {label && label}
         {children && children}
       </Link>
@@ -57,7 +62,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
 
   return (
     <Button asChild className={className} size={size} variant={appearance}>
-      <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
+      <Link className={cn(className)} href={localizedHref || url || ''} {...newTabProps}>
         {label && label}
         {children && children}
       </Link>

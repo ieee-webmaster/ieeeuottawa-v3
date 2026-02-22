@@ -58,14 +58,22 @@ export const Pages: CollectionConfig<'pages'> = {
     {
       name: 'title',
       type: 'text',
+      localized: true,
       required: true,
+      label: {
+        en: 'Title',
+        fr: 'Titre',
+      },
     },
     {
       type: 'tabs',
       tabs: [
         {
           fields: [hero],
-          label: 'Hero',
+          label: {
+            en: 'Hero',
+            fr: 'Hero',
+          },
         },
         {
           fields: [
@@ -77,13 +85,23 @@ export const Pages: CollectionConfig<'pages'> = {
               admin: {
                 initCollapsed: true,
               },
+              label: {
+                en: 'Layout',
+                fr: 'Mise en page',
+              },
             },
           ],
-          label: 'Content',
+          label: {
+            en: 'Content',
+            fr: 'Contenu',
+          },
         },
         {
           name: 'meta',
-          label: 'SEO',
+          label: {
+            en: 'SEO',
+            fr: 'SEO',
+          },
           fields: [
             OverviewField({
               titlePath: 'meta.title',
@@ -92,12 +110,19 @@ export const Pages: CollectionConfig<'pages'> = {
             }),
             MetaTitleField({
               hasGenerateFn: true,
+              overrides: {
+                localized: true,
+              },
             }),
             MetaImageField({
               relationTo: 'media',
             }),
 
-            MetaDescriptionField({}),
+            MetaDescriptionField({
+              overrides: {
+                localized: true,
+              },
+            }),
             PreviewField({
               // if the `generateUrl` function is configured
               hasGenerateFn: true,
@@ -113,6 +138,10 @@ export const Pages: CollectionConfig<'pages'> = {
     {
       name: 'publishedAt',
       type: 'date',
+      label: {
+        en: 'Published At',
+        fr: 'Publie le',
+      },
       admin: {
         position: 'sidebar',
       },

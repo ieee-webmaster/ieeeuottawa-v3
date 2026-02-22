@@ -2,10 +2,10 @@ import type { CollectionSlug, PayloadRequest } from 'payload'
 import { getPayload } from 'payload'
 
 import { draftMode } from 'next/headers'
-import { redirect } from 'next/navigation'
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 import configPromise from '@payload-config'
+import { defaultLocale, localeCookieName } from '@/i18n/config'
 
 export async function GET(req: NextRequest): Promise<Response> {
   const payload = await getPayload({ config: configPromise })
@@ -16,6 +16,7 @@ export async function GET(req: NextRequest): Promise<Response> {
   const collection = searchParams.get('collection') as CollectionSlug
   const slug = searchParams.get('slug')
   const previewSecret = searchParams.get('previewSecret')
+  const locale = searchParams.get('locale') || defaultLocale
 
   if (previewSecret !== process.env.PREVIEW_SECRET) {
     return new Response('You are not allowed to preview this page', { status: 403 })
@@ -52,5 +53,9 @@ export async function GET(req: NextRequest): Promise<Response> {
 
   draft.enable()
 
-  redirect(path)
+  const pathWithLocale = path.startsWith(`/${locale}`) ? path : `/${locale}${path}`
+  const redirectResponse = NextResponse.redirect(new URL(pathWithLocale, req.url))
+  redirectResponse.cookies.set(localeCookieName, locale, { path: '/' })
+
+  return redirectResponse
 }

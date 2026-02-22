@@ -2,18 +2,25 @@ import Link from 'next/link'
 import Image from 'next/image'
 import type { Event } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
+import type { AppLocale } from '@/i18n/config'
+import { prefixLocalePath } from '@/i18n/config'
 // I want this removed once we have more frontend components
 
 type Props = {
   event: Event
+  locale: AppLocale
 }
 
-export const EventCard = ({ event }: Props) => {
+export const EventCard = ({ event, locale }: Props) => {
   const heroMedia = event.heroImage && typeof event.heroImage === 'object' ? event.heroImage : null
   const heroSrc = heroMedia?.url ? getMediaUrl(heroMedia.url, heroMedia.updatedAt) : null
   const eventDate = new Date(event.date)
   const validDate = !Number.isNaN(eventDate.valueOf())
-  const month = validDate ? eventDate.toLocaleString('en-US', { month: 'short' }).toUpperCase() : ''
+  const month = validDate
+    ? eventDate
+        .toLocaleString(locale === 'fr' ? 'fr-CA' : 'en-CA', { month: 'short' })
+        .toUpperCase()
+    : ''
   const day = validDate ? String(eventDate.getDate()) : ''
 
   return (
@@ -33,7 +40,10 @@ export const EventCard = ({ event }: Props) => {
       <div className="px-4 py-3 flex items-start justify-between">
         <div className="flex-1 pr-4">
           <h3 className="text-lg font-semibold leading-tight">
-            <Link href={`/events/${event.slug}`} className="transition-colors hover:text-primary">
+            <Link
+              href={prefixLocalePath(locale, `/events/${event.slug}`)}
+              className="transition-colors hover:text-primary"
+            >
               {event.title}
             </Link>
           </h3>

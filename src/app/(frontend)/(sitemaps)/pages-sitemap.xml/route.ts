@@ -2,6 +2,7 @@ import { getServerSideSitemap } from 'next-sitemap'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { unstable_cache } from 'next/cache'
+import { locales } from '@/i18n/config'
 
 const getPagesSitemap = unstable_cache(
   async () => {
@@ -14,6 +15,7 @@ const getPagesSitemap = unstable_cache(
     const results = await payload.find({
       collection: 'pages',
       overrideAccess: false,
+      locale: 'all',
       draft: false,
       depth: 0,
       limit: 1000,
@@ -31,26 +33,29 @@ const getPagesSitemap = unstable_cache(
 
     const dateFallback = new Date().toISOString()
 
-    const defaultSitemap = [
+    const defaultSitemap = locales.flatMap((locale) => [
       {
-        loc: `${SITE_URL}/search`,
+        loc: `${SITE_URL}/${locale}/search`,
         lastmod: dateFallback,
       },
       {
-        loc: `${SITE_URL}/posts`,
+        loc: `${SITE_URL}/${locale}/posts`,
         lastmod: dateFallback,
       },
-    ]
+    ])
 
     const sitemap = results.docs
       ? results.docs
           .filter((page) => Boolean(page?.slug))
-          .map((page) => {
-            return {
-              loc: page?.slug === 'home' ? `${SITE_URL}/` : `${SITE_URL}/${page?.slug}`,
+          .flatMap((page) =>
+            locales.map((locale) => ({
+              loc:
+                page?.slug === 'home'
+                  ? `${SITE_URL}/${locale}`
+                  : `${SITE_URL}/${locale}/${page?.slug}`,
               lastmod: page.updatedAt || dateFallback,
-            }
-          })
+            })),
+          )
       : []
 
     return [...defaultSitemap, ...sitemap]

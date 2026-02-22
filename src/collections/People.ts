@@ -6,7 +6,7 @@ export const People: CollectionConfig = {
   slug: 'people',
   folders: true,
   admin: {
-    useAsTitle: "fullName",
+    useAsTitle: 'fullName',
   },
   access: {
     create: authenticated,
@@ -17,7 +17,10 @@ export const People: CollectionConfig = {
   fields: [
     {
       name: 'fullName',
-      label: 'Full Name',
+      label: {
+        en: 'Full Name',
+        fr: 'Nom complet',
+      },
       type: 'text',
       required: true,
     },
@@ -29,10 +32,18 @@ export const People: CollectionConfig = {
     {
       name: 'Contact Email',
       type: 'email',
+      label: {
+        en: 'Contact Email',
+        fr: 'Courriel de contact',
+      },
     },
     {
       name: 'Linkedin Profile',
       type: 'text',
+      label: {
+        en: 'LinkedIn Profile',
+        fr: 'Profil LinkedIn',
+      },
     },
   ],
 }

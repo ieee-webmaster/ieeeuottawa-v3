@@ -20,11 +20,15 @@ export const FormBlock: Block = {
     {
       name: 'enableIntro',
       type: 'checkbox',
-      label: 'Enable Intro Content',
+      label: {
+        en: 'Enable Intro Content',
+        fr: 'Activer le contenu d introduction',
+      },
     },
     {
       name: 'introContent',
       type: 'richText',
+      localized: true,
       admin: {
         condition: (_, { enableIntro }) => Boolean(enableIntro),
       },
@@ -38,14 +42,23 @@ export const FormBlock: Block = {
           ]
         },
       }),
-      label: 'Intro Content',
+      label: {
+        en: 'Intro Content',
+        fr: 'Contenu d introduction',
+      },
     },
   ],
   graphQL: {
     singularName: 'FormBlock',
   },
   labels: {
-    plural: 'Form Blocks',
-    singular: 'Form Block',
+    plural: {
+      en: 'Form Blocks',
+      fr: 'Blocs de formulaire',
+    },
+    singular: {
+      en: 'Form Block',
+      fr: 'Bloc de formulaire',
+    },
   },
 }

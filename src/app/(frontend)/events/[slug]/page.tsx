@@ -12,11 +12,16 @@ import RichText from '@/components/RichText'
 import { Media as PayloadMedia } from '@/components/Media'
 import { formatDateTime } from '@/utilities/formatDateTime'
 import PageClient from './page.client'
+import { defaultLocale } from '@/i18n/config'
+import { getRequestLocale } from '@/i18n/server'
+import { getMessages } from '@/i18n/messages'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
   const events = await payload.find({
     collection: 'events',
+    locale: defaultLocale as never,
+    fallbackLocale: defaultLocale as never,
     draft: false,
     limit: 1000,
     overrideAccess: false,
@@ -41,13 +46,15 @@ type Args = {
 
 export default async function EventPage({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
+  const locale = await getRequestLocale()
+  const messages = getMessages(locale)
   const { slug = '' } = await paramsPromise
   const decodedSlug = decodeURIComponent(slug)
   const url = '/events/' + decodedSlug
-  const event = await queryEventBySlug({ slug: decodedSlug })
+  const event = await queryEventBySlug({ slug: decodedSlug, locale })
 
   if (!event) {
-    return <PayloadRedirects url={url} />
+    return <PayloadRedirects url={url} locale={locale} />
   }
 
   const eventDate = new Date(event.date)
@@ -65,37 +72,37 @@ export default async function EventPage({ params: paramsPromise }: Args) {
   return (
     <article className="pt-16 pb-16">
       <PageClient />
-      <PayloadRedirects disableNotFound url={url} />
+      <PayloadRedirects disableNotFound url={url} locale={locale} />
 
       {draft && <LivePreviewListener />}
 
       <div className="relative -mt-[10.4rem] flex items-end">
         <div className="container z-10 relative lg:grid lg:grid-cols-[1fr_48rem_1fr] text-white pb-8">
           <div className="col-start-1 col-span-1 md:col-start-2 md:col-span-2">
-            <div className="uppercase text-sm mb-6">Event</div>
+            <div className="uppercase text-sm mb-6">{messages.events.eventLabel}</div>
             <h1 className="mb-6 text-3xl md:text-5xl lg:text-6xl">{event.title}</h1>
 
             <div className="flex flex-col md:flex-row gap-4 md:gap-16">
               <div className="flex flex-col gap-1">
                 <p className="text-sm">Date</p>
-                <time dateTime={event.date}>{formatDateTime(event.date)}</time>
+                <time dateTime={event.date}>{formatDateTime(event.date, locale)}</time>
               </div>
 
               <div className="flex flex-col gap-1">
-                <p className="text-sm">Location</p>
+                <p className="text-sm">{messages.events.location}</p>
                 <p>{event.location}</p>
               </div>
 
               <div className="flex flex-col gap-1">
-                <p className="text-sm">Hosted By</p>
+                <p className="text-sm">{messages.events.hostedBy}</p>
                 <p>{hostedByLabel}</p>
               </div>
 
               {!isPastEvent && event.SignupLink && (
                 <div className="flex flex-col gap-1">
-                  <p className="text-sm">Register</p>
+                  <p className="text-sm">{messages.events.register}</p>
                   <a href={event.SignupLink} rel="noopener noreferrer" target="_blank">
-                    Sign up / Learn more
+                    {messages.events.signUp}
                   </a>
                 </div>
               )}
@@ -128,7 +135,7 @@ export default async function EventPage({ params: paramsPromise }: Args) {
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                View Event Media
+                {messages.events.viewMedia}
               </a>
             </div>
           )}
@@ -139,20 +146,23 @@ export default async function EventPage({ params: paramsPromise }: Args) {
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
+  const locale = await getRequestLocale()
   const { slug = '' } = await paramsPromise
   const decodedSlug = decodeURIComponent(slug)
-  const event = await queryEventBySlug({ slug: decodedSlug })
+  const event = await queryEventBySlug({ slug: decodedSlug, locale })
 
   return generateMeta({ doc: event })
 }
 
-const queryEventBySlug = cache(async ({ slug }: { slug: string }) => {
+const queryEventBySlug = cache(async ({ slug, locale }: { slug: string; locale: string }) => {
   const { isEnabled: draft } = await draftMode()
 
   const payload = await getPayload({ config: configPromise })
 
   const result = await payload.find({
     collection: 'events',
+    locale: locale as never,
+    fallbackLocale: defaultLocale as never,
     depth: 2,
     draft,
     limit: 1,

@@ -27,11 +27,21 @@ export const Media: CollectionConfig = {
     {
       name: 'alt',
       type: 'text',
+      localized: true,
+      label: {
+        en: 'Alt Text',
+        fr: 'Texte alternatif',
+      },
       //required: true,
     },
     {
       name: 'caption',
       type: 'richText',
+      localized: true,
+      label: {
+        en: 'Caption',
+        fr: 'Legende',
+      },
       editor: lexicalEditor({
         features: ({ rootFeatures }) => {
           return [...rootFeatures, FixedToolbarFeature(), InlineToolbarFeature()]

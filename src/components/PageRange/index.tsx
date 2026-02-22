@@ -1,14 +1,17 @@
 import React from 'react'
-
-const defaultLabels = {
-  plural: 'Docs',
-  singular: 'Doc',
-}
+import { defaultLocale, type AppLocale } from '@/i18n/config'
+import { getMessages } from '@/i18n/messages'
 
 const defaultCollectionLabels = {
   posts: {
-    plural: 'Posts',
-    singular: 'Post',
+    en: {
+      plural: 'Posts',
+      singular: 'Post',
+    },
+    fr: {
+      plural: 'Articles',
+      singular: 'Article',
+    },
   },
 }
 
@@ -21,6 +24,7 @@ export const PageRange: React.FC<{
   }
   currentPage?: number
   limit?: number
+  locale?: AppLocale
   totalDocs?: number
 }> = (props) => {
   const {
@@ -29,8 +33,10 @@ export const PageRange: React.FC<{
     collectionLabels: collectionLabelsFromProps,
     currentPage,
     limit,
+    locale = defaultLocale,
     totalDocs,
   } = props
+  const messages = getMessages(locale)
 
   let indexStart = (currentPage ? currentPage - 1 : 1) * (limit || 1) + 1
   if (totalDocs && indexStart > totalDocs) indexStart = 0
@@ -38,20 +44,28 @@ export const PageRange: React.FC<{
   let indexEnd = (currentPage || 1) * (limit || 1)
   if (totalDocs && indexEnd > totalDocs) indexEnd = totalDocs
 
+  const defaultLabelsByLocale = {
+    plural: messages.pagination.defaultDocPlural,
+    singular: messages.pagination.defaultDocSingular,
+  }
+  const defaultCollectionByLocale = collection
+    ? defaultCollectionLabels[collection][locale]
+    : undefined
+
   const { plural, singular } =
-    collectionLabelsFromProps ||
-    (collection ? defaultCollectionLabels[collection] : undefined) ||
-    defaultLabels ||
-    {}
+    collectionLabelsFromProps || defaultCollectionByLocale || defaultLabelsByLocale || {}
 
   return (
     <div className={[className, 'font-semibold'].filter(Boolean).join(' ')}>
-      {(typeof totalDocs === 'undefined' || totalDocs === 0) && 'Search produced no results.'}
+      {(typeof totalDocs === 'undefined' || totalDocs === 0) && messages.pagination.noResults}
       {typeof totalDocs !== 'undefined' &&
         totalDocs > 0 &&
-        `Showing ${indexStart}${indexStart > 0 ? ` - ${indexEnd}` : ''} of ${totalDocs} ${
-          totalDocs > 1 ? plural : singular
-        }`}
+        messages.pagination.showing(
+          indexStart,
+          indexEnd,
+          totalDocs,
+          (totalDocs > 1 ? plural : singular) || messages.pagination.defaultDocSingular,
+        )}
     </div>
   )
 }

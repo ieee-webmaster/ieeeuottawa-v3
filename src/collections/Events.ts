@@ -65,17 +65,31 @@ export const Events: CollectionConfig<'events'> = {
     {
       name: 'title',
       type: 'text',
+      localized: true,
       required: true,
+      label: {
+        en: 'Title',
+        fr: 'Titre',
+      },
     },
     {
       name: 'date',
       type: 'date',
       required: true,
+      label: {
+        en: 'Date',
+        fr: 'Date',
+      },
     },
     {
       name: 'location',
       type: 'text',
+      localized: true,
       required: true,
+      label: {
+        en: 'Location',
+        fr: 'Lieu',
+      },
     },
     {
       name: 'hosted-by',
@@ -83,18 +97,30 @@ export const Events: CollectionConfig<'events'> = {
       relationTo: 'teams',
       hasMany: true,
       required: true,
+      label: {
+        en: 'Hosted By',
+        fr: 'Organise par',
+      },
     },
     {
       name: 'SignupLink',
       type: 'text',
       required: false,
       validate: validateHttpUrl,
+      label: {
+        en: 'Signup Link',
+        fr: 'Lien d inscription',
+      },
     },
     {
       name: 'MediaLink',
       type: 'text',
       required: false,
       validate: validateHttpUrl,
+      label: {
+        en: 'Media Link',
+        fr: 'Lien media',
+      },
     },
     {
       type: 'tabs',
@@ -105,10 +131,15 @@ export const Events: CollectionConfig<'events'> = {
               name: 'heroImage',
               type: 'upload',
               relationTo: 'media',
+              label: {
+                en: 'Hero Image',
+                fr: 'Image hero',
+              },
             },
             {
               name: 'content',
               type: 'richText',
+              localized: true,
               editor: lexicalEditor({
                 features: ({ rootFeatures }) => {
                   return [
@@ -125,11 +156,17 @@ export const Events: CollectionConfig<'events'> = {
               required: true,
             },
           ],
-          label: 'Content',
+          label: {
+            en: 'Content',
+            fr: 'Contenu',
+          },
         },
         {
           name: 'meta',
-          label: 'SEO',
+          label: {
+            en: 'SEO',
+            fr: 'SEO',
+          },
           fields: [
             OverviewField({
               titlePath: 'meta.title',
@@ -138,12 +175,19 @@ export const Events: CollectionConfig<'events'> = {
             }),
             MetaTitleField({
               hasGenerateFn: true,
+              overrides: {
+                localized: true,
+              },
             }),
             MetaImageField({
               relationTo: 'media',
             }),
 
-            MetaDescriptionField({}),
+            MetaDescriptionField({
+              overrides: {
+                localized: true,
+              },
+            }),
             PreviewField({
               // if the `generateUrl` function is configured
               hasGenerateFn: true,

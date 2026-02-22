@@ -10,15 +10,24 @@ export const Code: Block = {
       defaultValue: 'typescript',
       options: [
         {
-          label: 'Typescript',
+          label: {
+            en: 'Typescript',
+            fr: 'Typescript',
+          },
           value: 'typescript',
         },
         {
-          label: 'Javascript',
+          label: {
+            en: 'Javascript',
+            fr: 'Javascript',
+          },
           value: 'javascript',
         },
         {
-          label: 'CSS',
+          label: {
+            en: 'CSS',
+            fr: 'CSS',
+          },
           value: 'css',
         },
       ],
@@ -30,4 +39,14 @@ export const Code: Block = {
       required: true,
     },
   ],
+  labels: {
+    singular: {
+      en: 'Code',
+      fr: 'Code',
+    },
+    plural: {
+      en: 'Code Blocks',
+      fr: 'Blocs de code',
+    },
+  },
 }

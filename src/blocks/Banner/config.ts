@@ -14,16 +14,41 @@ export const Banner: Block = {
       type: 'select',
       defaultValue: 'info',
       options: [
-        { label: 'Info', value: 'info' },
-        { label: 'Warning', value: 'warning' },
-        { label: 'Error', value: 'error' },
-        { label: 'Success', value: 'success' },
+        {
+          label: {
+            en: 'Info',
+            fr: 'Info',
+          },
+          value: 'info',
+        },
+        {
+          label: {
+            en: 'Warning',
+            fr: 'Avertissement',
+          },
+          value: 'warning',
+        },
+        {
+          label: {
+            en: 'Error',
+            fr: 'Erreur',
+          },
+          value: 'error',
+        },
+        {
+          label: {
+            en: 'Success',
+            fr: 'Succes',
+          },
+          value: 'success',
+        },
       ],
       required: true,
     },
     {
       name: 'content',
       type: 'richText',
+      localized: true,
       editor: lexicalEditor({
         features: ({ rootFeatures }) => {
           return [...rootFeatures, FixedToolbarFeature(), InlineToolbarFeature()]

@@ -16,19 +16,31 @@ const columnFields: Field[] = [
     defaultValue: 'oneThird',
     options: [
       {
-        label: 'One Third',
+        label: {
+          en: 'One Third',
+          fr: 'Un tiers',
+        },
         value: 'oneThird',
       },
       {
-        label: 'Half',
+        label: {
+          en: 'Half',
+          fr: 'Moitie',
+        },
         value: 'half',
       },
       {
-        label: 'Two Thirds',
+        label: {
+          en: 'Two Thirds',
+          fr: 'Deux tiers',
+        },
         value: 'twoThirds',
       },
       {
-        label: 'Full',
+        label: {
+          en: 'Full',
+          fr: 'Plein',
+        },
         value: 'full',
       },
     ],
@@ -36,6 +48,7 @@ const columnFields: Field[] = [
   {
     name: 'richText',
     type: 'richText',
+    localized: true,
     editor: lexicalEditor({
       features: ({ rootFeatures }) => {
         return [
@@ -66,6 +79,16 @@ const columnFields: Field[] = [
 export const Content: Block = {
   slug: 'content',
   interfaceName: 'ContentBlock',
+  labels: {
+    singular: {
+      en: 'Content',
+      fr: 'Contenu',
+    },
+    plural: {
+      en: 'Content Blocks',
+      fr: 'Blocs de contenu',
+    },
+  },
   fields: [
     {
       name: 'columns',

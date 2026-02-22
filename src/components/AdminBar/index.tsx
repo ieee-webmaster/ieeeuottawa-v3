@@ -7,6 +7,7 @@ import { useSelectedLayoutSegments } from 'next/navigation'
 import { PayloadAdminBar } from '@payloadcms/admin-bar'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { getLocaleFromPathname, prefixLocalePath } from '@/i18n/config'
 
 import './index.scss'
 
@@ -40,6 +41,7 @@ export const AdminBar: React.FC<{
   const collection = (
     collectionLabels[segments?.[1] as keyof typeof collectionLabels] ? segments[1] : 'pages'
   ) as keyof typeof collectionLabels
+  const locale = getLocaleFromPathname(`/${segments.join('/')}`)
   const router = useRouter()
 
   const onAuthChange = React.useCallback((user: PayloadMeUser) => {
@@ -72,7 +74,7 @@ export const AdminBar: React.FC<{
           onAuthChange={onAuthChange}
           onPreviewExit={() => {
             fetch('/next/exit-preview').then(() => {
-              router.push('/')
+              router.push(prefixLocalePath(locale, '/'))
               router.refresh()
             })
           }}

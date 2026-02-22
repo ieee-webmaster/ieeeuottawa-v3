@@ -14,6 +14,7 @@ export const Archive: Block = {
     {
       name: 'introContent',
       type: 'richText',
+      localized: true,
       editor: lexicalEditor({
         features: ({ rootFeatures }) => {
           return [
@@ -24,7 +25,10 @@ export const Archive: Block = {
           ]
         },
       }),
-      label: 'Intro Content',
+      label: {
+        en: 'Intro Content',
+        fr: 'Contenu d introduction',
+      },
     },
     {
       name: 'populateBy',
@@ -32,11 +36,17 @@ export const Archive: Block = {
       defaultValue: 'collection',
       options: [
         {
-          label: 'Collection',
+          label: {
+            en: 'Collection',
+            fr: 'Collection',
+          },
           value: 'collection',
         },
         {
-          label: 'Individual Selection',
+          label: {
+            en: 'Individual Selection',
+            fr: 'Selection individuelle',
+          },
           value: 'selection',
         },
       ],
@@ -48,10 +58,16 @@ export const Archive: Block = {
         condition: (_, siblingData) => siblingData.populateBy === 'collection',
       },
       defaultValue: 'posts',
-      label: 'Collections To Show',
+      label: {
+        en: 'Collections To Show',
+        fr: 'Collections a afficher',
+      },
       options: [
         {
-          label: 'Posts',
+          label: {
+            en: 'Posts',
+            fr: 'Articles',
+          },
           value: 'posts',
         },
       ],
@@ -63,7 +79,10 @@ export const Archive: Block = {
         condition: (_, siblingData) => siblingData.populateBy === 'collection',
       },
       hasMany: true,
-      label: 'Categories To Show',
+      label: {
+        en: 'Categories To Show',
+        fr: 'Categories a afficher',
+      },
       relationTo: 'categories',
     },
     {
@@ -74,7 +93,10 @@ export const Archive: Block = {
         step: 1,
       },
       defaultValue: 10,
-      label: 'Limit',
+      label: {
+        en: 'Limit',
+        fr: 'Limite',
+      },
     },
     {
       name: 'selectedDocs',
@@ -83,12 +105,21 @@ export const Archive: Block = {
         condition: (_, siblingData) => siblingData.populateBy === 'selection',
       },
       hasMany: true,
-      label: 'Selection',
+      label: {
+        en: 'Selection',
+        fr: 'Selection',
+      },
       relationTo: ['posts'],
     },
   ],
   labels: {
-    plural: 'Archives',
-    singular: 'Archive',
+    plural: {
+      en: 'Archives',
+      fr: 'Archives',
+    },
+    singular: {
+      en: 'Archive',
+      fr: 'Archive',
+    },
   },
 }

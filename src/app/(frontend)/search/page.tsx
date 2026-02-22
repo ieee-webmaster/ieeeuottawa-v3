@@ -7,6 +7,9 @@ import React from 'react'
 import { Search } from '@/search/Component'
 import PageClient from './page.client'
 import { CardPostData } from '@/components/Card'
+import { defaultLocale } from '@/i18n/config'
+import { getRequestLocale } from '@/i18n/server'
+import { getMessages } from '@/i18n/messages'
 
 type Args = {
   searchParams: Promise<{
@@ -16,9 +19,13 @@ type Args = {
 export default async function Page({ searchParams: searchParamsPromise }: Args) {
   const { q: query } = await searchParamsPromise
   const payload = await getPayload({ config: configPromise })
+  const locale = await getRequestLocale()
+  const messages = getMessages(locale)
 
   const posts = await payload.find({
     collection: 'search',
+    locale: locale as never,
+    fallbackLocale: defaultLocale as never,
     depth: 1,
     limit: 12,
     select: {
@@ -64,7 +71,7 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
       <PageClient />
       <div className="container mb-16">
         <div className="prose dark:prose-invert max-w-none text-center">
-          <h1 className="mb-8 lg:mb-16">Search</h1>
+          <h1 className="mb-8 lg:mb-16">{messages.searchPage.title}</h1>
 
           <div className="max-w-[50rem] mx-auto">
             <Search />
@@ -75,14 +82,17 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
       {posts.totalDocs > 0 ? (
         <CollectionArchive posts={posts.docs as CardPostData[]} />
       ) : (
-        <div className="container">No results found.</div>
+        <div className="container">{messages.searchPage.noResults}</div>
       )}
     </div>
   )
 }
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale()
+  const messages = getMessages(locale)
+
   return {
-    title: `Payload Website Template Search`,
+    title: messages.searchPage.metadataTitle,
   }
 }

@@ -42,11 +42,17 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
             defaultValue: 'reference',
             options: [
               {
-                label: 'Internal link',
+                label: {
+                  en: 'Internal link',
+                  fr: 'Lien interne',
+                },
                 value: 'reference',
               },
               {
-                label: 'Custom URL',
+                label: {
+                  en: 'Custom URL',
+                  fr: 'URL personnalisee',
+                },
                 value: 'custom',
               },
             ],
@@ -60,7 +66,10 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
               },
               width: '50%',
             },
-            label: 'Open in new tab',
+            label: {
+              en: 'Open in new tab',
+              fr: 'Ouvrir dans un nouvel onglet',
+            },
           },
         ],
       },
@@ -74,7 +83,10 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
       admin: {
         condition: (_, siblingData) => siblingData?.type === 'reference',
       },
-      label: 'Document to link to',
+      label: {
+        en: 'Document to link to',
+        fr: 'Document a lier',
+      },
       relationTo: ['pages', 'posts'],
       required: true,
     },
@@ -84,7 +96,10 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
       admin: {
         condition: (_, siblingData) => siblingData?.type === 'custom',
       },
-      label: 'Custom URL',
+      label: {
+        en: 'Custom URL',
+        fr: 'URL personnalisee',
+      },
       required: true,
     },
   ]
@@ -105,10 +120,14 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
         {
           name: 'label',
           type: 'text',
+          localized: true,
           admin: {
             width: '50%',
           },
-          label: 'Label',
+          label: {
+            en: 'Label',
+            fr: 'Libelle',
+          },
           required: true,
         },
       ],
@@ -128,7 +147,10 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
       name: 'appearance',
       type: 'select',
       admin: {
-        description: 'Choose how the link should be rendered.',
+        description: {
+          en: 'Choose how the link should be rendered.',
+          fr: 'Choisissez comment le lien doit etre affiche.',
+        },
       },
       defaultValue: 'default',
       options: appearanceOptionsToUse,

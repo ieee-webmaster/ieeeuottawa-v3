@@ -20,31 +20,51 @@ export const Committees: CollectionConfig = {
       required: true,
       unique: true, // ensures its unique
       index: true, // perf boost
+      label: {
+        en: 'Year',
+        fr: 'Annee',
+      },
     },
     {
       name: 'teams',
       type: 'array',
-      label: 'Teams',
+      label: {
+        en: 'Teams',
+        fr: 'Equipes',
+      },
       fields: [
         {
           name: 'team',
           type: 'relationship',
           relationTo: 'teams',
           required: true,
-          label: 'Team',
+          label: {
+            en: 'Team',
+            fr: 'Equipe',
+          },
         },
         {
           name: 'members',
           type: 'array',
-          label: 'Members',
+          label: {
+            en: 'Members',
+            fr: 'Membres',
+          },
           fields: [
             {
               name: 'role',
               type: 'text',
+              localized: true,
               required: true,
-              label: 'Position Title',
+              label: {
+                en: 'Position Title',
+                fr: 'Titre du poste',
+              },
               admin: {
-                description: 'Select a position from the selected team',
+                description: {
+                  en: 'Select a position from the selected team',
+                  fr: 'Selectionnez un poste de l equipe choisie',
+                },
                 components: {
                   Field: '/components/CommitteePositionSelect#CommitteePositionSelect',
                 },
@@ -55,7 +75,10 @@ export const Committees: CollectionConfig = {
               type: 'relationship',
               relationTo: 'people',
               required: true,
-              label: 'Person',
+              label: {
+                en: 'Person',
+                fr: 'Personne',
+              },
             },
           ],
         },

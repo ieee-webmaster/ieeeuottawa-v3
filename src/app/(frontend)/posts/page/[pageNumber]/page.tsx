@@ -8,6 +8,9 @@ import { getPayload } from 'payload'
 import React from 'react'
 import PageClient from './page.client'
 import { notFound } from 'next/navigation'
+import { defaultLocale } from '@/i18n/config'
+import { getRequestLocale } from '@/i18n/server'
+import { getMessages } from '@/i18n/messages'
 
 export const revalidate = 600
 
@@ -20,6 +23,8 @@ type Args = {
 export default async function Page({ params: paramsPromise }: Args) {
   const { pageNumber } = await paramsPromise
   const payload = await getPayload({ config: configPromise })
+  const locale = await getRequestLocale()
+  const messages = getMessages(locale)
 
   const sanitizedPageNumber = Number(pageNumber)
 
@@ -27,6 +32,8 @@ export default async function Page({ params: paramsPromise }: Args) {
 
   const posts = await payload.find({
     collection: 'posts',
+    locale: locale as never,
+    fallbackLocale: defaultLocale as never,
     depth: 1,
     limit: 12,
     page: sanitizedPageNumber,
@@ -38,7 +45,7 @@ export default async function Page({ params: paramsPromise }: Args) {
       <PageClient />
       <div className="container mb-16">
         <div className="prose dark:prose-invert max-w-none">
-          <h1>Posts</h1>
+          <h1>{messages.postsPage.title}</h1>
         </div>
       </div>
 
@@ -47,6 +54,7 @@ export default async function Page({ params: paramsPromise }: Args) {
           collection="posts"
           currentPage={posts.page}
           limit={12}
+          locale={locale}
           totalDocs={posts.totalDocs}
         />
       </div>
@@ -55,7 +63,7 @@ export default async function Page({ params: paramsPromise }: Args) {
 
       <div className="container">
         {posts?.page && posts?.totalPages > 1 && (
-          <Pagination page={posts.page} totalPages={posts.totalPages} />
+          <Pagination locale={locale} page={posts.page} totalPages={posts.totalPages} />
         )}
       </div>
     </div>
@@ -63,9 +71,11 @@ export default async function Page({ params: paramsPromise }: Args) {
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
+  const locale = await getRequestLocale()
+  const messages = getMessages(locale)
   const { pageNumber } = await paramsPromise
   return {
-    title: `Payload Website Template Posts Page ${pageNumber || ''}`,
+    title: messages.postsPage.pagedMetadataTitle(pageNumber || ''),
   }
 }
 
@@ -73,6 +83,7 @@ export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
   const { totalDocs } = await payload.count({
     collection: 'posts',
+    locale: defaultLocale as never,
     overrideAccess: false,
   })
 
