@@ -6,9 +6,13 @@ import type { Header as HeaderType } from '@/payload-types'
 
 import { CMSLink } from '@/components/Link'
 import Link from 'next/link'
-import { SearchIcon } from 'lucide-react'
+import { SearchIcon, ChevronDown } from 'lucide-react'
+import { text } from 'stream/consumers'
 
-export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
+export const HeaderNav: React.FC<{ data: HeaderType; documentYears?: (string | number)[] }> = ({
+  data,
+  documentYears = [],
+}) => {
   const navItems = data?.navItems || []
 
   return (
@@ -16,6 +20,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
       {navItems.map(({ link }, i) => {
         return <CMSLink key={i} {...link} appearance="link" />
       })}
+
       <Link href="/search">
         <span className="sr-only">Search</span>
         <SearchIcon className="w-5 text-primary" />
