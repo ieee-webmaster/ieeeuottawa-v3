@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { SignUpButton } from '../_components/SignUpButton'
 
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import configPromise from '@payload-config'
@@ -70,10 +71,27 @@ export default async function EventPage({ params: paramsPromise }: Args) {
       {draft && <LivePreviewListener />}
 
       <div className="relative -mt-[10.4rem] flex items-end">
+        <a href="/events" className="absolute top-8 left-4 z-20 flex h-10 w-10 items-center justify-center rounded bg-black/40 text-white transition-hover hover:bg-black" aria-label="Go back to events">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+        </a>
+
         <div className="container z-10 relative lg:grid lg:grid-cols-[1fr_48rem_1fr] text-white pb-8">
           <div className="col-start-1 col-span-1 md:col-start-2 md:col-span-2">
-            <div className="uppercase text-sm mb-6">Event</div>
-            <h1 className="mb-6 text-3xl md:text-5xl lg:text-6xl">{event.title}</h1>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="uppercase text-sm opacity-80">Event</div>
+
+              {isPastEvent && (
+                <svg width="54" height="24" viewBox="0 0 54 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M8 0H52C53.1046 0 54 0.895431 54 2V22C54 23.1046 53.1046 24 52 24H8L0 12L8 0Z" fill="#f8fafc" />
+                  <text x="30" y="16" fill="#0f172a" fontSize="10" fontWeight="bold" textAnchor="middle" className="uppercase tracking-wider" >
+                    Past
+                  </text>
+                </svg>
+              )}
+            </div>
+            <h1 className="mb-6 text-3xl md:text-5xl lg:text-6xl max-w-[48rem]">{event.title}</h1>
 
             <div className="flex flex-col md:flex-row gap-4 md:gap-16">
               <div className="flex flex-col gap-1">
@@ -92,12 +110,7 @@ export default async function EventPage({ params: paramsPromise }: Args) {
               </div>
 
               {!isPastEvent && event.SignupLink && (
-                <div className="flex flex-col gap-1">
-                  <p className="text-sm">Register</p>
-                  <a href={event.SignupLink} rel="noopener noreferrer" target="_blank">
-                    Sign up / Learn more
-                  </a>
-                </div>
+                <SignUpButton href={event.SignupLink} />
               )}
             </div>
           </div>
@@ -133,6 +146,12 @@ export default async function EventPage({ params: paramsPromise }: Args) {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="flex justify-center mt-12">
+        {!isPastEvent && event.SignupLink && (
+          <SignUpButton href={event.SignupLink} />
+        )}
       </div>
     </article>
   )
