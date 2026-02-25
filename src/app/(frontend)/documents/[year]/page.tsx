@@ -4,8 +4,8 @@ import { notFound } from 'next/navigation'
 import { Doc } from '@/payload-types'
 import { YearlyDocument } from '../_components/YearlyDocument'
 
-export default async function DocsPage({ params }: { params: { year: string } }) {
-  const year = (await params).year
+export default async function DocsPage({ params }: { params: Promise<{ year: string }> }) {
+  const year = await params
 
   const payload = await getPayload({ config: configPromise })
 
