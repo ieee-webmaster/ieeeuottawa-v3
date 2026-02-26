@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { SignUpButton } from '../_components/SignUpButton'
 
 import { PayloadRedirects } from '@/components/PayloadRedirects'
@@ -71,11 +72,11 @@ export default async function EventPage({ params: paramsPromise }: Args) {
       {draft && <LivePreviewListener />}
 
       <div className="relative -mt-[10.4rem] flex items-end">
-        <a href="/events" className="absolute top-8 left-4 z-20 flex h-10 w-10 items-center justify-center rounded bg-black/40 text-white transition-hover hover:bg-black" aria-label="Go back to events">
+        <Link href="/events" className="absolute top-8 left-4 z-20 flex h-10 w-10 items-center justify-center rounded bg-black/40 text-white transition-hover hover:bg-black" aria-label="Go back to events">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
           </svg>
-        </a>
+        </Link>
 
         <div className="container z-10 relative lg:grid lg:grid-cols-[1fr_48rem_1fr] text-white pb-8">
           <div className="col-start-1 col-span-1 md:col-start-2 md:col-span-2">
@@ -135,14 +136,14 @@ export default async function EventPage({ params: paramsPromise }: Args) {
 
           {isPastEvent && event.MediaLink && (
             <div className="max-w-[48rem] mx-auto mt-8">
-              <a
+              <Link
                 className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
                 href={event.MediaLink}
                 rel="noopener noreferrer"
                 target="_blank"
               >
                 View Event Media
-              </a>
+              </Link>
             </div>
           )}
         </div>
