@@ -1,7 +1,7 @@
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { notFound } from 'next/navigation'
-import type { Committee, Team, Person } from '@/payload-types'
+import type { Committee, Team, Person, Config } from '@/payload-types'
 
 /*
 In the future:
@@ -10,8 +10,8 @@ In the future:
 - Add SEO
 */
 
-export default async function CommitteePage({ params }: { params: Promise<{ year: string }> }) {
-  const { year } = await params
+export default async function CommitteePage({ params }: { params: Promise<{ locale: Config['locale']; year: string }> }) {
+  const { locale, year } = await params
   const payload = await getPayload({ config: configPromise })
 
   const result = await payload.find({
@@ -22,6 +22,7 @@ export default async function CommitteePage({ params }: { params: Promise<{ year
       },
     },
     depth: 2,
+    locale,
     limit: 1,
   })
 

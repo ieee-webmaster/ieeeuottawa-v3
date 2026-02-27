@@ -1,15 +1,21 @@
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
-import type { Event } from '@/payload-types'
+import type { Event, Config } from '@/payload-types'
 import { EventCard } from './_components/EventCard'
 
-export default async function EventsPage() {
+type Args = {
+  params: Promise<{ locale: Config['locale'] }>
+}
+
+export default async function EventsPage({ params: paramsPromise }: Args) {
+  const { locale } = await paramsPromise
   const payload = await getPayload({ config: configPromise })
 
   const { docs } = await payload.find({
     collection: 'events',
     depth: 1,
     limit: 100,
+    locale,
     sort: 'date',
   })
 
