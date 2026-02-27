@@ -66,6 +66,7 @@ export const Events: CollectionConfig<'events'> = {
       name: 'title',
       type: 'text',
       required: true,
+      localized: true,
     },
     {
       name: 'date',
@@ -76,6 +77,7 @@ export const Events: CollectionConfig<'events'> = {
       name: 'location',
       type: 'text',
       required: true,
+      localized: true,
     },
     {
       name: 'hosted-by',
@@ -123,6 +125,7 @@ export const Events: CollectionConfig<'events'> = {
               }),
               label: false,
               required: true,
+              localized: true,
             },
           ],
           label: 'Content',

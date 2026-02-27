@@ -1,9 +1,10 @@
 import type React from 'react'
-import type { Page, Post } from '@/payload-types'
+import type { Page, Post, Config } from '@/payload-types'
 
 import { getCachedDocument } from '@/utilities/getDocument'
 import { getCachedRedirects } from '@/utilities/getRedirects'
 import { notFound, redirect } from 'next/navigation'
+import { getLocale } from 'next-intl/server'
 
 interface Props {
   disableNotFound?: boolean
@@ -12,13 +13,18 @@ interface Props {
 
 /* This component helps us with SSR based dynamic redirects */
 export const PayloadRedirects: React.FC<Props> = async ({ disableNotFound, url }) => {
-  const redirects = await getCachedRedirects()()
+  const redirectsList = await getCachedRedirects()()
+  const locale = await getLocale() as Config['locale']
 
-  const redirectItem = redirects.find((redirect) => redirect.from === url)
+  const redirectItem = redirectsList.find((r) => r.from === url)
 
   if (redirectItem) {
+    // Prefix the destination with the current locale so the redirect lands on
+    // the correct locale-prefixed URL (e.g. /en/new-slug).
+    const withLocale = (path: string) => `/${locale}${path.startsWith('/') ? '' : '/'}${path}`
+
     if (redirectItem.to?.url) {
-      redirect(redirectItem.to.url)
+      redirect(withLocale(redirectItem.to.url))
     }
 
     let redirectUrl: string
@@ -27,7 +33,7 @@ export const PayloadRedirects: React.FC<Props> = async ({ disableNotFound, url }
       const collection = redirectItem.to?.reference?.relationTo
       const id = redirectItem.to?.reference?.value
 
-      const document = (await getCachedDocument(collection, id)()) as Page | Post
+      const document = (await getCachedDocument(collection, id, locale)()) as Page | Post
       redirectUrl = `${redirectItem.to?.reference?.relationTo !== 'pages' ? `/${redirectItem.to?.reference?.relationTo}` : ''}/${
         document?.slug
       }`
@@ -39,7 +45,7 @@ export const PayloadRedirects: React.FC<Props> = async ({ disableNotFound, url }
       }`
     }
 
-    if (redirectUrl) redirect(redirectUrl)
+    if (redirectUrl) redirect(withLocale(redirectUrl))
   }
 
   if (disableNotFound) return null

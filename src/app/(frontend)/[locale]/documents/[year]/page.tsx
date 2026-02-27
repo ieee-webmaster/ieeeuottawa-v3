@@ -1,7 +1,7 @@
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import { notFound } from 'next/navigation'
-import { Doc } from '@/payload-types'
+import { Doc, Config } from '@/payload-types'
 import { YearlyDocument } from '../_components/YearlyDocument'
 
 export async function generateStaticParams() {
@@ -25,17 +25,19 @@ export async function generateStaticParams() {
 
 type Args = {
   params: Promise<{
+    locale: Config['locale']
     year?: string
   }>
 }
 
 export default async function DocsPage({ params: paramsPromise }: Args) {
-  const { year = '' } = await paramsPromise
+  const { locale, year = '' } = await paramsPromise
 
   const payload = await getPayload({ config: configPromise })
 
   const result = await payload.find({
     collection: 'docs',
+    locale,
     where: {
       year: {
         equals: year,

@@ -7,7 +7,7 @@ import { draftMode } from 'next/headers'
 import { cache } from 'react'
 import { generateMeta } from '@/utilities/generateMeta'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
-import type { Event } from '@/payload-types'
+import type { Event, Config } from '@/payload-types'
 import RichText from '@/components/RichText'
 import { Media as PayloadMedia } from '@/components/Media'
 import { formatDateTime } from '@/utilities/formatDateTime'
@@ -35,16 +35,17 @@ export async function generateStaticParams() {
 
 type Args = {
   params: Promise<{
+    locale: Config['locale']
     slug?: string
   }>
 }
 
 export default async function EventPage({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
-  const { slug = '' } = await paramsPromise
+  const { locale, slug = '' } = await paramsPromise
   const decodedSlug = decodeURIComponent(slug)
   const url = '/events/' + decodedSlug
-  const event = await queryEventBySlug({ slug: decodedSlug })
+  const event = await queryEventBySlug({ slug: decodedSlug, locale })
 
   if (!event) {
     return <PayloadRedirects url={url} />
@@ -139,14 +140,14 @@ export default async function EventPage({ params: paramsPromise }: Args) {
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  const { slug = '' } = await paramsPromise
+  const { locale, slug = '' } = await paramsPromise
   const decodedSlug = decodeURIComponent(slug)
-  const event = await queryEventBySlug({ slug: decodedSlug })
+  const event = await queryEventBySlug({ slug: decodedSlug, locale })
 
   return generateMeta({ doc: event })
 }
 
-const queryEventBySlug = cache(async ({ slug }: { slug: string }) => {
+const queryEventBySlug = cache(async ({ slug, locale }: { slug: string; locale: Config['locale'] }) => {
   const { isEnabled: draft } = await draftMode()
 
   const payload = await getPayload({ config: configPromise })
@@ -156,6 +157,7 @@ const queryEventBySlug = cache(async ({ slug }: { slug: string }) => {
     depth: 2,
     draft,
     limit: 1,
+    locale,
     overrideAccess: draft,
     pagination: false,
     where: {

@@ -20,6 +20,7 @@ export const Teams: CollectionConfig = {
       type: 'text',
       required: true,
       unique: true,
+      localized: true,
     },
     {
         name: 'coverImage',
@@ -47,6 +48,7 @@ export const Teams: CollectionConfig = {
           type: 'text',
           required: true,
           label: 'Position Title',
+          localized: true,
         },
       ],
     },

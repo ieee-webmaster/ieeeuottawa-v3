@@ -70,6 +70,14 @@ export default buildConfig({
   }),
   collections: [Pages, Posts, Media, Categories, Users, Events, People, Teams, Committees, Docs],
   cors: [getServerSideURL()].filter(Boolean),
+  localization: {
+    locales: [
+      { label: 'English', code: 'en' },
+      { label: 'Français', code: 'fr' },
+    ],
+    defaultLocale: 'en',
+    fallback: true,
+  },
   plugins: [
     ...plugins,
     vercelBlobStorage({
