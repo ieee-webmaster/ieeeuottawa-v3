@@ -1,45 +1,67 @@
 import type React from 'react'
-import type { Page, Post } from '@/payload-types'
+import type { Page, Post, Config } from '@/payload-types'
 
 import { getCachedDocument } from '@/utilities/getDocument'
 import { getCachedRedirects } from '@/utilities/getRedirects'
 import { notFound, redirect } from 'next/navigation'
+import { getLocale } from 'next-intl/server'
+import { routing } from '@/i18n/routing'
 
 interface Props {
   disableNotFound?: boolean
   url: string
 }
 
+/** Prefix a path with the current locale, skipping absolute URLs and already-prefixed paths. */
+function withLocale(path: string, locale: Config['locale']): string {
+  if (/^https?:\/\//i.test(path)) return path
+
+  const normalised = path.startsWith('/') ? path : `/${path}`
+
+  const alreadyPrefixed = routing.locales.some(
+    (l) => normalised === `/${l}` || normalised.startsWith(`/${l}/`),
+  )
+  if (alreadyPrefixed) return normalised
+
+  return `/${locale}${normalised}`
+}
+
+function resolveRedirectUrl(
+  redirectItem: Awaited<ReturnType<ReturnType<typeof getCachedRedirects>>>[number],
+): string | null {
+  if (redirectItem.to?.url) return redirectItem.to.url
+
+  const ref = redirectItem.to?.reference
+  if (!ref) return null
+
+  const slug = typeof ref.value === 'object' ? ref.value?.slug : undefined
+  if (!slug) return null
+
+  const prefix = ref.relationTo !== 'pages' ? `/${ref.relationTo}` : ''
+  return `${prefix}/${slug}`
+}
+
 /* This component helps us with SSR based dynamic redirects */
 export const PayloadRedirects: React.FC<Props> = async ({ disableNotFound, url }) => {
-  const redirects = await getCachedRedirects()()
+  const redirectsList = await getCachedRedirects()()
+  const locale = (await getLocale()) as Config['locale']
 
-  const redirectItem = redirects.find((redirect) => redirect.from === url)
+  const redirectItem = redirectsList.find((r) => r.from === url)
 
   if (redirectItem) {
-    if (redirectItem.to?.url) {
-      redirect(redirectItem.to.url)
+    // For numeric references we need to fetch the document to get the slug
+    if (!redirectItem.to?.url && typeof redirectItem.to?.reference?.value === 'number') {
+      const { relationTo, value: id } = redirectItem.to.reference
+      const document = (await getCachedDocument(relationTo, String(id), locale)()) as Page | Post
+
+      const prefix = relationTo !== 'pages' ? `/${relationTo}` : ''
+      const redirectUrl = `${prefix}/${document?.slug}`
+
+      if (redirectUrl) redirect(withLocale(redirectUrl, locale))
     }
 
-    let redirectUrl: string
-
-    if (typeof redirectItem.to?.reference?.value === 'string') {
-      const collection = redirectItem.to?.reference?.relationTo
-      const id = redirectItem.to?.reference?.value
-
-      const document = (await getCachedDocument(collection, id)()) as Page | Post
-      redirectUrl = `${redirectItem.to?.reference?.relationTo !== 'pages' ? `/${redirectItem.to?.reference?.relationTo}` : ''}/${
-        document?.slug
-      }`
-    } else {
-      redirectUrl = `${redirectItem.to?.reference?.relationTo !== 'pages' ? `/${redirectItem.to?.reference?.relationTo}` : ''}/${
-        typeof redirectItem.to?.reference?.value === 'object'
-          ? redirectItem.to?.reference?.value?.slug
-          : ''
-      }`
-    }
-
-    if (redirectUrl) redirect(redirectUrl)
+    const resolvedUrl = resolveRedirectUrl(redirectItem)
+    if (resolvedUrl) redirect(withLocale(resolvedUrl, locale))
   }
 
   if (disableNotFound) return null
