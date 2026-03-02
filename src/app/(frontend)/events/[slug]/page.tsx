@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { SignUpButton } from '../_components/SignUpButton'
+import { LinkButton } from '../_components/LinkButton'
 
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import configPromise from '@payload-config'
@@ -63,6 +63,9 @@ export default async function EventPage({ params: paramsPromise }: Args) {
   )
   const hostedByLabel =
     hostedBy.length > 0 ? hostedBy.map((team) => team.name).join(', ') : 'IEEE uOttawa'
+  const eventContentLength = Array.isArray(event.content.root.children[0].children)
+    ? event.content.root.children[0].children.map((child: any) => child.text).join('').length
+    : 0;
 
   return (
     <article className="pt-16 pb-16">
@@ -111,7 +114,7 @@ export default async function EventPage({ params: paramsPromise }: Args) {
               </div>
 
               {!isPastEvent && event.SignupLink && (
-                <SignUpButton href={event.SignupLink} />
+                <LinkButton href={event.SignupLink} innerText="Sign Up" />
               )}
             </div>
           </div>
@@ -136,22 +139,15 @@ export default async function EventPage({ params: paramsPromise }: Args) {
 
           {isPastEvent && event.MediaLink && (
             <div className="max-w-[48rem] mx-auto mt-8">
-              <Link
-                className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
-                href={event.MediaLink}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                View Event Media
-              </Link>
+              <LinkButton href={event.MediaLink} innerText="View Media" />
             </div>
           )}
         </div>
       </div>
 
       <div className="flex justify-center mt-12">
-        {!isPastEvent && event.SignupLink && (
-          <SignUpButton href={event.SignupLink} />
+        {!isPastEvent && event.SignupLink && eventContentLength > 1000 &&(
+          <LinkButton href={event.SignupLink} innerText="Sign Up" />
         )}
       </div>
     </article>

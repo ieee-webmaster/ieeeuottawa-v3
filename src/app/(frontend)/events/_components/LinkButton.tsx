@@ -1,10 +1,11 @@
 import Link from "next/link";
 
 type Args = {
-    href: string
+  href: string,
+  innerText: string,
 }
 
-export const SignUpButton = ({ href }: Args) => {
+export const LinkButton = ({ href, innerText }: Args) => {
   return (
     <Link
       href={href}
@@ -12,7 +13,7 @@ export const SignUpButton = ({ href }: Args) => {
       target="_blank"
       className="bg-primary text-primary-foreground px-6 py-2 rounded-md text-sm inline-flex items-center min-h-12"
     >
-      Sign Up / Learn More
+      {innerText}
     </Link>
   );
 };
