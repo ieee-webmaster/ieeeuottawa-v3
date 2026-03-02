@@ -10,6 +10,7 @@ import { homeStatic } from '@/endpoints/seed/home-static'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
+import { getDocumentPath } from '@/utilities/routes'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import type { Config } from '@/payload-types'
@@ -50,7 +51,7 @@ export default async function Page({ params: paramsPromise }: Args) {
   const { locale, slug = 'home' } = await paramsPromise
   // Decode to support slugs with special characters
   const decodedSlug = decodeURIComponent(slug)
-  const url = '/' + decodedSlug
+  const url = getDocumentPath({ collection: 'pages', slug: decodedSlug })
   let page: RequiredDataFromCollectionSlug<'pages'> | null
 
   page = await queryPageBySlug({
@@ -92,7 +93,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
     locale,
   })
 
-  return generateMeta({ doc: page })
+  return generateMeta({ collection: 'pages', doc: page, locale })
 }
 
 const queryPageBySlug = cache(async ({ slug, locale }: { slug: string; locale: Config['locale'] }) => {

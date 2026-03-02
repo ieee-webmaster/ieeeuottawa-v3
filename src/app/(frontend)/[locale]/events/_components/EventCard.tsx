@@ -2,22 +2,30 @@ import { Link } from '@/i18n/navigation'
 import Image from 'next/image'
 import type { Event } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
+import type { Locale } from '@/i18n/routing'
 
 type Props = {
   event: Event
+  locale: Locale
 }
 
-export const EventCard = ({ event }: Props) => {
+export const EventCard = ({ event, locale }: Props) => {
   const heroMedia = event.heroImage && typeof event.heroImage === 'object' ? event.heroImage : null
   const heroSrc = heroMedia?.url ? getMediaUrl(heroMedia.url, heroMedia.updatedAt) : null
   const eventDate = new Date(event.date)
   const validDate = !Number.isNaN(eventDate.valueOf())
-  const month = validDate ? eventDate.toLocaleString('en-US', { month: 'short' }).toUpperCase() : ''
-  const day = validDate ? String(eventDate.getDate()) : ''
+  const month = validDate
+    ? new Intl.DateTimeFormat(locale, { month: 'short', timeZone: 'UTC' })
+        .format(eventDate)
+        .toLocaleUpperCase(locale)
+    : ''
+  const day = validDate
+    ? new Intl.DateTimeFormat(locale, { day: 'numeric', timeZone: 'UTC' }).format(eventDate)
+    : ''
 
   return (
     <article className="overflow-hidden rounded-lg border border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow">
-      <Link href={`/events/${event.slug}`} className="block h-full">
+      <Link href={`/events/${encodeURIComponent(event.slug)}`} className="block h-full">
         {heroSrc ? (
           <Image
             src={heroSrc}

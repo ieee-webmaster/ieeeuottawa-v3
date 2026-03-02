@@ -10,17 +10,30 @@ import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/
 import { searchFields } from '@/search/fieldOverrides'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
 
-import { Page, Post } from '@/payload-types'
-import { getServerSideURL } from '@/utilities/getURL'
+import { Event, Page, Post } from '@/payload-types'
+import { routing } from '@/i18n/routing'
+import { getAbsoluteLocalizedUrl, isRoutedCollection } from '@/utilities/routes'
 
-const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
+const generateTitle: GenerateTitle<Event | Post | Page> = ({ doc }) => {
   return doc?.title ? `${doc.title} | Payload Website Template` : 'Payload Website Template'
 }
 
-const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
-  const url = getServerSideURL()
+const generateURL: GenerateURL<Event | Post | Page> = ({ collectionConfig, doc, locale }) => {
+  if (
+    !doc?.slug ||
+    !locale ||
+    !routing.locales.includes(locale as (typeof routing.locales)[number]) ||
+    !collectionConfig?.slug ||
+    !isRoutedCollection(collectionConfig.slug)
+  ) {
+    return ''
+  }
 
-  return doc?.slug ? `${url}/${doc.slug}` : url
+  return getAbsoluteLocalizedUrl({
+    collection: collectionConfig.slug,
+    locale: locale as (typeof routing.locales)[number],
+    slug: doc.slug,
+  })
 }
 
 export const plugins: Plugin[] = [

@@ -1,30 +1,33 @@
-import { PayloadRequest, CollectionSlug } from 'payload'
+import type { PayloadRequest } from 'payload'
 
-const collectionPrefixMap: Partial<Record<CollectionSlug, string>> = {
-  events: '/events',
-  posts: '/posts',
-  pages: '',
-}
+import { routing, type Locale } from '@/i18n/routing'
+import { getLocalizedDocumentPath, type RoutedCollection } from '@/utilities/routes'
 
 type Props = {
-  collection: keyof typeof collectionPrefixMap
+  collection: RoutedCollection
   slug: string
   req: PayloadRequest
 }
 
-export const generatePreviewPath = ({ collection, slug }: Props) => {
+export const generatePreviewPath = ({ collection, req, slug }: Props) => {
   // Allow empty strings, e.g. for the homepage
   if (slug === undefined || slug === null) {
     return null
   }
 
-  // Encode to support slugs with special characters
-  const encodedSlug = encodeURIComponent(slug)
+  const locale =
+    typeof req.locale === 'string' && routing.locales.includes(req.locale as Locale)
+      ? (req.locale as Locale)
+      : routing.defaultLocale
 
   const encodedParams = new URLSearchParams({
-    slug: encodedSlug,
+    slug,
     collection,
-    path: `${collectionPrefixMap[collection]}/${encodedSlug}`,
+    path: getLocalizedDocumentPath({
+      collection,
+      locale,
+      slug,
+    }),
     previewSecret: process.env.PREVIEW_SECRET || '',
   })
 

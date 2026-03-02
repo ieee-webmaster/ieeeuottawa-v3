@@ -12,6 +12,7 @@ import type { Post, Config } from '@/payload-types'
 
 import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
+import { getDocumentPath } from '@/utilities/routes'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
@@ -47,7 +48,7 @@ export default async function Post({ params: paramsPromise }: Args) {
   const { locale, slug = '' } = await paramsPromise
   // Decode to support slugs with special characters
   const decodedSlug = decodeURIComponent(slug)
-  const url = '/posts/' + decodedSlug
+  const url = getDocumentPath({ collection: 'posts', slug: decodedSlug })
   const post = await queryPostBySlug({ slug: decodedSlug, locale })
 
   if (!post) return <PayloadRedirects url={url} />
@@ -61,7 +62,7 @@ export default async function Post({ params: paramsPromise }: Args) {
 
       {draft && <LivePreviewListener />}
 
-      <PostHero post={post} />
+      <PostHero locale={locale} post={post} />
 
       <div className="flex flex-col items-center gap-4 pt-8">
         <div className="container">
@@ -84,7 +85,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const decodedSlug = decodeURIComponent(slug)
   const post = await queryPostBySlug({ slug: decodedSlug, locale })
 
-  return generateMeta({ doc: post })
+  return generateMeta({ collection: 'posts', doc: post, locale })
 }
 
 const queryPostBySlug = cache(async ({ slug, locale }: { slug: string; locale: Config['locale'] }) => {
