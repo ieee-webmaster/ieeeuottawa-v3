@@ -197,6 +197,10 @@ export interface Page {
               | ({
                   relationTo: 'posts';
                   value: number | Post;
+                } | null)
+              | ({
+                  relationTo: 'events';
+                  value: number | Event;
                 } | null);
             url?: string | null;
             label: string;
@@ -566,6 +570,10 @@ export interface CallToActionBlock {
             | ({
                 relationTo: 'posts';
                 value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
               } | null);
           url?: string | null;
           label: string;
@@ -616,6 +624,10 @@ export interface ContentBlock {
             | ({
                 relationTo: 'posts';
                 value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
               } | null);
           url?: string | null;
           label: string;
@@ -1968,6 +1980,10 @@ export interface Header {
             | ({
                 relationTo: 'posts';
                 value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
               } | null);
           url?: string | null;
           label: string;
@@ -1997,6 +2013,10 @@ export interface Footer {
             | ({
                 relationTo: 'posts';
                 value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
               } | null);
           url?: string | null;
           label: string;

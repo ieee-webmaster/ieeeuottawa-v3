@@ -2,14 +2,12 @@ import { getServerSideSitemap } from 'next-sitemap'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { unstable_cache } from 'next/cache'
+import { routing } from '@/i18n/routing'
+import { getAbsoluteUrl, getDocumentPath, getLocalizedPath } from '@/utilities/routes'
 
 const getPagesSitemap = unstable_cache(
   async () => {
     const payload = await getPayload({ config })
-    const SITE_URL =
-      process.env.NEXT_PUBLIC_SERVER_URL ||
-      process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-      'https://example.com'
 
     const results = await payload.find({
       collection: 'pages',
@@ -31,26 +29,34 @@ const getPagesSitemap = unstable_cache(
 
     const dateFallback = new Date().toISOString()
 
-    const defaultSitemap = [
+    const defaultSitemap = routing.locales.flatMap((locale) => [
       {
-        loc: `${SITE_URL}/search`,
+        loc: getAbsoluteUrl(getLocalizedPath({ locale, path: '/search' })),
         lastmod: dateFallback,
       },
       {
-        loc: `${SITE_URL}/posts`,
+        loc: getAbsoluteUrl(getLocalizedPath({ locale, path: '/posts' })),
         lastmod: dateFallback,
       },
-    ]
+    ])
 
     const sitemap = results.docs
       ? results.docs
           .filter((page) => Boolean(page?.slug))
-          .map((page) => {
-            return {
-              loc: page?.slug === 'home' ? `${SITE_URL}/` : `${SITE_URL}/${page?.slug}`,
+          .flatMap((page) =>
+            routing.locales.map((locale) => ({
+              loc: getAbsoluteUrl(
+                getLocalizedPath({
+                  locale,
+                  path: getDocumentPath({
+                    collection: 'pages',
+                    slug: page.slug,
+                  }),
+                }),
+              ),
               lastmod: page.updatedAt || dateFallback,
-            }
-          })
+            })),
+          )
       : []
 
     return [...defaultSitemap, ...sitemap]

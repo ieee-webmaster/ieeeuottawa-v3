@@ -13,6 +13,7 @@ import type { Event, Config } from '@/payload-types'
 import RichText from '@/components/RichText'
 import { Media as PayloadMedia } from '@/components/Media'
 import { formatDateTime } from '@/utilities/formatDateTime'
+import { getDocumentPath } from '@/utilities/routes'
 import PageClient from './page.client'
 
 export async function generateStaticParams() {
@@ -46,7 +47,7 @@ export default async function EventPage({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { locale, slug = '' } = await paramsPromise
   const decodedSlug = decodeURIComponent(slug)
-  const url = '/events/' + decodedSlug
+  const url = getDocumentPath({ collection: 'events', slug: decodedSlug })
   const event = await queryEventBySlug({ slug: decodedSlug, locale })
 
   if (!event) {
@@ -123,7 +124,7 @@ export default async function EventPage({ params: paramsPromise }: Args) {
             <div className="flex flex-col md:flex-row gap-4 md:gap-16">
               <div className="flex flex-col gap-1">
                 <p className="text-sm">Date</p>
-                <time dateTime={event.date}>{formatDateTime(event.date)}</time>
+                <time dateTime={event.date}>{formatDateTime(event.date, locale)}</time>
               </div>
 
               <div className="flex flex-col gap-1">
@@ -179,7 +180,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const decodedSlug = decodeURIComponent(slug)
   const event = await queryEventBySlug({ slug: decodedSlug, locale })
 
-  return generateMeta({ doc: event })
+  return generateMeta({ collection: 'events', doc: event, locale })
 }
 
 const queryEventBySlug = cache(async ({ slug, locale }: { slug: string; locale: Config['locale'] }) => {
