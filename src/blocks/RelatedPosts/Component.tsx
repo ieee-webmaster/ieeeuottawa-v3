@@ -6,6 +6,7 @@ import type { Post } from '@/payload-types'
 
 import { Card } from '../../components/Card'
 import { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
+import { getDocumentPath } from '@/utilities/routes'
 
 export type RelatedPostsProps = {
   className?: string
@@ -24,7 +25,14 @@ export const RelatedPosts: React.FC<RelatedPostsProps> = (props) => {
         {docs?.map((doc, index) => {
           if (typeof doc === 'string') return null
 
-          return <Card key={index} doc={doc} relationTo="posts" showCategories />
+          return (
+            <Card
+              key={index}
+              doc={doc}
+              href={getDocumentPath({ collection: 'posts', slug: doc.slug })}
+              showCategories
+            />
+          )
         })}
       </div>
     </div>

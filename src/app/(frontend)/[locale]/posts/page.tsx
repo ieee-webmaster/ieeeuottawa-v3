@@ -8,6 +8,7 @@ import { getPayload } from 'payload'
 import React from 'react'
 import PageClient from './page.client'
 import type { Config } from '@/payload-types'
+import { getCollectionIndexPath } from '@/utilities/routes'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -56,7 +57,11 @@ export default async function Page({ params: paramsPromise }: Args) {
 
       <div className="container">
         {posts.totalPages > 1 && posts.page && (
-          <Pagination page={posts.page} totalPages={posts.totalPages} />
+          <Pagination
+            basePath={getCollectionIndexPath({ collection: 'posts' })}
+            page={posts.page}
+            totalPages={posts.totalPages}
+          />
         )}
       </div>
     </div>

@@ -2,19 +2,28 @@ import { Link } from '@/i18n/navigation'
 import Image from 'next/image'
 import type { Event } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
+import type { Locale } from '@/i18n/routing'
+import { getDocumentPath } from '@/utilities/routes'
 // I want this removed once we have more frontend components
 
 type Props = {
   event: Event
+  locale: Locale
 }
 
-export const EventCard = ({ event }: Props) => {
+export const EventCard = ({ event, locale }: Props) => {
   const heroMedia = event.heroImage && typeof event.heroImage === 'object' ? event.heroImage : null
   const heroSrc = heroMedia?.url ? getMediaUrl(heroMedia.url, heroMedia.updatedAt) : null
   const eventDate = new Date(event.date)
   const validDate = !Number.isNaN(eventDate.valueOf())
-  const month = validDate ? eventDate.toLocaleString('en-US', { month: 'short' }).toUpperCase() : ''
-  const day = validDate ? String(eventDate.getDate()) : ''
+  const month = validDate
+    ? new Intl.DateTimeFormat(locale, { month: 'short', timeZone: 'UTC' })
+        .format(eventDate)
+        .toLocaleUpperCase(locale)
+    : ''
+  const day = validDate
+    ? new Intl.DateTimeFormat(locale, { day: 'numeric', timeZone: 'UTC' }).format(eventDate)
+    : ''
 
   return (
     <article className="overflow-hidden rounded-lg border border-border bg-card text-card-foreground shadow-sm">
@@ -33,7 +42,10 @@ export const EventCard = ({ event }: Props) => {
       <div className="px-4 py-3 flex items-start justify-between">
         <div className="flex-1 pr-4">
           <h3 className="text-lg font-semibold leading-tight">
-            <Link href={`/events/${event.slug}`} className="transition-colors hover:text-primary">
+            <Link
+              href={getDocumentPath({ collection: 'events', slug: event.slug })}
+              className="transition-colors hover:text-primary"
+            >
               {event.title}
             </Link>
           </h3>

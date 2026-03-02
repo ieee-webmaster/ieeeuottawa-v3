@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
+import type { Locale } from '@/i18n/routing'
 
 import type { Config, Event, Media, Page, Post } from '../payload-types'
 
 import { mergeOpenGraph } from './mergeOpenGraph'
 import { getServerSideURL } from './getURL'
+import { getAbsoluteLocalizedUrl, type RoutedCollection } from './routes'
 
 const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
   const serverUrl = getServerSideURL()
@@ -20,9 +22,11 @@ const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
 }
 
 export const generateMeta = async (args: {
+  collection: RoutedCollection
   doc: Partial<Event> | Partial<Page> | Partial<Post> | null
+  locale: Locale
 }): Promise<Metadata> => {
-  const { doc } = args
+  const { collection, doc, locale } = args
 
   const ogImage = getImageURL(doc?.meta?.image)
 
@@ -42,7 +46,14 @@ export const generateMeta = async (args: {
           ]
         : undefined,
       title,
-      url: Array.isArray(doc?.slug) ? doc?.slug.join('/') : '/',
+      url:
+        typeof doc?.slug === 'string'
+          ? getAbsoluteLocalizedUrl({
+              collection,
+              locale,
+              slug: doc.slug,
+            })
+          : undefined,
     }),
     title,
   }
