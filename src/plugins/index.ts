@@ -10,30 +10,31 @@ import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/
 import { searchFields } from '@/search/fieldOverrides'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
 
-import { Event, Page, Post } from '@/payload-types'
-import { routing } from '@/i18n/routing'
-import { getAbsoluteLocalizedUrl, isRoutedCollection } from '@/utilities/routes'
+import { resolveLocale } from '@/i18n/routing'
+import { getAbsoluteUrl, isRoutedCollection, prefixLocale } from '@/utilities/routes'
 
-const generateTitle: GenerateTitle<Event | Post | Page> = ({ doc }) => {
+const generateTitle: GenerateTitle<{ title?: string | null }> = ({ doc }) => {
   return doc?.title ? `${doc.title} | Payload Website Template` : 'Payload Website Template'
 }
 
-const generateURL: GenerateURL<Event | Post | Page> = ({ collectionConfig, doc, locale }) => {
+const generateURL: GenerateURL<{ slug?: string | null }> = ({ collectionConfig, doc, locale }) => {
   if (
     !doc?.slug ||
     !locale ||
-    !routing.locales.includes(locale as (typeof routing.locales)[number]) ||
     !collectionConfig?.slug ||
     !isRoutedCollection(collectionConfig.slug)
   ) {
     return ''
   }
 
-  return getAbsoluteLocalizedUrl({
-    collection: collectionConfig.slug,
-    locale: locale as (typeof routing.locales)[number],
-    slug: doc.slug,
-  })
+  const path =
+    collectionConfig.slug === 'pages'
+      ? doc.slug === 'home'
+        ? '/'
+        : `/${encodeURIComponent(doc.slug)}`
+      : `/${collectionConfig.slug}/${encodeURIComponent(doc.slug)}`
+
+  return getAbsoluteUrl(prefixLocale(path, resolveLocale(locale)))
 }
 
 export const plugins: Plugin[] = [

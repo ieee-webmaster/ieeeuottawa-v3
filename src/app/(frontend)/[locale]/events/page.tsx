@@ -16,6 +16,7 @@ export default async function EventsPage({ params: paramsPromise }: Args) {
     depth: 1,
     limit: 100,
     locale,
+    overrideAccess: false,
     sort: 'date',
   })
 
@@ -24,7 +25,7 @@ export default async function EventsPage({ params: paramsPromise }: Args) {
   const upcoming: Event[] = []
   const past: Event[] = []
 
-  for (const doc of docs as Event[]) {
+  for (const doc of docs) {
     const eventDate = new Date(doc.date)
 
     if (!Number.isNaN(eventDate.valueOf()) && eventDate >= now) {

@@ -9,7 +9,6 @@ import React from 'react'
 import PageClient from './page.client'
 import { notFound } from 'next/navigation'
 import type { Config } from '@/payload-types'
-import { getCollectionIndexPath } from '@/utilities/routes'
 
 export const revalidate = 600
 
@@ -59,11 +58,7 @@ export default async function Page({ params: paramsPromise }: Args) {
 
       <div className="container">
         {posts?.page && posts?.totalPages > 1 && (
-          <Pagination
-            basePath={getCollectionIndexPath({ collection: 'posts' })}
-            page={posts.page}
-            totalPages={posts.totalPages}
-          />
+          <Pagination basePath="/posts" page={posts.page} totalPages={posts.totalPages} />
         )}
       </div>
     </div>
@@ -84,7 +79,7 @@ export async function generateStaticParams() {
     overrideAccess: false,
   })
 
-  const totalPages = Math.ceil(totalDocs / 10)
+  const totalPages = Math.ceil(totalDocs / 12)
 
   const pages: { pageNumber: string }[] = []
 
