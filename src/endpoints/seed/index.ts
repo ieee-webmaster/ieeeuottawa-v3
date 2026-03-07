@@ -15,6 +15,8 @@ const collections: CollectionSlug[] = [
   'media',
   'pages',
   'posts',
+  'events',
+  'teams',
   'forms',
   'form-submissions',
   'search',
@@ -23,6 +25,37 @@ const collections: CollectionSlug[] = [
 const globals: GlobalSlug[] = ['header', 'footer']
 
 const categories = ['Technology', 'News', 'Finance', 'Design', 'Software', 'Engineering']
+
+const richTextParagraph = (text: string) => ({
+  root: {
+    type: 'root' as const,
+    children: [
+      {
+        type: 'paragraph' as const,
+        children: [
+          {
+            type: 'text' as const,
+            detail: 0,
+            format: 0,
+            mode: 'normal' as const,
+            style: '',
+            text,
+            version: 1,
+          },
+        ],
+        direction: 'ltr' as const,
+        format: '' as const,
+        indent: 0,
+        textFormat: 0,
+        version: 1,
+      },
+    ],
+    direction: 'ltr' as const,
+    format: '' as const,
+    indent: 0,
+    version: 1,
+  },
+})
 
 // Next.js revalidation errors are normal when seeding the database without a server running
 // i.e. running `yarn seed` locally instead of using the admin UI within an active app
@@ -191,6 +224,93 @@ export const seed = async ({
     },
   })
 
+  payload.logger.info(`— Seeding teams and events...`)
+
+  const teamDoc = await payload.create({
+    collection: 'teams',
+    depth: 0,
+    context: {
+      disableRevalidate: true,
+    },
+    data: {
+      name: 'IEEE UOttawa',
+      positions: [
+        {
+          role: 'exec',
+          positionTitle: 'Chair',
+        },
+      ],
+    },
+  })
+
+  const upcomingEvent = await payload.create({
+    collection: 'events',
+    depth: 0,
+    draft: true,
+    context: {
+      disableRevalidate: true,
+    },
+    data: {
+      title: 'IEEE Design Sprint',
+      date: '2026-11-12T18:00:00.000Z',
+      location: 'uOttawa STEM Complex',
+      'hosted-by': [teamDoc.id],
+      SignupLink: 'https://example.com/events/design-sprint',
+      heroImage: image1Doc.id,
+      content: richTextParagraph(
+        'Join us for a collaborative design sprint focused on real campus challenges.',
+      ),
+      meta: {
+        title: 'IEEE Design Sprint',
+        description: 'Collaborative design sprint focused on solving campus challenges.',
+        image: image1Doc.id,
+      },
+    },
+  })
+
+  const pastEvent = await payload.create({
+    collection: 'events',
+    depth: 0,
+    draft: true,
+    context: {
+      disableRevalidate: true,
+    },
+    data: {
+      title: 'Embedded Systems Workshop',
+      date: '2025-10-03T17:00:00.000Z',
+      location: 'SITE Building, Room 3021',
+      'hosted-by': [teamDoc.id],
+      MediaLink: 'https://example.com/events/embedded-systems-workshop/media',
+      heroImage: image2Doc.id,
+      content: richTextParagraph(
+        'Hands-on workshop covering embedded fundamentals with practical lab exercises.',
+      ),
+      meta: {
+        title: 'Embedded Systems Workshop',
+        description: 'Hands-on embedded systems workshop with practical lab exercises.',
+        image: image2Doc.id,
+      },
+    },
+  })
+
+  await payload.update({
+    collection: 'events',
+    id: upcomingEvent.id,
+    data: {
+      _status: 'published',
+    },
+    context: { disableRevalidate: true },
+  })
+
+  await payload.update({
+    collection: 'events',
+    id: pastEvent.id,
+    data: {
+      _status: 'published',
+    },
+    context: { disableRevalidate: true },
+  })
+
   payload.logger.info(`— Seeding contact form...`)
 
   const contactForm = await payload.create({
@@ -309,8 +429,15 @@ export const seed = async ({
   }
 
   // --- Rich text helpers for building Lexical content nodes ---
-  const _text = (t: string, format = 0) =>
-    ({ type: 'text' as const, detail: 0, format, mode: 'normal' as const, style: '', text: t, version: 1 })
+  const _text = (t: string, format = 0) => ({
+    type: 'text' as const,
+    detail: 0,
+    format,
+    mode: 'normal' as const,
+    style: '',
+    text: t,
+    version: 1,
+  })
   const _link = (t: string, url: string, newTab = false) => ({
     type: 'link' as const,
     children: [_text(t)],
@@ -320,12 +447,33 @@ export const seed = async ({
     indent: 0,
     version: 3,
   })
-  const _p = (...children: ReturnType<typeof _text>[]) =>
-    ({ type: 'paragraph' as const, children, direction: 'ltr' as const, format: '' as const, indent: 0, textFormat: 0, version: 1 })
-  const _h = (tag: string, ...children: ReturnType<typeof _text>[]) =>
-    ({ type: 'heading' as const, children, direction: 'ltr' as const, format: '' as const, indent: 0, tag, version: 1 })
+  const _p = (...children: ReturnType<typeof _text>[]) => ({
+    type: 'paragraph' as const,
+    children,
+    direction: 'ltr' as const,
+    format: '' as const,
+    indent: 0,
+    textFormat: 0,
+    version: 1,
+  })
+  const _h = (tag: string, ...children: ReturnType<typeof _text>[]) => ({
+    type: 'heading' as const,
+    children,
+    direction: 'ltr' as const,
+    format: '' as const,
+    indent: 0,
+    tag,
+    version: 1,
+  })
   const _root = (...children: any[]) => ({
-    root: { type: 'root' as const, children, direction: 'ltr' as const, format: '' as const, indent: 0, version: 1 },
+    root: {
+      type: 'root' as const,
+      children,
+      direction: 'ltr' as const,
+      format: '' as const,
+      indent: 0,
+      version: 1,
+    },
   })
   const _banner = (name: string, style: string, content: ReturnType<typeof _root>) => ({
     type: 'block' as const,
@@ -347,17 +495,31 @@ export const seed = async ({
   })
 
   // Reusable blocks
-  const disclaimerBanner = _banner('Avertissement', 'info', _root(
-    _p(
-      _text('Avertissement :', 1),
-      _text(' Ce contenu est fictif et à des fins de démonstration uniquement. Pour modifier cet article, '),
-      _link('accédez au tableau de bord d\'administration', '/admin', true) as any,
-      _text('.'),
+  const disclaimerBanner = _banner(
+    'Avertissement',
+    'info',
+    _root(
+      _p(
+        _text('Avertissement :', 1),
+        _text(
+          ' Ce contenu est fictif et à des fins de démonstration uniquement. Pour modifier cet article, ',
+        ),
+        _link("accédez au tableau de bord d'administration", '/admin', true) as any,
+        _text('.'),
+      ),
     ),
-  ))
-  const dynamicBanner = _banner('Composants dynamiques', 'info', _root(
-    _p(_text('Le contenu ci-dessus est entièrement dynamique grâce à des blocs de mise en page personnalisés configurés dans le CMS. Cela peut être n\'importe quoi, du texte enrichi et des images aux composants complexes et hautement conçus.')),
-  ))
+  )
+  const dynamicBanner = _banner(
+    'Composants dynamiques',
+    'info',
+    _root(
+      _p(
+        _text(
+          "Le contenu ci-dessus est entièrement dynamique grâce à des blocs de mise en page personnalisés configurés dans le CMS. Cela peut être n'importe quoi, du texte enrichi et des images aux composants complexes et hautement conçus.",
+        ),
+      ),
+    ),
+  )
 
   // --- Post 1: Digital Horizons ---
   await payload.update({
@@ -367,21 +529,48 @@ export const seed = async ({
     data: {
       title: 'Horizons numériques : un aperçu de demain',
       content: _root(
-        _h('h2', _text('Plongez dans les merveilles de l\'innovation moderne, où le seul constant est le changement. Un voyage où pixels et données convergent pour façonner l\'avenir.')),
+        _h(
+          'h2',
+          _text(
+            "Plongez dans les merveilles de l'innovation moderne, où le seul constant est le changement. Un voyage où pixels et données convergent pour façonner l'avenir.",
+          ),
+        ),
         disclaimerBanner,
-        _h('h2', _text('L\'essor de l\'IA et de l\'apprentissage automatique')),
-        _p(_text('Nous nous trouvons dans une ère transformatrice où l\'intelligence artificielle (IA) se trouve à l\'avant-garde de l\'évolution technologique. Les effets d\'entraînement de ses avancées refaçonnent les industries à un rythme sans précédent. Les entreprises ne sont plus limitées par les contraintes de processus manuels et fastidieux. Au contraire, des machines sophistiquées, alimentées par de vastes quantités de données historiques, sont désormais capables de prendre des décisions autrefois réservées à l\'intuition humaine. Ces systèmes intelligents ne se contentent pas d\'optimiser les opérations, ils sont aussi à l\'origine d\'approches innovantes, annonçant une nouvelle ère de transformation des entreprises à l\'échelle mondiale. ')),
-        _h('h4', _text('Pour démontrer les fonctionnalités de base de l\'IA, voici un extrait JavaScript qui effectue une requête POST vers une API IA générique afin de générer du texte à partir d\'une invite. ')),
-        _code('Générer du texte', 'javascript', "async function generateText(prompt) {\n    const apiKey = 'your-api-key';\n    const apiUrl = 'https://api.example.com/generate-text';\n\n    const response = await fetch(apiUrl, {\n        method: 'POST',\n        headers: {\n            'Content-Type': 'application/json',\n            'Authorization': `Bearer ${apiKey}`\n        },\n        body: JSON.stringify({\n            model: 'text-generation-model',\n            prompt: prompt,\n            max_tokens: 50\n        })\n    });\n\n    const data = await response.json();\n    console.log(data.choices[0].text.trim());\n}\n\n// Exemple d'utilisation\ngenerateText(\"Il était une fois dans un pays lointain,\");\n"),
+        _h('h2', _text("L'essor de l'IA et de l'apprentissage automatique")),
+        _p(
+          _text(
+            "Nous nous trouvons dans une ère transformatrice où l'intelligence artificielle (IA) se trouve à l'avant-garde de l'évolution technologique. Les effets d'entraînement de ses avancées refaçonnent les industries à un rythme sans précédent. Les entreprises ne sont plus limitées par les contraintes de processus manuels et fastidieux. Au contraire, des machines sophistiquées, alimentées par de vastes quantités de données historiques, sont désormais capables de prendre des décisions autrefois réservées à l'intuition humaine. Ces systèmes intelligents ne se contentent pas d'optimiser les opérations, ils sont aussi à l'origine d'approches innovantes, annonçant une nouvelle ère de transformation des entreprises à l'échelle mondiale. ",
+          ),
+        ),
+        _h(
+          'h4',
+          _text(
+            "Pour démontrer les fonctionnalités de base de l'IA, voici un extrait JavaScript qui effectue une requête POST vers une API IA générique afin de générer du texte à partir d'une invite. ",
+          ),
+        ),
+        _code(
+          'Générer du texte',
+          'javascript',
+          "async function generateText(prompt) {\n    const apiKey = 'your-api-key';\n    const apiUrl = 'https://api.example.com/generate-text';\n\n    const response = await fetch(apiUrl, {\n        method: 'POST',\n        headers: {\n            'Content-Type': 'application/json',\n            'Authorization': `Bearer ${apiKey}`\n        },\n        body: JSON.stringify({\n            model: 'text-generation-model',\n            prompt: prompt,\n            max_tokens: 50\n        })\n    });\n\n    const data = await response.json();\n    console.log(data.choices[0].text.trim());\n}\n\n// Exemple d'utilisation\ngenerateText(\"Il était une fois dans un pays lointain,\");\n",
+        ),
         _h('h2', _text('IoT : connecter le monde qui nous entoure')),
-        _p(_text('Dans le paysage technologique en évolution rapide d\'aujourd\'hui, l\'Internet des objets (IoT) se distingue comme une force révolutionnaire. De la transformation de nos résidences avec des systèmes de maison intelligente à la redéfinition du transport par les voitures connectées, l\'influence de l\'IoT est palpable dans presque toutes les facettes de notre vie quotidienne.')),
-        _p(_text('Cette technologie repose sur l\'intégration transparente des appareils et des systèmes, leur permettant de communiquer et de collaborer sans effort. Avec chaque appareil connecté, nous faisons un pas de plus vers un monde où le confort et l\'efficacité sont intégrés dans le tissu même de notre existence. Par conséquent, nous transitionnons vers une ère où notre environnement répond intuitivement à nos besoins, annonçant une communauté mondiale plus intelligente et plus interconnectée.')),
+        _p(
+          _text(
+            "Dans le paysage technologique en évolution rapide d'aujourd'hui, l'Internet des objets (IoT) se distingue comme une force révolutionnaire. De la transformation de nos résidences avec des systèmes de maison intelligente à la redéfinition du transport par les voitures connectées, l'influence de l'IoT est palpable dans presque toutes les facettes de notre vie quotidienne.",
+          ),
+        ),
+        _p(
+          _text(
+            "Cette technologie repose sur l'intégration transparente des appareils et des systèmes, leur permettant de communiquer et de collaborer sans effort. Avec chaque appareil connecté, nous faisons un pas de plus vers un monde où le confort et l'efficacité sont intégrés dans le tissu même de notre existence. Par conséquent, nous transitionnons vers une ère où notre environnement répond intuitivement à nos besoins, annonçant une communauté mondiale plus intelligente et plus interconnectée.",
+          ),
+        ),
         _media(image2Doc.id),
         dynamicBanner,
       ),
       meta: {
         title: 'Horizons numériques : un aperçu de demain',
-        description: 'Plongez dans les merveilles de l\'innovation moderne, où le seul constant est le changement. Un voyage où pixels et données convergent pour façonner l\'avenir.',
+        description:
+          "Plongez dans les merveilles de l'innovation moderne, où le seul constant est le changement. Un voyage où pixels et données convergent pour façonner l'avenir.",
         image: image1Doc.id,
       },
     },
@@ -396,17 +585,31 @@ export const seed = async ({
     data: {
       title: 'Regard mondial : au-delà des gros titres',
       content: _root(
-        _h('h2', _text('Explorez l\'inexploré et le négligé. Un regard amplifié sur les recoins du monde, où chaque histoire mérite d\'être mise en lumière.')),
+        _h(
+          'h2',
+          _text(
+            "Explorez l'inexploré et le négligé. Un regard amplifié sur les recoins du monde, où chaque histoire mérite d'être mise en lumière.",
+          ),
+        ),
         disclaimerBanner,
-        _h('h2', _text('La force de la résilience : histoires de rétablissement et d\'espoir')),
-        _p(_text('Tout au long de l\'histoire, des régions du monde entier ont subi l\'impact dévastateur de catastrophes naturelles, la turbulence de l\'instabilité politique et les vagues difficiles des récessions économiques. Dans ces moments de crise profonde, une force souvent sous-estimée émerge : la résilience indomptable de l\'esprit humain. Ce ne sont pas simplement des récits de survie, mais des histoires de communautés forgeant des liens, s\'unissant dans un but collectif et démontrant une capacité innée à surmonter les épreuves.')),
+        _h('h2', _text("La force de la résilience : histoires de rétablissement et d'espoir")),
+        _p(
+          _text(
+            "Tout au long de l'histoire, des régions du monde entier ont subi l'impact dévastateur de catastrophes naturelles, la turbulence de l'instabilité politique et les vagues difficiles des récessions économiques. Dans ces moments de crise profonde, une force souvent sous-estimée émerge : la résilience indomptable de l'esprit humain. Ce ne sont pas simplement des récits de survie, mais des histoires de communautés forgeant des liens, s'unissant dans un but collectif et démontrant une capacité innée à surmonter les épreuves.",
+          ),
+        ),
         _media(image3Doc.id),
-        _p(_text('Des voisins formant des équipes de secours improvisées lors d\'inondations aux villes entières se ralliant pour reconstruire après un effondrement économique, l\'essence de l\'humanité est plus évidente dans ces actes de solidarité. En explorant ces récits, nous sommes témoins du pouvoir transformateur de l\'esprit communautaire, où l\'adversité devient un catalyseur de croissance, d\'unité et d\'un avenir plus lumineux et reconstruit.')),
+        _p(
+          _text(
+            "Des voisins formant des équipes de secours improvisées lors d'inondations aux villes entières se ralliant pour reconstruire après un effondrement économique, l'essence de l'humanité est plus évidente dans ces actes de solidarité. En explorant ces récits, nous sommes témoins du pouvoir transformateur de l'esprit communautaire, où l'adversité devient un catalyseur de croissance, d'unité et d'un avenir plus lumineux et reconstruit.",
+          ),
+        ),
         dynamicBanner,
       ),
       meta: {
         title: 'Regard mondial : au-delà des gros titres',
-        description: 'Explorez l\'inexploré et le négligé. Un regard amplifié sur les recoins du monde, où chaque histoire mérite d\'être mise en lumière.',
+        description:
+          "Explorez l'inexploré et le négligé. Un regard amplifié sur les recoins du monde, où chaque histoire mérite d'être mise en lumière.",
         image: image2Doc.id,
       },
     },
@@ -422,21 +625,40 @@ export const seed = async ({
       title: 'Dollars et bon sens : les prévisions financières',
       content: _root(
         disclaimerBanner,
-        _h('h2',
-          _text('L\'argent n\'est pas seulement une monnaie ; '),
-          _text('c\'est un langage. ', 2),
-          _text('Plongez dans ses nuances, où la stratégie rencontre l\'intuition dans le vaste océan de la finance.'),
+        _h(
+          'h2',
+          _text("L'argent n'est pas seulement une monnaie ; "),
+          _text("c'est un langage. ", 2),
+          _text(
+            "Plongez dans ses nuances, où la stratégie rencontre l'intuition dans le vaste océan de la finance.",
+          ),
         ),
-        _p(_text('L\'argent, dans son essence, transcende le simple concept de pièces et de billets ; il devient un langage profond qui parle de valeur, de confiance et de structures sociétales. Comme tout langage, il possède des nuances et des subtilités complexes qui exigent une compréhension avisée. C\'est dans ces profondeurs que le monde calculé de la stratégie financière entre en collision avec la nature brute et instinctive de l\'intuition humaine. Tout comme un linguiste chevronné pourrait disséquer la syntaxe et la sémantique d\'une phrase, un expert financier navigue dans le vaste et tumultueux océan de la finance, guidé non seulement par la logique et les données, mais aussi par l\'instinct et la prévoyance. Chaque transaction, investissement et décision financière devient un dialogue dans ce vaste lexique du commerce et de la valeur.')),
+        _p(
+          _text(
+            "L'argent, dans son essence, transcende le simple concept de pièces et de billets ; il devient un langage profond qui parle de valeur, de confiance et de structures sociétales. Comme tout langage, il possède des nuances et des subtilités complexes qui exigent une compréhension avisée. C'est dans ces profondeurs que le monde calculé de la stratégie financière entre en collision avec la nature brute et instinctive de l'intuition humaine. Tout comme un linguiste chevronné pourrait disséquer la syntaxe et la sémantique d'une phrase, un expert financier navigue dans le vaste et tumultueux océan de la finance, guidé non seulement par la logique et les données, mais aussi par l'instinct et la prévoyance. Chaque transaction, investissement et décision financière devient un dialogue dans ce vaste lexique du commerce et de la valeur.",
+          ),
+        ),
         _media(image1Doc.id),
-        _h('h2', _text('Dynamiques boursières : haussiers, baissiers et l\'incertitude entre les deux')),
-        _p(_text('Le marché boursier est un domaine de vastes opportunités mais qui comporte aussi des risques. Découvrez les forces qui animent les tendances du marché et les stratégies employées par les meilleurs traders pour naviguer dans cet écosystème complexe. De l\'analyse de marché à la compréhension de la psychologie des investisseurs, obtenez un aperçu complet du monde des actions.')),
-        _p(_text('Le marché boursier, souvent visualisé comme une arène animée de chiffres et de téléscripteurs, concerne autant le comportement humain que l\'économie. C\'est un lieu où l\'optimisme, représenté par la hausse des marchés, rencontre la prudence des baisses, chacun cherchant à dicter la direction du marché. Mais entre ces deux extrêmes se trouve un terrain incertain, une zone peuplée de traders et d\'investisseurs qui pèsent constamment l\'espoir contre la peur. Naviguer avec succès demande plus qu\'une simple expertise financière ; cela exige une compréhension des sentiments collectifs et la capacité de prédire non seulement les mouvements du marché, mais aussi les réactions des autres participants. Dans cette danse complexe de chiffres et de nerfs, les acteurs les plus astucieux sont ceux qui maîtrisent à la fois les données concrètes et les nuances subtiles du comportement humain.')),
+        _h(
+          'h2',
+          _text("Dynamiques boursières : haussiers, baissiers et l'incertitude entre les deux"),
+        ),
+        _p(
+          _text(
+            "Le marché boursier est un domaine de vastes opportunités mais qui comporte aussi des risques. Découvrez les forces qui animent les tendances du marché et les stratégies employées par les meilleurs traders pour naviguer dans cet écosystème complexe. De l'analyse de marché à la compréhension de la psychologie des investisseurs, obtenez un aperçu complet du monde des actions.",
+          ),
+        ),
+        _p(
+          _text(
+            "Le marché boursier, souvent visualisé comme une arène animée de chiffres et de téléscripteurs, concerne autant le comportement humain que l'économie. C'est un lieu où l'optimisme, représenté par la hausse des marchés, rencontre la prudence des baisses, chacun cherchant à dicter la direction du marché. Mais entre ces deux extrêmes se trouve un terrain incertain, une zone peuplée de traders et d'investisseurs qui pèsent constamment l'espoir contre la peur. Naviguer avec succès demande plus qu'une simple expertise financière ; cela exige une compréhension des sentiments collectifs et la capacité de prédire non seulement les mouvements du marché, mais aussi les réactions des autres participants. Dans cette danse complexe de chiffres et de nerfs, les acteurs les plus astucieux sont ceux qui maîtrisent à la fois les données concrètes et les nuances subtiles du comportement humain.",
+          ),
+        ),
         dynamicBanner,
       ),
       meta: {
         title: 'Dollars et bon sens : les prévisions financières',
-        description: 'L\'argent n\'est pas seulement une monnaie ; c\'est un langage. Plongez dans ses nuances, où la stratégie rencontre l\'intuition dans le vaste océan de la finance.',
+        description:
+          "L'argent n'est pas seulement une monnaie ; c'est un langage. Plongez dans ses nuances, où la stratégie rencontre l'intuition dans le vaste océan de la finance.",
         image: image3Doc.id,
       },
     },
@@ -478,9 +700,15 @@ export const seed = async ({
         richText: _root(
           _h('h1', _text('Modèle de site Web Payload')),
           _p(
-            _link('Visitez le tableau de bord d\'administration', '/admin') as any,
-            _text(' pour commencer à gérer le contenu de ce site. Le code de ce modèle est entièrement open source et peut être trouvé '),
-            _link('sur notre Github', 'https://github.com/payloadcms/payload/tree/main/templates/website', true) as any,
+            _link("Visitez le tableau de bord d'administration", '/admin') as any,
+            _text(
+              ' pour commencer à gérer le contenu de ce site. Le code de ce modèle est entièrement open source et peut être trouvé ',
+            ),
+            _link(
+              'sur notre Github',
+              'https://github.com/payloadcms/payload/tree/main/templates/website',
+              true,
+            ) as any,
             _text('. '),
           ),
         ),
@@ -491,9 +719,7 @@ export const seed = async ({
           blockType: 'content',
           columns: [
             {
-              richText: _root(
-                _h('h2', _text('Fonctionnalités principales')),
-              ),
+              richText: _root(_h('h2', _text('Fonctionnalités principales'))),
               size: 'full',
             },
             {
@@ -502,7 +728,7 @@ export const seed = async ({
                 _h('h3', _text('Tableau de bord')),
                 _p(
                   _text('Gérez les pages et les articles de ce site depuis le '),
-                  _link('tableau de bord d\'administration', '/admin') as any,
+                  _link("tableau de bord d'administration", '/admin') as any,
                   _text('.'),
                 ),
               ),
@@ -512,7 +738,11 @@ export const seed = async ({
               enableLink: false,
               richText: _root(
                 _h('h3', _text('Aperçu')),
-                _p(_text('Grâce aux versions, aux brouillons et à l\'aperçu, les éditeurs peuvent réviser et partager leurs modifications avant de les publier.')),
+                _p(
+                  _text(
+                    "Grâce aux versions, aux brouillons et à l'aperçu, les éditeurs peuvent réviser et partager leurs modifications avant de les publier.",
+                  ),
+                ),
               ),
               size: 'oneThird',
             },
@@ -520,7 +750,11 @@ export const seed = async ({
               enableLink: false,
               richText: _root(
                 _h('h3', _text('Constructeur de pages')),
-                _p(_text('Le constructeur de pages personnalisé vous permet de créer des mises en page uniques pour tout type de contenu.')),
+                _p(
+                  _text(
+                    'Le constructeur de pages personnalisé vous permet de créer des mises en page uniques pour tout type de contenu.',
+                  ),
+                ),
               ),
               size: 'oneThird',
             },
@@ -529,8 +763,10 @@ export const seed = async ({
               richText: _root(
                 _h('h3', _text('SEO')),
                 _p(
-                  _text('Les éditeurs ont un contrôle total sur les données SEO et le contenu du site directement depuis le '),
-                  _link('tableau de bord d\'administration', '/admin') as any,
+                  _text(
+                    'Les éditeurs ont un contrôle total sur les données SEO et le contenu du site directement depuis le ',
+                  ),
+                  _link("tableau de bord d'administration", '/admin') as any,
                   _text('.'),
                 ),
               ),
@@ -540,7 +776,11 @@ export const seed = async ({
               enableLink: false,
               richText: _root(
                 _h('h3', _text('Mode sombre')),
-                _p(_text('Les utilisateurs verront ce site dans leur schéma de couleurs préféré et chaque bloc peut être inversé.')),
+                _p(
+                  _text(
+                    'Les utilisateurs verront ce site dans leur schéma de couleurs préféré et chaque bloc peut être inversé.',
+                  ),
+                ),
               ),
               size: 'oneThird',
             },
@@ -552,18 +792,22 @@ export const seed = async ({
           media: image2Doc.id,
         },
         {
-          blockName: 'Bloc d\'archives',
+          blockName: "Bloc d'archives",
           blockType: 'archive',
           categories: [],
           introContent: _root(
             _h('h3', _text('Articles récents')),
-            _p(_text('Les articles ci-dessous sont affichés dans un bloc de mise en page « Archive », un moyen extrêmement puissant d\'afficher des documents sur une page. Il peut être alimenté automatiquement par collection ou par catégorie, ou les articles peuvent être sélectionnés individuellement. Les contrôles de pagination apparaîtront automatiquement si le nombre de résultats dépasse le nombre d\'éléments par page.')),
+            _p(
+              _text(
+                "Les articles ci-dessous sont affichés dans un bloc de mise en page « Archive », un moyen extrêmement puissant d'afficher des documents sur une page. Il peut être alimenté automatiquement par collection ou par catégorie, ou les articles peuvent être sélectionnés individuellement. Les contrôles de pagination apparaîtront automatiquement si le nombre de résultats dépasse le nombre d'éléments par page.",
+              ),
+            ),
           ),
           populateBy: 'collection',
           relationTo: 'posts',
         },
         {
-          blockName: 'Appel à l\'action',
+          blockName: "Appel à l'action",
           blockType: 'cta',
           links: [
             {
@@ -576,10 +820,10 @@ export const seed = async ({
             },
           ],
           richText: _root(
-            _h('h3', _text('Ceci est un appel à l\'action')),
+            _h('h3', _text("Ceci est un appel à l'action")),
             _p(
               _text('Ceci est un bloc de mise en page personnalisé '),
-              _link('configuré dans le tableau de bord d\'administration', '/admin') as any,
+              _link("configuré dans le tableau de bord d'administration", '/admin') as any,
               _text('.'),
             ),
           ),
@@ -606,9 +850,7 @@ export const seed = async ({
           blockType: 'formBlock',
           enableIntro: true,
           form: contactForm.id,
-          introContent: _root(
-            _h('h3', _text('Exemple de formulaire de contact :')),
-          ),
+          introContent: _root(_h('h3', _text('Exemple de formulaire de contact :'))),
         },
       ],
     },
@@ -727,6 +969,60 @@ export const seed = async ({
         },
       ],
     },
+  })
+
+  await payload.update({
+    collection: 'teams',
+    id: teamDoc.id,
+    locale: 'fr',
+    data: {
+      name: 'IEEE uOttawa',
+      positions: [
+        {
+          role: 'exec',
+          positionTitle: 'Présidence',
+        },
+      ],
+    },
+    context: { disableRevalidate: true },
+  })
+
+  await payload.update({
+    collection: 'events',
+    id: upcomingEvent.id,
+    locale: 'fr',
+    data: {
+      title: 'Sprint de conception IEEE',
+      location: "Complexe STEM de l'uOttawa",
+      content: richTextParagraph(
+        'Participez a un sprint de conception collaboratif sur des enjeux concrets du campus.',
+      ),
+      meta: {
+        title: 'Sprint de conception IEEE',
+        description: 'Sprint de conception collaboratif visant a resoudre des enjeux du campus.',
+        image: image1Doc.id,
+      },
+    },
+    context: { disableRevalidate: true },
+  })
+
+  await payload.update({
+    collection: 'events',
+    id: pastEvent.id,
+    locale: 'fr',
+    data: {
+      title: 'Atelier sur les systemes embarques',
+      location: 'Edifice SITE, salle 3021',
+      content: richTextParagraph(
+        'Atelier pratique couvrant les bases des systemes embarques avec des exercices en laboratoire.',
+      ),
+      meta: {
+        title: 'Atelier sur les systemes embarques',
+        description: 'Atelier pratique sur les systemes embarques avec exercices de laboratoire.',
+        image: image2Doc.id,
+      },
+    },
+    context: { disableRevalidate: true },
   })
 
   payload.logger.info('Seeded French translations successfully!')
