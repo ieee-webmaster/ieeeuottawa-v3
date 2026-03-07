@@ -2,15 +2,17 @@ import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'paylo
 
 import { revalidatePath } from 'next/cache'
 
-import type { Event } from '../../../payload-types'
-import { getLocalizedDocumentPaths } from '@/utilities/routes'
+import type { Event } from '@/payload-types'
+import { routing } from '@/i18n/routing'
+import { prefixLocale } from '@/utilities/routes'
 
 const revalidateEventPaths = (slug?: string | null) => {
   if (!slug) {
     return
   }
 
-  for (const path of getLocalizedDocumentPaths({ collection: 'events', slug })) {
+  for (const locale of routing.locales) {
+    const path = prefixLocale(`/events/${encodeURIComponent(slug)}`, locale)
     revalidatePath(path)
   }
 }

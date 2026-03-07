@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 import type { Locale } from '@/i18n/routing'
 
-import type { Config, Event, Media, Page, Post } from '../payload-types'
+import type { Config, Media } from '../payload-types'
 
 import { mergeOpenGraph } from './mergeOpenGraph'
 import { getServerSideURL } from './getURL'
-import { getAbsoluteLocalizedUrl, type RoutedCollection } from './routes'
+import { getAbsoluteUrl, prefixLocale, type RoutedCollection } from './routes'
 
 const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
   const serverUrl = getServerSideURL()
@@ -23,7 +23,7 @@ const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
 
 export const generateMeta = async (args: {
   collection: RoutedCollection
-  doc: Partial<Event> | Partial<Page> | Partial<Post> | null
+  doc: Partial<Config['collections'][RoutedCollection]> | null
   locale: Locale
 }): Promise<Metadata> => {
   const { collection, doc, locale } = args
@@ -33,6 +33,14 @@ export const generateMeta = async (args: {
   const title = doc?.meta?.title
     ? doc?.meta?.title + ' | Payload Website Template'
     : 'Payload Website Template'
+  const path =
+    typeof doc?.slug === 'string'
+      ? collection === 'pages'
+        ? doc.slug === 'home'
+          ? '/'
+          : `/${encodeURIComponent(doc.slug)}`
+        : `/${collection}/${encodeURIComponent(doc.slug)}`
+      : null
 
   return {
     description: doc?.meta?.description,
@@ -46,14 +54,7 @@ export const generateMeta = async (args: {
           ]
         : undefined,
       title,
-      url:
-        typeof doc?.slug === 'string'
-          ? getAbsoluteLocalizedUrl({
-              collection,
-              locale,
-              slug: doc.slug,
-            })
-          : undefined,
+      url: path ? getAbsoluteUrl(prefixLocale(path, locale)) : undefined,
     }),
     title,
   }

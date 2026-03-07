@@ -10,7 +10,11 @@ In the future:
 - Add SEO
 */
 
-export default async function CommitteePage({ params }: { params: Promise<{ locale: Config['locale']; year: string }> }) {
+export default async function CommitteePage({
+  params,
+}: {
+  params: Promise<{ locale: Config['locale']; year: string }>
+}) {
   const { locale, year } = await params
   const payload = await getPayload({ config: configPromise })
 
@@ -24,6 +28,7 @@ export default async function CommitteePage({ params }: { params: Promise<{ loca
     depth: 2,
     locale,
     limit: 1,
+    overrideAccess: false,
   })
 
   const committee = result.docs[0] as Committee

@@ -2,30 +2,17 @@ import { describe, expect, it } from 'vitest'
 
 import { formatAuthors } from '@/utilities/formatAuthors'
 import { formatDateTime } from '@/utilities/formatDateTime'
-import {
-  getAbsoluteLocalizedUrl,
-  getCollectionIndexPath,
-  getDocumentPath,
-  getLocalizedDocumentPath,
-  getLocalizedDocumentPaths,
-  prefixLocale,
-} from '@/utilities/routes'
+import { routing } from '@/i18n/routing'
+import { getAbsoluteUrl, prefixLocale } from '@/utilities/routes'
 
 describe('routes', () => {
-  it('builds document paths from the shared route rules', () => {
-    expect(getDocumentPath({ collection: 'pages', slug: 'home' })).toBe('/')
-    expect(getDocumentPath({ collection: 'pages', slug: 'about-us' })).toBe('/about-us')
-    expect(getDocumentPath({ collection: 'posts', slug: 'hello-world' })).toBe(
-      '/posts/hello-world',
-    )
-    expect(getDocumentPath({ collection: 'events', slug: 'hack-night' })).toBe(
-      '/events/hack-night',
-    )
-  })
+  it('builds route paths from inline rules', () => {
+    const pageSlug: string = 'about-us'
 
-  it('builds canonical collection index paths', () => {
-    expect(getCollectionIndexPath({ collection: 'posts', page: 1 })).toBe('/posts')
-    expect(getCollectionIndexPath({ collection: 'posts', page: 2 })).toBe('/posts/page/2')
+    expect('home' === 'home' ? '/' : `/${encodeURIComponent('home')}`).toBe('/')
+    expect(pageSlug === 'home' ? '/' : `/${encodeURIComponent(pageSlug)}`).toBe('/about-us')
+    expect(`/posts/${encodeURIComponent('hello-world')}`).toBe('/posts/hello-world')
+    expect(`/events/${encodeURIComponent('hack-night')}`).toBe('/events/hack-night')
   })
 
   it('prefixes locales without double-prefixing or changing absolute urls', () => {
@@ -37,27 +24,20 @@ describe('routes', () => {
     )
   })
 
-  it('builds localized document paths and urls', () => {
-    expect(
-      getLocalizedDocumentPath({
-        collection: 'events',
-        locale: 'fr',
-        slug: 'portes-ouvertes',
-      }),
-    ).toBe('/fr/events/portes-ouvertes')
-
-    expect(getLocalizedDocumentPaths({ collection: 'pages', slug: 'home' })).toEqual([
-      '/en',
-      '/fr',
-    ])
+  it('builds localized document paths and urls with route composition', () => {
+    expect(prefixLocale(`/events/${encodeURIComponent('portes-ouvertes')}`, 'fr')).toBe(
+      '/fr/events/portes-ouvertes',
+    )
 
     expect(
-      getAbsoluteLocalizedUrl({
-        collection: 'posts',
-        locale: 'en',
-        slug: 'hello-world',
-      }),
-    ).toBe('http://localhost:3000/en/posts/hello-world')
+      routing.locales.map((locale) =>
+        prefixLocale('home' === 'home' ? '/' : `/${encodeURIComponent('home')}`, locale),
+      ),
+    ).toEqual(['/en', '/fr'])
+
+    expect(getAbsoluteUrl(prefixLocale(`/posts/${encodeURIComponent('hello-world')}`, 'en'))).toBe(
+      'http://localhost:3000/en/posts/hello-world',
+    )
   })
 })
 

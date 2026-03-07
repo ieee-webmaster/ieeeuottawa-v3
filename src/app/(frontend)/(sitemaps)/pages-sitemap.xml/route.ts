@@ -3,7 +3,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { unstable_cache } from 'next/cache'
 import { routing } from '@/i18n/routing'
-import { getAbsoluteUrl, getDocumentPath, getLocalizedPath } from '@/utilities/routes'
+import { getAbsoluteUrl, prefixLocale } from '@/utilities/routes'
 
 const getPagesSitemap = unstable_cache(
   async () => {
@@ -31,11 +31,11 @@ const getPagesSitemap = unstable_cache(
 
     const defaultSitemap = routing.locales.flatMap((locale) => [
       {
-        loc: getAbsoluteUrl(getLocalizedPath({ locale, path: '/search' })),
+        loc: getAbsoluteUrl(prefixLocale('/search', locale)),
         lastmod: dateFallback,
       },
       {
-        loc: getAbsoluteUrl(getLocalizedPath({ locale, path: '/posts' })),
+        loc: getAbsoluteUrl(prefixLocale('/posts', locale)),
         lastmod: dateFallback,
       },
     ])
@@ -46,13 +46,10 @@ const getPagesSitemap = unstable_cache(
           .flatMap((page) =>
             routing.locales.map((locale) => ({
               loc: getAbsoluteUrl(
-                getLocalizedPath({
+                prefixLocale(
+                  page.slug === 'home' ? '/' : `/${encodeURIComponent(page.slug)}`,
                   locale,
-                  path: getDocumentPath({
-                    collection: 'pages',
-                    slug: page.slug,
-                  }),
-                }),
+                ),
               ),
               lastmod: page.updatedAt || dateFallback,
             })),

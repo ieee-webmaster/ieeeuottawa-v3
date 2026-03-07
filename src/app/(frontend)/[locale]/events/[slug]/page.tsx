@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { LinkButton } from '../_components/LinkButton'
 
 import { PayloadRedirects } from '@/components/PayloadRedirects'
@@ -7,13 +7,13 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
 import { cache } from 'react'
+import { getTranslations } from 'next-intl/server'
 import { generateMeta } from '@/utilities/generateMeta'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
-import type { Event, Config } from '@/payload-types'
+import type { Config } from '@/payload-types'
 import RichText from '@/components/RichText'
 import { Media as PayloadMedia } from '@/components/Media'
 import { formatDateTime } from '@/utilities/formatDateTime'
-import { getDocumentPath } from '@/utilities/routes'
 import PageClient from './page.client'
 
 export async function generateStaticParams() {
@@ -43,12 +43,29 @@ type Args = {
   }>
 }
 
+const getTextLength = (node: unknown): number => {
+  if (typeof node !== 'object' || node === null) {
+    return 0
+  }
+
+  if ('text' in node && typeof node.text === 'string') {
+    return node.text.length
+  }
+
+  if ('children' in node && Array.isArray(node.children)) {
+    return node.children.reduce((total, child) => total + getTextLength(child), 0)
+  }
+
+  return 0
+}
+
 export default async function EventPage({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { locale, slug = '' } = await paramsPromise
   const decodedSlug = decodeURIComponent(slug)
-  const url = getDocumentPath({ collection: 'events', slug: decodedSlug })
+  const url = `/events/${encodeURIComponent(decodedSlug)}`
   const event = await queryEventBySlug({ slug: decodedSlug, locale })
+  const t = await getTranslations({ locale, namespace: 'events' })
 
   if (!event) {
     return <PayloadRedirects url={url} />
@@ -65,9 +82,10 @@ export default async function EventPage({ params: paramsPromise }: Args) {
   )
   const hostedByLabel =
     hostedBy.length > 0 ? hostedBy.map((team) => team.name).join(', ') : 'IEEE uOttawa'
-  const eventContentLength = Array.isArray(event.content.root.children[0].children)
-    ? event.content.root.children[0].children.map((child: any) => child.text).join('').length
-    : 0
+  const eventContentLength =
+    'root' in event.content && Array.isArray(event.content.root.children)
+      ? event.content.root.children.reduce((total, child) => total + getTextLength(child), 0)
+      : 0
 
   return (
     <article className="pt-16 pb-16">
@@ -80,7 +98,7 @@ export default async function EventPage({ params: paramsPromise }: Args) {
         <Link
           href="/events"
           className="absolute top-8 left-4 z-20 flex h-10 w-10 items-center justify-center rounded bg-black/40 text-white transition-hover hover:bg-black"
-          aria-label="Go back to events"
+          aria-label={t('backToEvents')}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -97,7 +115,7 @@ export default async function EventPage({ params: paramsPromise }: Args) {
         <div className="container z-10 relative lg:grid lg:grid-cols-[1fr_48rem_1fr] text-white pb-8">
           <div className="col-start-1 col-span-1 md:col-start-2 md:col-span-2">
             <div className="flex items-center gap-3 mb-6">
-              <div className="uppercase text-sm opacity-80">Event</div>
+              <div className="uppercase text-sm opacity-80">{t('label')}</div>
 
               {isPastEvent && (
                 <svg width="54" height="24" viewBox="0 0 54 24" xmlns="http://www.w3.org/2000/svg">
@@ -114,7 +132,7 @@ export default async function EventPage({ params: paramsPromise }: Args) {
                     textAnchor="middle"
                     className="uppercase tracking-wider"
                   >
-                    Past
+                    {t('past')}
                   </text>
                 </svg>
               )}
@@ -123,25 +141,25 @@ export default async function EventPage({ params: paramsPromise }: Args) {
 
             <div className="flex flex-col md:flex-row gap-4 md:gap-16">
               <div className="flex flex-col gap-1">
-                <p className="text-sm">Date</p>
+                <p className="text-sm">{t('date')}</p>
                 <time dateTime={event.date}>{formatDateTime(event.date, locale)}</time>
               </div>
 
               <div className="flex flex-col gap-1">
-                <p className="text-sm">Location</p>
+                <p className="text-sm">{t('location')}</p>
                 <p>{event.location}</p>
               </div>
 
               <div className="flex flex-col gap-1">
-                <p className="text-sm">Hosted By</p>
+                <p className="text-sm">{t('hostedBy')}</p>
                 <p>{hostedByLabel}</p>
               </div>
 
               {!isPastEvent && event.SignupLink && (
-                <LinkButton href={event.SignupLink} innerText="Sign Up" />
+                <LinkButton href={event.SignupLink} innerText={t('signUp')} />
               )}
               {isPastEvent && event.MediaLink && (
-                <LinkButton href={event.MediaLink} innerText="View Media" />
+                <LinkButton href={event.MediaLink} innerText={t('viewMedia')} />
               )}
             </div>
           </div>
@@ -168,7 +186,7 @@ export default async function EventPage({ params: paramsPromise }: Args) {
 
       <div className="flex justify-center mt-12">
         {!isPastEvent && event.SignupLink && eventContentLength > 1000 && (
-          <LinkButton href={event.SignupLink} innerText="Sign Up" />
+          <LinkButton href={event.SignupLink} innerText={t('signUp')} />
         )}
       </div>
     </article>
@@ -183,25 +201,27 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   return generateMeta({ collection: 'events', doc: event, locale })
 }
 
-const queryEventBySlug = cache(async ({ slug, locale }: { slug: string; locale: Config['locale'] }) => {
-  const { isEnabled: draft } = await draftMode()
+const queryEventBySlug = cache(
+  async ({ slug, locale }: { slug: string; locale: Config['locale'] }) => {
+    const { isEnabled: draft } = await draftMode()
 
-  const payload = await getPayload({ config: configPromise })
+    const payload = await getPayload({ config: configPromise })
 
-  const result = await payload.find({
-    collection: 'events',
-    depth: 2,
-    draft,
-    limit: 1,
-    locale,
-    overrideAccess: draft,
-    pagination: false,
-    where: {
-      slug: {
-        equals: slug,
+    const result = await payload.find({
+      collection: 'events',
+      depth: 2,
+      draft,
+      limit: 1,
+      locale,
+      overrideAccess: draft,
+      pagination: false,
+      where: {
+        slug: {
+          equals: slug,
+        },
       },
-    },
-  })
+    })
 
-  return (result.docs?.[0] as Event | undefined) || null
-})
+    return (result.docs?.[0] as Event | undefined) || null
+  },
+)

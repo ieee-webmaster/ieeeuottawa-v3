@@ -4,9 +4,8 @@ import RichText from '@/components/RichText'
 
 import type { Post } from '@/payload-types'
 
-import { Card } from '../../components/Card'
+import { Card } from '@/components/Card'
 import { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
-import { getDocumentPath } from '@/utilities/routes'
 
 export type RelatedPostsProps = {
   className?: string
@@ -29,7 +28,7 @@ export const RelatedPosts: React.FC<RelatedPostsProps> = (props) => {
             <Card
               key={index}
               doc={doc}
-              href={getDocumentPath({ collection: 'posts', slug: doc.slug })}
+              href={`/posts/${encodeURIComponent(doc.slug)}`}
               showCategories
             />
           )
