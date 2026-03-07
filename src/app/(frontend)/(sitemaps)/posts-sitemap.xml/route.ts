@@ -3,7 +3,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { unstable_cache } from 'next/cache'
 import { routing } from '@/i18n/routing'
-import { getAbsoluteUrl, getLocalizedDocumentPath } from '@/utilities/routes'
+import { getAbsoluteUrl, prefixLocale } from '@/utilities/routes'
 
 const getPostsSitemap = unstable_cache(
   async () => {
@@ -34,13 +34,7 @@ const getPostsSitemap = unstable_cache(
           .filter((post) => Boolean(post?.slug))
           .flatMap((post) =>
             routing.locales.map((locale) => ({
-              loc: getAbsoluteUrl(
-                getLocalizedDocumentPath({
-                  collection: 'posts',
-                  locale,
-                  slug: post.slug,
-                }),
-              ),
+              loc: getAbsoluteUrl(prefixLocale(`/posts/${encodeURIComponent(post.slug)}`, locale)),
               lastmod: post.updatedAt || dateFallback,
             })),
           )

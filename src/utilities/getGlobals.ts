@@ -13,6 +13,7 @@ async function getGlobal(slug: Global, depth = 0, locale?: Config['locale']) {
     slug,
     depth,
     locale,
+    overrideAccess: false,
   })
 
   return global

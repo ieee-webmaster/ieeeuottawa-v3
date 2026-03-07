@@ -2,15 +2,17 @@ import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'paylo
 
 import { revalidatePath, revalidateTag } from 'next/cache'
 
-import type { Post } from '../../../payload-types'
-import { getLocalizedDocumentPaths } from '@/utilities/routes'
+import type { Post } from '@/payload-types'
+import { routing } from '@/i18n/routing'
+import { prefixLocale } from '@/utilities/routes'
 
 const revalidatePostPaths = (slug?: string | null) => {
   if (!slug) {
     return
   }
 
-  for (const path of getLocalizedDocumentPaths({ collection: 'posts', slug })) {
+  for (const locale of routing.locales) {
+    const path = prefixLocale(`/posts/${encodeURIComponent(slug)}`, locale)
     revalidatePath(path)
   }
 }

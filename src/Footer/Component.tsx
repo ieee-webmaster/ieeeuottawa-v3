@@ -1,15 +1,15 @@
 import { getCachedGlobal } from '@/utilities/getGlobals'
+import { resolveLocale } from '@/i18n/routing'
 import { Link } from '@/i18n/navigation'
-import React from 'react'
 import { getLocale } from 'next-intl/server'
-import type { Footer, Config } from '@/payload-types'
+import type { Footer } from '@/payload-types'
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo/Logo'
 const currentYear = new Date().getFullYear()
 
 export async function Footer() {
-  const locale = (await getLocale()) as Config['locale']
+  const locale = resolveLocale(await getLocale())
   const footerData: Footer = await getCachedGlobal('footer', 1, locale)()
 
   const navItems = footerData?.navItems || []

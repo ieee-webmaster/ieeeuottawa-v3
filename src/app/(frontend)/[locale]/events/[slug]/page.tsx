@@ -9,11 +9,10 @@ import { draftMode } from 'next/headers'
 import { cache } from 'react'
 import { generateMeta } from '@/utilities/generateMeta'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
-import type { Event, Config } from '@/payload-types'
+import type { Config } from '@/payload-types'
 import RichText from '@/components/RichText'
 import { Media as PayloadMedia } from '@/components/Media'
 import { formatDateTime } from '@/utilities/formatDateTime'
-import { getDocumentPath } from '@/utilities/routes'
 import PageClient from './page.client'
 
 export async function generateStaticParams() {
@@ -43,11 +42,27 @@ type Args = {
   }>
 }
 
+const getTextLength = (node: unknown): number => {
+  if (typeof node !== 'object' || node === null) {
+    return 0
+  }
+
+  if ('text' in node && typeof node.text === 'string') {
+    return node.text.length
+  }
+
+  if ('children' in node && Array.isArray(node.children)) {
+    return node.children.reduce((total, child) => total + getTextLength(child), 0)
+  }
+
+  return 0
+}
+
 export default async function EventPage({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { locale, slug = '' } = await paramsPromise
   const decodedSlug = decodeURIComponent(slug)
-  const url = getDocumentPath({ collection: 'events', slug: decodedSlug })
+  const url = `/events/${encodeURIComponent(decodedSlug)}`
   const event = await queryEventBySlug({ slug: decodedSlug, locale })
 
   if (!event) {
@@ -65,9 +80,10 @@ export default async function EventPage({ params: paramsPromise }: Args) {
   )
   const hostedByLabel =
     hostedBy.length > 0 ? hostedBy.map((team) => team.name).join(', ') : 'IEEE uOttawa'
-  const eventContentLength = Array.isArray(event.content.root.children[0].children)
-    ? event.content.root.children[0].children.map((child: any) => child.text).join('').length
-    : 0
+  const eventContentLength =
+    'root' in event.content && Array.isArray(event.content.root.children)
+      ? event.content.root.children.reduce((total, child) => total + getTextLength(child), 0)
+      : 0
 
   return (
     <article className="pt-16 pb-16">
@@ -204,6 +220,6 @@ const queryEventBySlug = cache(
       },
     })
 
-    return (result.docs?.[0] as Event | undefined) || null
+    return result.docs?.[0] || null
   },
 )

@@ -20,7 +20,7 @@ import type {
 } from '@/payload-types'
 import { BannerBlock } from '@/blocks/Banner/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
-import { getDocumentPath, isRoutedCollection } from '@/utilities/routes'
+import { isRoutedCollection } from '@/utilities/routes'
 import { cn } from '@/utilities/ui'
 
 type NodeTypes =
@@ -36,10 +36,11 @@ const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
     throw new Error(`Unsupported collection relation: ${relationTo}`)
   }
 
-  return getDocumentPath({
-    collection: relationTo,
-    slug: value.slug,
-  })
+  return relationTo === 'pages'
+    ? value.slug === 'home'
+      ? '/'
+      : `/${encodeURIComponent(value.slug)}`
+    : `/${relationTo}/${encodeURIComponent(value.slug)}`
 }
 
 const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({

@@ -3,7 +3,6 @@ import Image from 'next/image'
 import type { Event } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import type { Locale } from '@/i18n/routing'
-import { getDocumentPath } from '@/utilities/routes'
 
 type Props = {
   event: Event
@@ -26,10 +25,7 @@ export const EventCard = ({ event, locale }: Props) => {
 
   return (
     <article className="overflow-hidden rounded-lg border border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow">
-      <Link
-        href={getDocumentPath({ collection: 'events', slug: event.slug })}
-        className="block h-full"
-      >
+      <Link href={`/events/${encodeURIComponent(event.slug)}`} className="block h-full">
         {heroSrc ? (
           <Image
             src={heroSrc}
