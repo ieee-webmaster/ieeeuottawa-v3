@@ -2,14 +2,12 @@ import { getServerSideSitemap } from 'next-sitemap'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { unstable_cache } from 'next/cache'
+import { routing } from '@/i18n/routing'
+import { getAbsoluteUrl, prefixLocale } from '@/utilities/routes'
 
 const getPostsSitemap = unstable_cache(
   async () => {
     const payload = await getPayload({ config })
-    const SITE_URL =
-      process.env.NEXT_PUBLIC_SERVER_URL ||
-      process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-      'https://example.com'
 
     const results = await payload.find({
       collection: 'posts',
@@ -34,10 +32,12 @@ const getPostsSitemap = unstable_cache(
     const sitemap = results.docs
       ? results.docs
           .filter((post) => Boolean(post?.slug))
-          .map((post) => ({
-            loc: `${SITE_URL}/posts/${post?.slug}`,
-            lastmod: post.updatedAt || dateFallback,
-          }))
+          .flatMap((post) =>
+            routing.locales.map((locale) => ({
+              loc: getAbsoluteUrl(prefixLocale(`/posts/${encodeURIComponent(post.slug)}`, locale)),
+              lastmod: post.updatedAt || dateFallback,
+            })),
+          )
       : []
 
     return sitemap

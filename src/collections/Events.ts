@@ -14,6 +14,7 @@ import { authenticatedOrPublished } from '../access/authenticatedOrPublished'
 import { Banner } from '../blocks/Banner/config'
 import { Code } from '../blocks/Code/config'
 import { MediaBlock } from '../blocks/MediaBlock/config'
+import { revalidateDelete, revalidateEvent } from './Events/hooks/revalidateEvent'
 import { generatePreviewPath } from '../utilities/generatePreviewPath'
 import { validateHttpUrl } from '../utilities/validateHttpUrl'
 
@@ -66,6 +67,7 @@ export const Events: CollectionConfig<'events'> = {
       name: 'title',
       type: 'text',
       required: true,
+      localized: true,
     },
     {
       name: 'date',
@@ -76,6 +78,7 @@ export const Events: CollectionConfig<'events'> = {
       name: 'location',
       type: 'text',
       required: true,
+      localized: true,
     },
     {
       name: 'hosted-by',
@@ -123,6 +126,7 @@ export const Events: CollectionConfig<'events'> = {
               }),
               label: false,
               required: true,
+              localized: true,
             },
           ],
           label: 'Content',
@@ -166,5 +170,9 @@ export const Events: CollectionConfig<'events'> = {
       schedulePublish: true,
     },
     maxPerDoc: 50,
+  },
+  hooks: {
+    afterChange: [revalidateEvent],
+    afterDelete: [revalidateDelete],
   },
 }

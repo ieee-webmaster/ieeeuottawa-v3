@@ -118,7 +118,7 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'fr') | ('en' | 'fr')[];
   globals: {
     header: Header;
     footer: Footer;
@@ -127,7 +127,7 @@ export interface Config {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
   };
-  locale: null;
+  locale: 'en' | 'fr';
   user: User & {
     collection: 'users';
   };
@@ -197,6 +197,10 @@ export interface Page {
               | ({
                   relationTo: 'posts';
                   value: number | Post;
+                } | null)
+              | ({
+                  relationTo: 'events';
+                  value: number | Event;
                 } | null);
             url?: string | null;
             label: string;
@@ -566,6 +570,10 @@ export interface CallToActionBlock {
             | ({
                 relationTo: 'posts';
                 value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
               } | null);
           url?: string | null;
           label: string;
@@ -616,6 +624,10 @@ export interface ContentBlock {
             | ({
                 relationTo: 'posts';
                 value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
               } | null);
           url?: string | null;
           label: string;
@@ -1968,6 +1980,10 @@ export interface Header {
             | ({
                 relationTo: 'posts';
                 value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
               } | null);
           url?: string | null;
           label: string;
@@ -1997,6 +2013,10 @@ export interface Footer {
             | ({
                 relationTo: 'posts';
                 value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
               } | null);
           url?: string | null;
           label: string;

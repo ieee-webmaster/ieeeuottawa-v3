@@ -10,17 +10,31 @@ import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/
 import { searchFields } from '@/search/fieldOverrides'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
 
-import { Page, Post } from '@/payload-types'
-import { getServerSideURL } from '@/utilities/getURL'
+import { resolveLocale } from '@/i18n/routing'
+import { getAbsoluteUrl, isRoutedCollection, prefixLocale } from '@/utilities/routes'
 
-const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
+const generateTitle: GenerateTitle<{ title?: string | null }> = ({ doc }) => {
   return doc?.title ? `${doc.title} | Payload Website Template` : 'Payload Website Template'
 }
 
-const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
-  const url = getServerSideURL()
+const generateURL: GenerateURL<{ slug?: string | null }> = ({ collectionConfig, doc, locale }) => {
+  if (
+    !doc?.slug ||
+    !locale ||
+    !collectionConfig?.slug ||
+    !isRoutedCollection(collectionConfig.slug)
+  ) {
+    return ''
+  }
 
-  return doc?.slug ? `${url}/${doc.slug}` : url
+  const path =
+    collectionConfig.slug === 'pages'
+      ? doc.slug === 'home'
+        ? '/'
+        : `/${encodeURIComponent(doc.slug)}`
+      : `/${collectionConfig.slug}/${encodeURIComponent(doc.slug)}`
+
+  return getAbsoluteUrl(prefixLocale(path, resolveLocale(locale)))
 }
 
 export const plugins: Plugin[] = [

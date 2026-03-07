@@ -20,6 +20,7 @@ import type {
 } from '@/payload-types'
 import { BannerBlock } from '@/blocks/Banner/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
+import { isRoutedCollection } from '@/utilities/routes'
 import { cn } from '@/utilities/ui'
 
 type NodeTypes =
@@ -28,11 +29,18 @@ type NodeTypes =
 
 const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
   const { value, relationTo } = linkNode.fields.doc!
-  if (typeof value !== 'object') {
+  if (typeof value !== 'object' || value === null || typeof value.slug !== 'string') {
     throw new Error('Expected value to be an object')
   }
-  const slug = value.slug
-  return relationTo === 'posts' ? `/posts/${slug}` : `/${slug}`
+  if (!isRoutedCollection(relationTo)) {
+    throw new Error(`Unsupported collection relation: ${relationTo}`)
+  }
+
+  return relationTo === 'pages'
+    ? value.slug === 'home'
+      ? '/'
+      : `/${encodeURIComponent(value.slug)}`
+    : `/${relationTo}/${encodeURIComponent(value.slug)}`
 }
 
 const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({

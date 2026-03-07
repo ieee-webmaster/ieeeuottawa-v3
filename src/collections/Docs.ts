@@ -38,6 +38,7 @@ export const Docs: CollectionConfig = {
           type: 'text',
           label: 'Document Name',
           required: true,
+          localized: true,
           admin: {
             description: 'Name of the document (e.g., "IEEE Constitution")',
           },
@@ -46,6 +47,7 @@ export const Docs: CollectionConfig = {
           name: 'description',
           type: 'textarea',
           label: 'Description',
+          localized: true,
           admin: {
             description: 'Optional description of the document',
           },
@@ -70,6 +72,7 @@ export const Docs: CollectionConfig = {
           type: 'text',
           label: 'Meeting Name',
           required: true,
+          localized: true,
           admin: {
             description: 'Name of the meeting (e.g., "General Meeting - October 2024")',
           },
@@ -86,6 +89,7 @@ export const Docs: CollectionConfig = {
           name: 'description',
           type: 'textarea',
           label: 'Description',
+          localized: true,
           admin: {
             description: 'Optional description or summary of the meeting',
           },
@@ -110,11 +114,13 @@ export const Docs: CollectionConfig = {
           type: 'text',
           label: 'Document Name',
           required: true,
+          localized: true,
         },
         {
           name: 'description',
           type: 'textarea',
           label: 'Description',
+          localized: true,
           admin: {
             description: 'Optional description of the document',
           },
