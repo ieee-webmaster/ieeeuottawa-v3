@@ -1,5 +1,6 @@
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
+import { getTranslations } from 'next-intl/server'
 import type { Event, Config } from '@/payload-types'
 import { EventCard } from './_components/EventCard'
 
@@ -10,6 +11,7 @@ type Args = {
 export default async function EventsPage({ params: paramsPromise }: Args) {
   const { locale } = await paramsPromise
   const payload = await getPayload({ config: configPromise })
+  const t = await getTranslations({ locale, namespace: 'events' })
 
   const { docs } = await payload.find({
     collection: 'events',
@@ -44,23 +46,21 @@ export default async function EventsPage({ params: paramsPromise }: Args) {
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <header className="mb-8">
-        <h1 className="text-5xl font-extrabold tracking-tight text-center">Events</h1>
-        <p className="mt-2 text-center text-muted-foreground">
-          Browse upcoming and past events organized by IEEE UOttawa.
-        </p>
+        <h1 className="text-5xl font-extrabold tracking-tight text-center">{t('title')}</h1>
+        <p className="mt-2 text-center text-muted-foreground">{t('description')}</p>
       </header>
 
       <section className="mb-12">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-semibold">Upcoming</h2>
+          <h2 className="text-2xl font-semibold">{t('upcoming')}</h2>
           <div className="text-sm text-gray-500">
-            {upcoming.length} event{upcoming.length !== 1 ? 's' : ''}
+            {t('eventCount', { count: upcoming.length })}
           </div>
         </div>
 
         {upcoming.length === 0 ? (
           <div className="rounded-lg border border-dashed border-gray-200 p-8 text-center text-gray-600">
-            No upcoming events.
+            {t('noUpcoming')}
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
@@ -73,15 +73,15 @@ export default async function EventsPage({ params: paramsPromise }: Args) {
 
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-semibold">Past</h2>
+          <h2 className="text-2xl font-semibold">{t('past')}</h2>
           <div className="text-sm text-gray-500">
-            {past.length} event{past.length !== 1 ? 's' : ''}
+            {t('eventCount', { count: past.length })}
           </div>
         </div>
 
         {past.length === 0 ? (
           <div className="rounded-lg border border-dashed border-gray-200 p-8 text-center text-gray-600">
-            No past events.
+            {t('noPast')}
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">

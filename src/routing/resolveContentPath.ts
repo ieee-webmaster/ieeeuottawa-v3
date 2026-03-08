@@ -12,7 +12,11 @@ const contentPathResolvers: Partial<Record<string, (doc: unknown) => string | nu
 
 export const resolveContentPathFromDoc = (collection: string, doc: unknown): string | null => {
   const resolver = contentPathResolvers[collection]
-  return resolver ? resolver(doc) : null
+  if (!resolver) {
+    console.warn(`[resolveContentPath] No path resolver found for collection "${collection}"`)
+    return null
+  }
+  return resolver(doc)
 }
 
 export const resolveContentPathFromReference = (

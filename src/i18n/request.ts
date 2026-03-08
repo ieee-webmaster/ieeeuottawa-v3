@@ -8,8 +8,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
   return {
     locale,
-    // Messages are managed through Payload CMS content fields.
-    // Add UI-string keys here only if needed outside of CMS-managed content.
-    messages: {},
+    messages: (await import(`../../messages/${locale}.json`)).default,
   }
 })
