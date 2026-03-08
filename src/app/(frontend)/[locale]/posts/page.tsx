@@ -6,6 +6,7 @@ import { Pagination } from '@/components/Pagination'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
+import { getTranslations } from 'next-intl/server'
 import PageClient from './page.client'
 import type { Config } from '@/payload-types'
 
@@ -19,6 +20,7 @@ type Args = {
 export default async function Page({ params: paramsPromise }: Args) {
   const { locale } = await paramsPromise
   const payload = await getPayload({ config: configPromise })
+  const t = await getTranslations({ locale, namespace: 'posts' })
 
   const posts = await payload.find({
     collection: 'posts',
@@ -39,7 +41,7 @@ export default async function Page({ params: paramsPromise }: Args) {
       <PageClient />
       <div className="container mb-16">
         <div className="prose dark:prose-invert max-w-none">
-          <h1>Posts</h1>
+          <h1>{t('title')}</h1>
         </div>
       </div>
 
@@ -63,8 +65,10 @@ export default async function Page({ params: paramsPromise }: Args) {
   )
 }
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
+  const { locale } = await paramsPromise
+  const t = await getTranslations({ locale, namespace: 'posts' })
   return {
-    title: `Payload Website Template Posts`,
+    title: t('title'),
   }
 }

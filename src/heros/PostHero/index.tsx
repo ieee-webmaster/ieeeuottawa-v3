@@ -1,6 +1,7 @@
 import type { Locale } from '@/i18n/routing'
 import { formatDateTime } from 'src/utilities/formatDateTime'
 import React from 'react'
+import { getTranslations } from 'next-intl/server'
 
 import type { Post } from '@/payload-types'
 
@@ -10,8 +11,9 @@ import { formatAuthors } from '@/utilities/formatAuthors'
 export const PostHero: React.FC<{
   locale: Locale
   post: Post
-}> = ({ locale, post }) => {
+}> = async ({ locale, post }) => {
   const { categories, heroImage, populatedAuthors, publishedAt, title } = post
+  const t = await getTranslations({ locale, namespace: 'posts' })
 
   const hasAuthors =
     populatedAuthors && populatedAuthors.length > 0 && formatAuthors(populatedAuthors, locale) !== ''
@@ -48,7 +50,7 @@ export const PostHero: React.FC<{
             {hasAuthors && (
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
-                  <p className="text-sm">Author</p>
+                  <p className="text-sm">{t('author')}</p>
 
                   <p>{formatAuthors(populatedAuthors, locale)}</p>
                 </div>
@@ -56,7 +58,7 @@ export const PostHero: React.FC<{
             )}
             {publishedAt && (
               <div className="flex flex-col gap-1">
-                <p className="text-sm">Date Published</p>
+                <p className="text-sm">{t('datePublished')}</p>
 
                 <time dateTime={publishedAt}>{formatDateTime(publishedAt, locale)}</time>
               </div>

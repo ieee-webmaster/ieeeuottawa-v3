@@ -1,0 +1,23 @@
+{
+  "events": {
+    "title": "Événements",
+    "description": "Parcourez les événements à venir et passés organisés par IEEE UOttawa.",
+    "upcoming": "À venir",
+    "past": "Passé",
+    "eventCount": "{count, plural, one {# événement} other {# événements}}",
+    "noUpcoming": "Aucun événement à venir.",
+    "noPast": "Aucun événement passé.",
+    "label": "Événement",
+    "date": "Date",
+    "location": "Lieu",
+    "hostedBy": "Organisé par",
+    "signUp": "S'inscrire",
+    "viewMedia": "Voir les médias",
+    "backToEvents": "Retour aux événements"
+  },
+  "posts": {
+    "title": "Articles",
+    "author": "Auteur",
+    "datePublished": "Date de publication"
+  }
+}

@@ -58,7 +58,7 @@ export const getCachedDocument = (
     async () => getDocument(collection, slug, 0, locale),
     [collection, slug, locale ?? ''],
     {
-      tags: [`${collection}_${slug}`],
+      tags: [`${collection}_${slug}_${locale ?? 'en'}`],
     },
   )
 
@@ -71,6 +71,6 @@ export const getCachedDocumentByID = (
     async () => getDocumentByID(collection, id, 0, locale),
     [collection, 'id', id, locale ?? ''],
     {
-      tags: [`${collection}_${id}`],
+      tags: [`${collection}_${id}_${locale ?? 'en'}`],
     },
   )
