@@ -49,14 +49,14 @@ export const Events: CollectionConfig<'events'> = {
     livePreview: {
       url: ({ data, req }) =>
         generatePreviewPath({
-          slug: data?.slug,
+          doc: data,
           collection: 'events',
           req,
         }),
     },
     preview: (data, { req }) =>
       generatePreviewPath({
-        slug: data?.slug as string,
+        doc: data,
         collection: 'events',
         req,
       }),

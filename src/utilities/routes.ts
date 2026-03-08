@@ -1,13 +1,6 @@
 import { routing, type Locale } from '@/i18n/routing'
 import { getServerSideURL } from '@/utilities/getURL'
 
-export const routedCollections = ['pages', 'posts', 'events'] as const
-
-export type RoutedCollection = (typeof routedCollections)[number]
-
-export const isRoutedCollection = (value: string): value is RoutedCollection =>
-  (routedCollections as readonly string[]).includes(value)
-
 export const prefixLocale = (path: string, locale: Locale): string => {
   if (/^https?:\/\//i.test(path)) {
     return path

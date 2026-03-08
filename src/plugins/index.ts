@@ -9,30 +9,24 @@ import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
 import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import { searchFields } from '@/search/fieldOverrides'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
+import { resolveContentPathFromDoc } from '@/routing/resolveContentPath'
 
 import { resolveLocale } from '@/i18n/routing'
-import { getAbsoluteUrl, isRoutedCollection, prefixLocale } from '@/utilities/routes'
+import { getAbsoluteUrl, prefixLocale } from '@/utilities/routes'
 
 const generateTitle: GenerateTitle<{ title?: string | null }> = ({ doc }) => {
   return doc?.title ? `${doc.title} | Payload Website Template` : 'Payload Website Template'
 }
 
-const generateURL: GenerateURL<{ slug?: string | null }> = ({ collectionConfig, doc, locale }) => {
-  if (
-    !doc?.slug ||
-    !locale ||
-    !collectionConfig?.slug ||
-    !isRoutedCollection(collectionConfig.slug)
-  ) {
+const generateURL: GenerateURL<Record<string, unknown>> = ({ collectionConfig, doc, locale }) => {
+  if (!doc || !locale || !collectionConfig?.slug) {
     return ''
   }
 
-  const path =
-    collectionConfig.slug === 'pages'
-      ? doc.slug === 'home'
-        ? '/'
-        : `/${encodeURIComponent(doc.slug)}`
-      : `/${collectionConfig.slug}/${encodeURIComponent(doc.slug)}`
+  const path = resolveContentPathFromDoc(collectionConfig.slug, doc)
+  if (!path) {
+    return ''
+  }
 
   return getAbsoluteUrl(prefixLocale(path, resolveLocale(locale)))
 }

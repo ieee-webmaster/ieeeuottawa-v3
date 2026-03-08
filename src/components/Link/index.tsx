@@ -1,7 +1,7 @@
 import { Button, type ButtonProps } from '@/components/ui/button'
 import { cn } from '@/utilities/ui'
 import { Link } from '@/i18n/navigation'
-import type { RoutedCollection } from '@/utilities/routes'
+import { resolveContentPathFromReference } from '@/routing/resolveContentPath'
 import React from 'react'
 
 type CMSLinkType = {
@@ -11,8 +11,8 @@ type CMSLinkType = {
   label?: string | null
   newTab?: boolean | null
   reference?: {
-    relationTo: RoutedCollection
-    value: { slug?: string } | string | number | null
+    relationTo: string
+    value: object | string | number | null
   } | null
   size?: ButtonProps['size'] | null
   type?: 'custom' | 'reference' | null
@@ -33,12 +33,8 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   } = props
 
   const href =
-    type === 'reference' && typeof reference?.value === 'object' && reference.value?.slug
-      ? reference.relationTo === 'pages'
-        ? reference.value.slug === 'home'
-          ? '/'
-          : `/${encodeURIComponent(reference.value.slug)}`
-        : `/${reference.relationTo}/${encodeURIComponent(reference.value.slug)}`
+    type === 'reference' && reference
+      ? (resolveContentPathFromReference(reference.relationTo, reference.value) ?? url)
       : url
 
   if (!href) return null
