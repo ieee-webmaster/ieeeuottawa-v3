@@ -41,14 +41,14 @@ export const Pages: CollectionConfig<'pages'> = {
     livePreview: {
       url: ({ data, req }) =>
         generatePreviewPath({
-          slug: data?.slug,
+          doc: data,
           collection: 'pages',
           req,
         }),
     },
     preview: (data, { req }) =>
       generatePreviewPath({
-        slug: data?.slug as string,
+        doc: data,
         collection: 'pages',
         req,
       }),

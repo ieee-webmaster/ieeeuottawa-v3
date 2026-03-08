@@ -1,7 +1,11 @@
 import { resolveLocale } from '@/i18n/routing'
+import {
+  resolveContentPathFromDoc,
+  resolveContentPathFromReference,
+} from '@/routing/resolveContentPath'
 import { getCachedDocumentByID } from '@/utilities/getDocument'
 import { getCachedRedirects } from '@/utilities/getRedirects'
-import { isRoutedCollection, prefixLocale } from '@/utilities/routes'
+import { prefixLocale } from '@/utilities/routes'
 import { notFound, redirect } from 'next/navigation'
 import { getLocale } from 'next-intl/server'
 
@@ -15,18 +19,8 @@ type RedirectItem = Awaited<ReturnType<ReturnType<typeof getCachedRedirects>>>[n
 function resolveRedirectUrl(redirectItem: RedirectItem): string | null {
   if (redirectItem.to?.url) return redirectItem.to.url
 
-  const ref = redirectItem.to?.reference
-  if (!ref) return null
-  if (!isRoutedCollection(ref.relationTo)) return null
-
-  const slug = typeof ref.value === 'object' ? ref.value?.slug : undefined
-  if (!slug) return null
-
-  return ref.relationTo === 'pages'
-    ? slug === 'home'
-      ? '/'
-      : `/${encodeURIComponent(slug)}`
-    : `/${ref.relationTo}/${encodeURIComponent(slug)}`
+  const reference = redirectItem.to?.reference
+  return reference ? resolveContentPathFromReference(reference.relationTo, reference.value) : null
 }
 
 /* This component helps us with SSR based dynamic redirects */
@@ -47,25 +41,11 @@ export const PayloadRedirects = async ({ disableNotFound, url }: Props) => {
     typeof redirectItem.to.reference.value !== 'object'
   ) {
     const { relationTo, value: id } = redirectItem.to.reference
-    if (isRoutedCollection(relationTo)) {
-      const document = await getCachedDocumentByID(relationTo, String(id), locale)()
-      const slug =
-        typeof document === 'object' &&
-        document !== null &&
-        'slug' in document &&
-        typeof document.slug === 'string'
-          ? document.slug
-          : null
 
-      if (typeof slug === 'string') {
-        const path =
-          relationTo === 'pages'
-            ? slug === 'home'
-              ? '/'
-              : `/${encodeURIComponent(slug)}`
-            : `/${relationTo}/${encodeURIComponent(slug)}`
-        redirect(prefixLocale(path, locale))
-      }
+    const document = await getCachedDocumentByID(relationTo, String(id), locale)()
+    const path = resolveContentPathFromDoc(relationTo, document)
+    if (path) {
+      redirect(prefixLocale(path, locale))
     }
   }
 

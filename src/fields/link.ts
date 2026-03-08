@@ -1,7 +1,6 @@
 import type { Field, GroupField } from 'payload'
 
 import deepMerge from '@/utilities/deepMerge'
-import { routedCollections } from '@/utilities/routes'
 
 export type LinkAppearances = 'default' | 'outline'
 
@@ -76,7 +75,7 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
         condition: (_, siblingData) => siblingData?.type === 'reference',
       },
       label: 'Document to link to',
-      relationTo: [...routedCollections],
+      relationTo: ['pages', 'posts', 'events'],
       required: true,
     },
     {
