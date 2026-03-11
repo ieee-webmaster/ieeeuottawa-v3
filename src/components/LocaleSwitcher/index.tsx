@@ -22,6 +22,7 @@ export const LocaleSwitcher: React.FC = () => {
 
   return (
     <button
+      type="button"
       onClick={handleSwitch}
       className="text-sm font-medium text-primary hover:opacity-75 transition-opacity cursor-pointer"
       aria-label={`Switch to ${otherLocale === 'fr' ? 'Français' : 'English'}`}
