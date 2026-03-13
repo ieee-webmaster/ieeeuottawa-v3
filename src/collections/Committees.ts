@@ -2,25 +2,6 @@ import type { CollectionConfig } from 'payload'
 import { authenticated } from '@/access/authenticated'
 import { anyone } from '@/access/anyone'
 
-const getTeamName = (
-  value: null | Record<string, string> | string | undefined,
-  locale?: string,
-): null | string => {
-  if (!value) {
-    return null
-  }
-
-  if (typeof value === 'string') {
-    return value
-  }
-
-  if (locale && value[locale]) {
-    return value[locale]
-  }
-
-  return Object.values(value)[0] ?? null
-}
-
 export const Committees: CollectionConfig = {
   slug: 'committee',
   admin: {
@@ -56,36 +37,6 @@ export const Committees: CollectionConfig = {
           relationTo: 'teams',
           required: true,
           label: 'Team',
-          hooks: {
-            beforeChange: [
-              async ({ req, siblingData, value }) => {
-                if (!value) {
-                  siblingData.teamLabel = ''
-                  return value
-                }
-
-                const team = await req.payload.findByID({
-                  collection: 'teams',
-                  id: String(value),
-                  depth: 0,
-                  overrideAccess: false,
-                  req,
-                })
-
-                siblingData.teamLabel = getTeamName(team.name, req.locale) || ''
-
-                return value
-              },
-            ],
-          },
-        },
-        {
-          name: 'teamLabel',
-          type: 'text',
-          admin: {
-            hidden: true,
-            readOnly: true,
-          },
         },
         {
           name: 'members',
