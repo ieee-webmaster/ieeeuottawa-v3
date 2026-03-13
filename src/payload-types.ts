@@ -897,7 +897,6 @@ export interface Committee {
   teams?:
     | {
         team: number | Team;
-        teamLabel?: string | null;
         members?:
           | {
               /**
@@ -1641,7 +1640,6 @@ export interface CommitteeSelect<T extends boolean = true> {
     | T
     | {
         team?: T;
-        teamLabel?: T;
         members?:
           | T
           | {
