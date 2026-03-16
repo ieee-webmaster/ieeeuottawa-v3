@@ -20,7 +20,8 @@ import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { FolderTableCell as FolderTableCell_ab83ff7e88da8d3530831f296ec4756a } from '@payloadcms/ui/rsc'
 import { FolderField as FolderField_ab83ff7e88da8d3530831f296ec4756a } from '@payloadcms/ui/rsc'
 import { CommitteePositionSelect as CommitteePositionSelect_246c74b4fcdbd351657ffb7a1bf4fcca } from '../../../components/CommitteePositionSelect'
-import { RowLabel as RowLabel_f10893b7a7bc68547ae2696bccbbe6bc } from '@/components/CommitteeTeamRowLabel'
+import { CommitteeMemberRowLabel as CommitteeMemberRowLabel_558617eb9db307ac4d2aa657a24a7e0f } from '@/collections/Committees/RowLabel'
+import { CommitteeTeamRowLabel as CommitteeTeamRowLabel_558617eb9db307ac4d2aa657a24a7e0f } from '@/collections/Committees/RowLabel'
 import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { FolderTypeField as FolderTypeField_3817bf644402e67bfe6577f60ef982de } from '@payloadcms/ui'
@@ -54,7 +55,8 @@ export const importMap = {
   "@payloadcms/ui/rsc#FolderTableCell": FolderTableCell_ab83ff7e88da8d3530831f296ec4756a,
   "@payloadcms/ui/rsc#FolderField": FolderField_ab83ff7e88da8d3530831f296ec4756a,
   "/components/CommitteePositionSelect#CommitteePositionSelect": CommitteePositionSelect_246c74b4fcdbd351657ffb7a1bf4fcca,
-  "@/components/CommitteeTeamRowLabel#RowLabel": RowLabel_f10893b7a7bc68547ae2696bccbbe6bc,
+  "@/collections/Committees/RowLabel#CommitteeMemberRowLabel": CommitteeMemberRowLabel_558617eb9db307ac4d2aa657a24a7e0f,
+  "@/collections/Committees/RowLabel#CommitteeTeamRowLabel": CommitteeTeamRowLabel_558617eb9db307ac4d2aa657a24a7e0f,
   "@payloadcms/plugin-search/client#LinkToDoc": LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
   "@payloadcms/plugin-search/client#ReindexButton": ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,
   "@payloadcms/ui#FolderTypeField": FolderTypeField_3817bf644402e67bfe6577f60ef982de,

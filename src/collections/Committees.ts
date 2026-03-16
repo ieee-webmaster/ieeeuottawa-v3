@@ -27,7 +27,7 @@ export const Committees: CollectionConfig = {
       label: 'Teams',
       admin: {
         components: {
-          RowLabel: '@/components/CommitteeTeamRowLabel#RowLabel',
+          RowLabel: '@/collections/Committees/RowLabel#CommitteeTeamRowLabel',
         },
       },
       fields: [
@@ -42,6 +42,11 @@ export const Committees: CollectionConfig = {
           name: 'members',
           type: 'array',
           label: 'Members',
+          admin: {
+            components: {
+              RowLabel: '@/collections/Committees/RowLabel#CommitteeMemberRowLabel',
+            },
+          },
           fields: [
             {
               name: 'role',
