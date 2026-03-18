@@ -60,9 +60,15 @@ export const hero: Field = {
     },
     linkGroup({
       overrides: {
-        maxRows: 2,
+        maxRows: 4,
       },
     }),
+    {
+      name: 'logo',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Logo (Affinity Group Only)',
+    },
     {
       name: 'media',
       type: 'upload',
