@@ -214,6 +214,7 @@ export interface Page {
           id?: string | null;
         }[]
       | null;
+    logo?: (number | null) | Media;
     media?: (number | null) | Media;
   };
   layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
@@ -1327,6 +1328,7 @@ export interface PagesSelect<T extends boolean = true> {
                   };
               id?: T;
             };
+        logo?: T;
         media?: T;
       };
   layout?:
