@@ -12,6 +12,7 @@ jobs:
     env:
       POSTGRES_URL: ${{ secrets.POSTGRES_URL_NO_POOLING }}
       BACKUP_POSTGRES_URL: ${{ secrets.BACKUP_POSTGRES_URL_NO_POOLING }}
+      PG_BIN: /usr/lib/postgresql/17/bin
 
     steps:
       - name: Validate required secrets
@@ -32,7 +33,7 @@ jobs:
           mkdir -p backups
           BACKUP_FILE="backups/backup-$(date -u +%Y-%m-%dT%H-%M-%SZ).sql"
 
-          pg_dump \
+          "$PG_BIN/pg_dump" \
             --dbname="$POSTGRES_URL" \
             --format=plain \
             --no-owner \
@@ -45,7 +46,7 @@ jobs:
 
       - name: Reset backup database schema
         run: |
-          psql "$BACKUP_POSTGRES_URL" -v ON_ERROR_STOP=1 <<'SQL'
+          "$PG_BIN/psql" "$BACKUP_POSTGRES_URL" -v ON_ERROR_STOP=1 <<'SQL'
           DROP SCHEMA IF EXISTS public CASCADE;
           CREATE SCHEMA public;
           GRANT ALL ON SCHEMA public TO CURRENT_USER;
@@ -53,7 +54,7 @@ jobs:
           SQL
 
       - name: Restore backup into destination database
-        run: psql "$BACKUP_POSTGRES_URL" -v ON_ERROR_STOP=1 -f "$BACKUP_FILE"
+        run: "$PG_BIN/psql" "$BACKUP_POSTGRES_URL" -v ON_ERROR_STOP=1 -f "$BACKUP_FILE"
 
       - name: Upload SQL backup artifact
         uses: actions/upload-artifact@v4
