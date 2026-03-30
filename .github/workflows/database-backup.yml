@@ -2,7 +2,7 @@ name: Database Backup
 
 on:
   schedule:
-    - cron: '35 0 */3 * *'
+    - cron: '0 3 */3 * *'
   workflow_dispatch:
 
 jobs:
@@ -20,7 +20,7 @@ jobs:
           test -n "$BACKUP_POSTGRES_URL"
 
       - name: Install PostgreSQL client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client-17
 
       - name: Create SQL backup
         run: |
