@@ -1,0 +1,65 @@
+name: Database Backup
+
+on:
+  schedule:
+    - cron: '0 3 */3 * *'
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      POSTGRES_URL: ${{ secrets.POSTGRES_URL_NO_POOLING }}
+      BACKUP_POSTGRES_URL: ${{ secrets.BACKUP_POSTGRES_URL_NO_POOLING }}
+      PG_BIN: /usr/lib/postgresql/17/bin
+
+    steps:
+      - name: Validate required secrets
+        run: |
+          test -n "$POSTGRES_URL"
+          test -n "$BACKUP_POSTGRES_URL"
+
+      - name: Install PostgreSQL 17 client
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-17
+
+      - name: Create SQL backup
+        run: |
+          mkdir -p backups
+          BACKUP_FILE="backups/backup-$(date -u +%Y-%m-%dT%H-%M-%SZ).sql"
+
+          "$PG_BIN/pg_dump" \
+            --dbname="$POSTGRES_URL" \
+            --format=plain \
+            --no-owner \
+            --no-privileges \
+            --clean \
+            --if-exists \
+            --file="$BACKUP_FILE"
+
+          echo "BACKUP_FILE=$BACKUP_FILE" >> "$GITHUB_ENV"
+
+      - name: Reset backup database schema
+        run: |
+          "$PG_BIN/psql" "$BACKUP_POSTGRES_URL" -v ON_ERROR_STOP=1 <<'SQL'
+          DROP SCHEMA IF EXISTS public CASCADE;
+          CREATE SCHEMA public;
+          GRANT ALL ON SCHEMA public TO CURRENT_USER;
+          GRANT ALL ON SCHEMA public TO PUBLIC;
+          SQL
+
+      - name: Restore backup into destination database
+        run: |
+          "$PG_BIN/psql" "$BACKUP_POSTGRES_URL" -v ON_ERROR_STOP=1 -f "$BACKUP_FILE"
+
+      - name: Upload SQL backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: postgres-backup
+          path: backups/*.sql
+          retention-days: 7
