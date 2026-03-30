@@ -54,7 +54,8 @@ jobs:
           SQL
 
       - name: Restore backup into destination database
-        run: "$PG_BIN/psql" "$BACKUP_POSTGRES_URL" -v ON_ERROR_STOP=1 -f "$BACKUP_FILE"
+        run: |
+          "$PG_BIN/psql" "$BACKUP_POSTGRES_URL" -v ON_ERROR_STOP=1 -f "$BACKUP_FILE"
 
       - name: Upload SQL backup artifact
         uses: actions/upload-artifact@v4
