@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Windows 2000 / MS Office 2000 Design System ── */
+@import url('https://fonts.googleapis.com/css2?family=Tahoma:wght@400;700&display=swap');
+
 @layer base {
   h1,
   h2,
@@ -14,73 +17,94 @@
   }
 
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Win2k color palette */
+    --background: 210 17% 86%;        /* #d4d0c8  classic silver */
+    --foreground: 0 0% 0%;            /* black text */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 210 17% 86%;              /* same silver for panels */
+    --card-foreground: 0 0% 0%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 210 17% 86%;
+    --popover-foreground: 0 0% 0%;
 
-    --primary: 225 93% 16%;
+    --primary: 213 62% 38%;           /* Win2k title bar blue #2356a5 */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 208 80% 45%;
+    --secondary: 180 42% 38%;         /* teal accent */
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 210 10% 78%;             /* slightly darker silver */
+    --muted-foreground: 0 0% 40%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 180 42% 38%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 240 6% 80%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 210 17% 86%;
+    --input: 0 0% 100%;
+    --ring: 213 62% 38%;
 
-    --radius: 0.2rem;
+    --radius: 0rem;   /* no rounding in Win2k */
 
-    --success: 196 52% 74%;
-    --warning: 34 89% 85%;
-    --error: 10 100% 86%;
+    --success: 120 40% 50%;
+    --warning: 34 89% 60%;
+    --error: 0 80% 55%;
+
+    /* Win2k bevel helpers (used via CSS directly) */
+    --win-highlight: #ffffff;
+    --win-light: #e0ddd6;
+    --win-shadow: #808080;
+    --win-dark: #404040;
+    --win-silver: #d4d0c8;
+    --win-title: #0a246a;
+    --win-title-end: #a6caf0;
+    --win-statusbar: #d4d0c8;
   }
 
+  /* Keep dark theme functional but also Win2k-flavored */
   [data-theme='dark'] {
-    --background: 0 0% 0%;
-    --foreground: 210 40% 98%;
+    --background: 210 10% 18%;
+    --foreground: 210 40% 90%;
 
-    --card: 0 0% 4%;
-    --card-foreground: 210 40% 98%;
+    --card: 210 10% 22%;
+    --card-foreground: 210 40% 90%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 210 10% 22%;
+    --popover-foreground: 210 40% 90%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 213 62% 55%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 180 42% 45%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 210 10% 28%;
+    --muted-foreground: 210 20% 60%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 180 42% 45%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 62.8% 40%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 0, 0%, 15%, 0.8;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 210 10% 30%;
+    --input: 210 10% 28%;
+    --ring: 213 62% 55%;
 
-    --success: 196 100% 14%;
-    --warning: 34 51% 25%;
-    --error: 10 39% 43%;
+    --success: 120 40% 35%;
+    --warning: 34 51% 35%;
+    --error: 0 50% 45%;
+
+    --win-highlight: #4a5060;
+    --win-light: #3a4050;
+    --win-shadow: #1a1e28;
+    --win-dark: #0a0e18;
+    --win-silver: #2a3040;
+    --win-title: #1a3a8a;
+    --win-title-end: #3a6ab0;
+    --win-statusbar: #2a3040;
   }
 }
 
@@ -90,6 +114,104 @@
   }
   body {
     @apply bg-background text-foreground min-h-[100vh] flex flex-col;
+    font-family: 'Tahoma', 'MS Sans Serif', 'Arial', sans-serif;
+    font-size: 11px;
+  }
+}
+
+/* ── Win2k Utility Classes ── */
+@layer utilities {
+  /* Raised 3-D bevel (like buttons, panels) */
+  .win-raised {
+    border-top: 2px solid var(--win-highlight);
+    border-left: 2px solid var(--win-highlight);
+    border-right: 2px solid var(--win-dark);
+    border-bottom: 2px solid var(--win-dark);
+  }
+
+  /* Sunken 3-D bevel (like insets, active) */
+  .win-sunken {
+    border-top: 2px solid var(--win-dark);
+    border-left: 2px solid var(--win-dark);
+    border-right: 2px solid var(--win-highlight);
+    border-bottom: 2px solid var(--win-highlight);
+  }
+
+  /* Outer + inner bevel combo */
+  .win-panel {
+    border-top: 1px solid var(--win-highlight);
+    border-left: 1px solid var(--win-highlight);
+    border-right: 1px solid var(--win-shadow);
+    border-bottom: 1px solid var(--win-shadow);
+    outline: 1px solid var(--win-light);
+    outline-offset: -1px;
+  }
+
+  /* Classic Win2k button */
+  .win-btn {
+    background-color: var(--win-silver);
+    border-top: 2px solid var(--win-highlight);
+    border-left: 2px solid var(--win-highlight);
+    border-right: 2px solid var(--win-dark);
+    border-bottom: 2px solid var(--win-dark);
+    padding: 3px 10px;
+    font-family: 'Tahoma', sans-serif;
+    font-size: 11px;
+    cursor: pointer;
+  }
+
+  .win-btn:active {
+    border-top: 2px solid var(--win-dark);
+    border-left: 2px solid var(--win-dark);
+    border-right: 2px solid var(--win-highlight);
+    border-bottom: 2px solid var(--win-highlight);
+  }
+
+  /* Title bar gradient */
+  .win-titlebar {
+    background: linear-gradient(to right, var(--win-title), var(--win-title-end));
+    padding: 3px 6px;
+    color: white;
+    font-weight: bold;
+    font-size: 11px;
+    font-family: 'Tahoma', sans-serif;
+    user-select: none;
+  }
+
+  /* Menubar strip */
+  .win-menubar {
+    background-color: var(--win-silver);
+    border-bottom: 1px solid var(--win-shadow);
+    font-size: 11px;
+    font-family: 'Tahoma', sans-serif;
+  }
+
+  /* Status bar */
+  .win-statusbar {
+    background-color: var(--win-statusbar);
+    border-top: 1px solid var(--win-shadow);
+    font-size: 10px;
+    font-family: 'Tahoma', sans-serif;
+    padding: 2px 6px;
+  }
+
+  /* Classic scrollbar look (Webkit) */
+  ::-webkit-scrollbar { width: 16px; }
+  ::-webkit-scrollbar-track { background: var(--win-silver); }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--win-silver);
+    border-top: 2px solid var(--win-highlight);
+    border-left: 2px solid var(--win-highlight);
+    border-right: 2px solid var(--win-dark);
+    border-bottom: 2px solid var(--win-dark);
+  }
+  ::-webkit-scrollbar-button {
+    background-color: var(--win-silver);
+    border-top: 2px solid var(--win-highlight);
+    border-left: 2px solid var(--win-highlight);
+    border-right: 2px solid var(--win-dark);
+    border-bottom: 2px solid var(--win-dark);
+    height: 16px;
   }
 }
 
