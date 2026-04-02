@@ -9,13 +9,6 @@ type Args = {
   params: Promise<{ locale: Config['locale'] }>
 }
 
-/*
-
-export default async function EventsPage({ params: paramsPromise }: Args) {
-  const { locale } = await paramsPromise
-
-*/
-
 export default async function DocumentsPage({ params: paramsPromise }: Args) {
   const { locale } = await paramsPromise
 
@@ -27,7 +20,6 @@ export default async function DocumentsPage({ params: paramsPromise }: Args) {
     limit: 100,
   })
 
-  const IEEEBlue = '#03164f'
   const t = await getTranslations({
     locale: locale ?? 'en',
     namespace: 'docs',
