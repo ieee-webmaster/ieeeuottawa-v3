@@ -20,6 +20,7 @@ export default async function CommitteePage({ params }: { params: Promise<{ year
   const committee = result.docs[0] as Committee
   if (!committee) notFound()
 
+  const coverImage = committee.coverImage as Media | undefined
   const executives: any[] = []
   const commissioners: any[] = []
   const coordinators: any[] = []
@@ -61,6 +62,20 @@ export default async function CommitteePage({ params }: { params: Promise<{ year
             {committee.Year} Committee
           </h1>
         </header>
+
+        {coverImage?.url && (
+          <div className="mt-8 overflow-hidden rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100 dark:bg-zinc-950 shadow-sm">
+            <div className="relative w-full aspect-[16/9]">
+              <Image
+                src={coverImage.url}
+                alt={`${committee.Year} Committee Banner`}
+                fill
+                className="object-cover transition-transform duration-500 hover:scale-[1.02]"
+                sizes="(max-width: 1024px) 100vw, 1200px"
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {hasNoData ? (
