@@ -22,6 +22,12 @@ export const Committees: CollectionConfig = {
       index: true, // perf boost
     },
     {
+      name: 'coverImage',
+      type: 'upload',
+      relationTo: 'media',
+      required: false,
+    },
+    {
       name: 'teams',
       type: 'array',
       label: 'Teams',

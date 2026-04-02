@@ -894,6 +894,7 @@ export interface Form {
 export interface Committee {
   id: number;
   Year: string;
+  coverImage?: (number | null) | Media;
   teams?:
     | {
         team: number | Team;
@@ -1636,6 +1637,7 @@ export interface TeamsSelect<T extends boolean = true> {
  */
 export interface CommitteeSelect<T extends boolean = true> {
   Year?: T;
+  coverImage?: T;
   teams?:
     | T
     | {
