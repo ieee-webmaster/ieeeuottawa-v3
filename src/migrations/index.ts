@@ -1,6 +1,7 @@
 import * as migration_20260105_201500_initial from './20260105_201500_initial';
 import * as migration_20260215_170902 from './20260215_170902';
 import * as migration_20260307_215259_i18n_schema_sync from './20260307_215259_i18n_schema_sync';
+import * as migration_20260402_154329 from './20260402_154329';
 
 export const migrations = [
   {
@@ -16,6 +17,11 @@ export const migrations = [
   {
     up: migration_20260307_215259_i18n_schema_sync.up,
     down: migration_20260307_215259_i18n_schema_sync.down,
-    name: '20260307_215259_i18n_schema_sync'
+    name: '20260307_215259_i18n_schema_sync',
+  },
+  {
+    up: migration_20260402_154329.up,
+    down: migration_20260402_154329.down,
+    name: '20260402_154329'
   },
 ];
