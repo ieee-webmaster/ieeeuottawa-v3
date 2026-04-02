@@ -19,5 +19,15 @@
     "title": "Posts",
     "author": "Author",
     "datePublished": "Date Published"
+  },
+  "docs": {
+    "title": "Yearly Documents",
+    "description": "Access annual reports, meeting minutes, and other important documents from IEEE UOttawa.",
+    "noDocuments": "No documents available for this year.",
+    "backToDocuments": "Go back to yearly documents",
+    "landingDescription": "Explore our archive of official documents, meeting minutes, and miscellaneous documents.",
+    "landingDescriptionCont": " Select an academic year to view its specific documentation.",
+    "noYears": "No archives have been published yet.",
+    "archiveLabel": "View Archives"
   }
 }
