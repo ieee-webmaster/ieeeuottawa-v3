@@ -1,24 +1,14 @@
 import { Doc } from '@/payload-types'
 
 const formatUrl = (url?: string) => {
-  if (!url) return '#'
+  if (!url) return
   if (url.startsWith('http://') || url.startsWith('https://')) return url
   return `https://${url}`
 }
 
 const formatDate = (dateString?: string | null) => {
   if (!dateString) return null
-
-  try {
-    const date = new Date(dateString)
-    const mm = String(date.getUTCMonth() + 1).padStart(2, '0')
-    const dd = String(date.getUTCDate()).padStart(2, '0')
-    const yyyy = date.getUTCFullYear()
-
-    return `${mm}-${dd}-${yyyy}`
-  } catch (error) {
-    return dateString
-  }
+  return new Date(dateString).toISOString().split('T')[0]
 }
 
 export function YearlyDocument(docs: Doc) {
