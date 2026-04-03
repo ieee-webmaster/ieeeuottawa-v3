@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import type { Committee } from '@/payload-types'
 
 type Props = {
@@ -6,6 +7,7 @@ type Props = {
 }
 
 export const CommitteeCard = ({ committee }: Props) => {
+  const t = useTranslations('committee')
   const yearLabel = committee.Year 
   const teamCount = committee.teams?.length || 0
 
@@ -21,7 +23,7 @@ export const CommitteeCard = ({ committee }: Props) => {
           </span>
           
           <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            {teamCount} {teamCount === 1 ? 'Team' : 'Teams'}
+            {t('teamCount', { count: teamCount })}
           </span>
         </div>
 

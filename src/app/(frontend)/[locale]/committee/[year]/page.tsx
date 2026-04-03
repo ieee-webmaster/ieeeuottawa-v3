@@ -4,11 +4,20 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowLeft, Mail, Linkedin, User } from 'lucide-react'
-import type { Committee, Team, Person, Media } from '@/payload-types'
+import { getTranslations } from 'next-intl/server'
+import type { Committee, Team, Person, Media, Config } from '@/payload-types'
 
-export default async function CommitteePage({ params }: { params: Promise<{ year: string }> }) {
-  const { year } = await params
+type Args = {
+  params: Promise<{ year: string; locale: Config['locale'] }>
+}
+
+export default async function CommitteePage({ params }: Args) {
+  const { year, locale } = await params
   const payload = await getPayload({ config: configPromise })
+  const t = await getTranslations({
+    locale: locale ?? 'en',
+    namespace: 'committee',
+  })
 
   const result = await payload.find({
     collection: 'committee',
@@ -45,9 +54,9 @@ export default async function CommitteePage({ params }: { params: Promise<{ year
   const hasNoData = executives.length === 0 && commissioners.length === 0 && coordinators.length === 0;
 
   const sections = [
-    { title: 'Executives', data: executives },
-    { title: 'Commissioners', data: commissioners },
-    { title: 'Coordinators', data: coordinators },
+    { title: t('executives'), data: executives },
+    { title: t('commissioners'), data: commissioners },
+    { title: t('coordinators'), data: coordinators },
   ]
 
   return (
@@ -58,12 +67,12 @@ export default async function CommitteePage({ params }: { params: Promise<{ year
           className="inline-flex items-center text-[10px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary mb-6 transition-colors group"
         >
           <ArrowLeft className="mr-2 h-3 w-3 transition-transform group-hover:-translate-x-1" />
-          Back to Committees
+          {t('backToCommittees')}
         </Link>
         
         <header className="mb-8 md:mb-12">
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter text-foreground">
-            {committee.Year} Committee
+            {committee.Year} {t('title')}
           </h1>
         </header>
 
@@ -90,9 +99,9 @@ export default async function CommitteePage({ params }: { params: Promise<{ year
           <div className="p-4 bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 mb-6">
             <User className="h-8 w-8 md:h-10 md:w-10 text-primary opacity-20" />
           </div>
-          <h3 className="text-xl md:text-2xl font-black tracking-tight text-foreground">Team Data Pending</h3>
+          <h3 className="text-xl md:text-2xl font-black tracking-tight text-foreground">{t('teamDataPending')}</h3>
           <p className="text-muted-foreground mt-2 max-w-sm mx-auto text-sm leading-relaxed">
-            The team for the <strong>{committee.Year}</strong> academic year hasn&apos;t been finalized in the system yet.
+            {t('teamNotFinalized', { year: committee.Year })}
           </p>
         </div>
       ) : (

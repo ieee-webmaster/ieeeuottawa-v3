@@ -30,5 +30,18 @@
     "landingDescriptionCont": " Sélectionnez une année académique pour voir sa documentation spécifique.",
     "noYears": "Aucune archive n'a encore été publiée.",
     "archiveLabel": "Voir les Archives"
+  },
+  "committee": {
+    "pageTitle": "Comités",
+    "landingDescription": "Derrière chaque association étudiante prospère se trouve une équipe de bénévoles dévoués qui partagent l'objectif commun d'améliorer la vie des étudiants du programme EECS sur le campus.",
+    "noRecords": "Aucun enregistrement de comité trouvé.",
+    "teamCount": "{count, plural, one {# Équipe} other {# Équipes}}",
+    "backToCommittees": "Retour aux comités",
+    "title": "Comité",
+    "teamDataPending": "Données d'équipe en attente",
+    "teamNotFinalized": "L'équipe de l'année scolaire {year} n'a pas encore été finalisée dans le système.",
+    "executives": "Cadres",
+    "commissioners": "Commissaires",
+    "coordinators": "Coordinateurs"
   }
 }

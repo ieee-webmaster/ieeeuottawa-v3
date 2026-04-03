@@ -29,5 +29,18 @@
     "landingDescriptionCont": " Select an academic year to view its specific documentation.",
     "noYears": "No archives have been published yet.",
     "archiveLabel": "View Archives"
+  },
+  "committee": {
+    "pageTitle": "Committees",
+    "landingDescription": "Behind every successful student association is a team of committed volunteers who share the common goal of enhancing EECS students' life on campus.",
+    "noRecords": "No committee records found.",
+    "teamCount": "{count, plural, one {# Team} other {# Teams}}",
+    "backToCommittees": "Back to Committees",
+    "title": "Committee",
+    "teamDataPending": "Team Data Pending",
+    "teamNotFinalized": "The team for the {year} academic year hasn't been finalized in the system yet.",
+    "executives": "Executives",
+    "commissioners": "Commissioners",
+    "coordinators": "Coordinators"
   }
 }
