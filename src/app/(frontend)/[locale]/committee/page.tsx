@@ -6,12 +6,10 @@ import { CommitteeCard } from './_components/CommitteeCard'
 export default async function CommitteeLanding() {
   const payload = await getPayload({ config: configPromise })
 
-  // Fetch all committees
   const { docs: committees } = await payload.find({
     collection: 'committee',
     depth: 1,
     limit: 100,
-    // Sort by Year descending (newest first)
     sort: '-Year',
   })
 

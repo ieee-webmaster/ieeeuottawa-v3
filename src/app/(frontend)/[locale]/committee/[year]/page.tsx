@@ -51,99 +51,107 @@ export default async function CommitteePage({ params }: { params: Promise<{ year
   ]
 
   return (
-    <main className="max-w-[1400px] m-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div className="mb-12">
-        <Link href="/committee" className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary mb-4 transition-colors group">
+    <main className="max-w-[1400px] m-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 transition-colors duration-300">
+      <div className="mb-12 md:mb-20">
+        <Link 
+          href="/committee" 
+          className="inline-flex items-center text-[10px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary mb-6 transition-colors group"
+        >
           <ArrowLeft className="mr-2 h-3 w-3 transition-transform group-hover:-translate-x-1" />
-          Back to Archives
+          Back to Committees
         </Link>
-        <header>
-          <h1 className="text-5xl font-black tracking-tighter text-foreground">
+        
+        <header className="mb-8 md:mb-12">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter text-foreground">
             {committee.Year} Committee
           </h1>
         </header>
 
         {coverImage?.url && (
-          <div className="mt-8 overflow-hidden rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100 dark:bg-zinc-950 shadow-sm">
-            <div className="relative w-full aspect-[16/9]">
-              <Image
-                src={coverImage.url}
-                alt={`${committee.Year} Committee Banner`}
-                fill
-                className="object-cover transition-transform duration-500 hover:scale-[1.02]"
-                sizes="(max-width: 1024px) 100vw, 1200px"
-              />
+          <div className="max-w-6xl mx-auto">
+            <div className="overflow-hidden rounded-2xl md:rounded-[2.5rem] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100 dark:bg-zinc-950 shadow-lg shadow-zinc-200/20 dark:shadow-none">
+              <div className="relative w-full aspect-[4/3] sm:aspect-video md:aspect-[21/9] lg:max-h-[550px]">
+                <Image
+                  src={coverImage.url}
+                  alt={`${committee.Year} Committee Banner`}
+                  fill
+                  priority
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 1152px"
+                />
+              </div>
             </div>
           </div>
         )}
       </div>
 
       {hasNoData ? (
-        <div className="flex flex-col items-center justify-center py-32 text-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-[2rem] bg-zinc-50/50 dark:bg-zinc-900/10">
+        <div className="flex flex-col items-center justify-center py-20 md:py-32 text-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-[2rem] bg-zinc-50/50 dark:bg-zinc-900/10 px-6">
           <div className="p-4 bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 mb-6">
-            <User className="h-10 w-10 text-primary opacity-20" />
+            <User className="h-8 w-8 md:h-10 md:w-10 text-primary opacity-20" />
           </div>
-          <h3 className="text-2xl font-black tracking-tight text-foreground">Team Data Pending</h3>
+          <h3 className="text-xl md:text-2xl font-black tracking-tight text-foreground">Team Data Pending</h3>
           <p className="text-muted-foreground mt-2 max-w-sm mx-auto text-sm leading-relaxed">
-            The team for the <strong>{committee.Year}</strong> academic year hasn't been finalized in the system yet. Check back soon!
+            The team for the <strong>{committee.Year}</strong> academic year hasn't been finalized in the system yet.
           </p>
         </div>
       ) : (
-        <div className="space-y-16">
+        <div className="space-y-16 md:space-y-24 max-w-6xl mx-auto">
           {sections.map((section) => (
             section.data.length > 0 && (
               <section key={section.title}>
-                <div className="flex items-center gap-4 mb-10">
+                <div className="flex items-center gap-4 mb-8 md:mb-14">
                   <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
-                  <h2 className="text-xl font-black uppercase tracking-[0.2em] text-foreground/50">
+                  <h2 className="text-lg md:text-xl font-black uppercase tracking-[0.2em] text-foreground/50 whitespace-nowrap">
                     {section.title}
                   </h2>
                   <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-y-10 gap-x-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-y-12 gap-x-4 md:gap-x-10">
                   {section.data.map((member) => {
                     const person = member.person as Person
                     const headshot = person.headshot as Media | undefined
 
                     return (
                       <div key={member.id} className="group flex flex-col items-center text-center">
-                        <div className="relative w-40 h-40 mb-4 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 transition-colors">
+                        <div className="relative w-32 h-32 md:w-40 md:h-40 mb-4 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 transition-all">
                           {headshot?.url ? (
                             <Image
                               src={headshot.url}
                               alt={person.fullName}
                               fill
-                              className="object-cover transition-transform duration-500 group-hover:scale-110"
+                              className="object-cover transition-transform duration-500"
+                              sizes="(max-width: 768px) 128px, 160px"
                             />
                           ) : (
                             <div className="flex h-full w-full items-center justify-center">
-                              <User className="h-12 w-12 text-zinc-300 dark:text-zinc-700" />
+                              <User className="h-10 w-10 md:h-12 md:w-12 text-zinc-300 dark:text-zinc-700" />
                             </div>
                           )}
                         </div>
 
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-[9px] font-black uppercase tracking-wider text-primary">
+                        <div className="flex flex-col gap-0.5 px-2">
+                          <span className="text-[8px] md:text-[9px] font-black uppercase tracking-wider text-primary">
                             {member.role}
                           </span>
-                          <h3 className="text-lg font-bold text-foreground leading-tight group-hover:text-primary transition-colors">
+                          <h3 className="text-base md:text-lg font-bold text-foreground leading-tight group-hover:text-primary transition-colors line-clamp-2">
                             {person.fullName}
                           </h3>
-                          <p className="text-[11px] text-muted-foreground font-medium italic opacity-80">
+                          <p className="text-[10px] md:text-[11px] text-muted-foreground font-medium opacity-80 line-clamp-1">
                             {member.teamName}
                           </p>
                         </div>
 
-                        <div className="flex gap-2 mt-3">
+                        <div className="flex gap-1 mt-3">
                           {person['Contact Email'] && (
-                            <a href={`mailto:${person['Contact Email']}`} className="p-1.5 rounded-md text-zinc-400 hover:text-primary hover:bg-primary/5 transition-all">
-                              <Mail className="h-4 w-4" />
+                            <a href={`mailto:${person['Contact Email']}`} className="p-2 rounded-full text-zinc-400 hover:text-primary hover:bg-primary/5 transition-all">
+                              <Mail className="h-3.5 w-3.5 md:h-4 md:w-4" />
                             </a>
                           )}
                           {person['Linkedin Profile'] && (
-                            <a href={person['Linkedin Profile']} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-md text-zinc-400 hover:text-primary hover:bg-primary/5 transition-all">
-                              <Linkedin className="h-4 w-4" />
+                            <a href={person['Linkedin Profile']} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full text-zinc-400 hover:text-primary hover:bg-primary/5 transition-all">
+                              <Linkedin className="h-3.5 w-3.5 md:h-4 md:w-4" />
                             </a>
                           )}
                         </div>
