@@ -19,5 +19,16 @@
     "title": "Articles",
     "author": "Auteur",
     "datePublished": "Date de publication"
+  },
+
+  "docs": {
+    "title": "Documents Annuels",
+    "description": "Accédez aux rapports annuels, aux procès-verbaux de réunions et à d'autres documents importants d'IEEE UOttawa.",
+    "noDocuments": "Aucun document disponible pour cette année.",
+    "backToDocuments": "Retour aux documents annuels",
+    "landingDescription": "Explorez notre archive de documents officiels, les procès-verbaux de réunions et les documents divers.",
+    "landingDescriptionCont": " Sélectionnez une année académique pour voir sa documentation spécifique.",
+    "noYears": "Aucune archive n'a encore été publiée.",
+    "archiveLabel": "Voir les Archives"
   }
 }
