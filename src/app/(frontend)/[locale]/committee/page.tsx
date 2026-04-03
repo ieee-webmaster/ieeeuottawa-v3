@@ -1,6 +1,5 @@
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
-import type { Committee } from '@/payload-types'
 import { CommitteeCard } from './_components/CommitteeCard'
 
 export default async function CommitteeLanding() {
@@ -19,7 +18,7 @@ export default async function CommitteeLanding() {
         <h1 className="text-5xl font-extrabold tracking-tight text-center">Committees</h1>
         <p className="mt-4 text-center text-xl text-muted-foreground max-w-[800px]">
           Behind every successful student association is a team of committed
-          volunteers who share the common goal of enhancing EECS students' life on campus.
+          volunteers who share the common goal of enhancing EECS students&apos; life on campus.
         </p>
       </header>
 

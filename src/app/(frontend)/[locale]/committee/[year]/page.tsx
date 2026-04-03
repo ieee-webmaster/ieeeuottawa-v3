@@ -92,7 +92,7 @@ export default async function CommitteePage({ params }: { params: Promise<{ year
           </div>
           <h3 className="text-xl md:text-2xl font-black tracking-tight text-foreground">Team Data Pending</h3>
           <p className="text-muted-foreground mt-2 max-w-sm mx-auto text-sm leading-relaxed">
-            The team for the <strong>{committee.Year}</strong> academic year hasn't been finalized in the system yet.
+            The team for the <strong>{committee.Year}</strong> academic year hasn&apos;t been finalized in the system yet.
           </p>
         </div>
       ) : (
