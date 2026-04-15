@@ -23,7 +23,7 @@ export async function Footer() {
       <div className="container py-8 flex flex-col gap-6">
         <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 w-full">
           <Link className="flex items-center" href="/">
-            <Logo />
+            <Logo invert />
           </Link>
 
           <div className="flex flex-col gap-4 md:items-end">
