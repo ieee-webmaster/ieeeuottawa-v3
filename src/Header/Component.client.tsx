@@ -69,7 +69,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
           <Logo
             loading="eager"
             priority
-            className="invert dark:invert-0 w-[7.5rem] sm:w-[8rem] md:w-[9.375rem]"
+            className="w-[7.5rem] sm:w-[8rem] md:w-[9.375rem]"
           />
         </Link>
 
