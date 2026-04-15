@@ -19,7 +19,7 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
-
+.playwright-mcp/
 
 # TypeScript stuff
 tsconfig.tsbuildinfo
