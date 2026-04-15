@@ -25,6 +25,24 @@ export const Header: GlobalConfig = {
         },
       },
     },
+    {
+      name: 'socialLinks',
+      type: 'relationship',
+      relationTo: 'socialLinks',
+      hasMany: true,
+      admin: {
+        description: 'Choose which social links to show in the header.',
+      },
+    },
+    {
+      name: 'showSocialLinkLabels',
+      type: 'checkbox',
+      label: 'Show social labels in header',
+      defaultValue: false,
+      admin: {
+        description: 'Show each social platform name next to its icon on desktop.',
+      },
+    },
   ],
   hooks: {
     afterChange: [revalidateHeader],

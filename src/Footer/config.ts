@@ -25,6 +25,32 @@ export const Footer: GlobalConfig = {
         },
       },
     },
+    {
+      name: 'socialLinks',
+      type: 'relationship',
+      relationTo: 'socialLinks',
+      hasMany: true,
+      admin: {
+        description: 'Choose which social links to show in the footer.',
+      },
+    },
+    {
+      name: 'contactPhone',
+      type: 'text',
+      localized: true,
+      admin: {
+        description: 'Phone number shown in the footer.',
+      },
+    },
+    {
+      name: 'contactLocation',
+      type: 'text',
+      label: 'Address / Location',
+      localized: true,
+      admin: {
+        description: 'Address or location text shown in the footer.',
+      },
+    },
   ],
   hooks: {
     afterChange: [revalidateFooter],
