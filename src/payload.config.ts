@@ -10,6 +10,7 @@ import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
 import { Events } from './collections/Events'
+import { SocialLinks } from './collections/SocialLinks'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
 import { People } from './collections/People'
@@ -68,7 +69,19 @@ export default buildConfig({
       connectionString: process.env.POSTGRES_URL || '',
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Users, Events, People, Teams, Committees, Docs],
+  collections: [
+    Pages,
+    Posts,
+    Media,
+    Categories,
+    Users,
+    Events,
+    People,
+    Teams,
+    Committees,
+    Docs,
+    SocialLinks,
+  ],
   cors: [getServerSideURL()].filter(Boolean),
   localization: {
     locales: [
