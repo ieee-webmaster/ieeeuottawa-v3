@@ -1017,6 +1017,7 @@ export const seed = async ({
     slug: 'header',
     locale: 'fr',
     data: {
+      socialLinks: defaultSocialLinkIDs,
       navItems: [
         {
           id: headerResult.navItems?.[0]?.id,
@@ -1045,6 +1046,7 @@ export const seed = async ({
     slug: 'footer',
     locale: 'fr',
     data: {
+      socialLinks: defaultSocialLinkIDs,
       contactPhone: '613-562-5800 poste 6196',
       contactLocation: '800, avenue King Edward, bureau 4026',
       navItems: [
