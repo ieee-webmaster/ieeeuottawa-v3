@@ -3,13 +3,18 @@
 import { useLocale } from 'next-intl'
 import { usePathname, useRouter } from '@/i18n/navigation'
 import { routing, type Locale } from '@/i18n/routing'
+import { cn } from '@/utilities/ui'
+
+type Props = {
+  className?: string
+}
 
 const localeLabels: Record<Locale, string> = {
   en: 'EN',
   fr: 'FR',
 }
 
-export const LocaleSwitcher: React.FC = () => {
+export const LocaleSwitcher: React.FC<Props> = ({ className }) => {
   const currentLocale = useLocale() as Locale
   const router = useRouter()
   const pathname = usePathname()
@@ -24,7 +29,10 @@ export const LocaleSwitcher: React.FC = () => {
     <button
       type="button"
       onClick={handleSwitch}
-      className="text-sm font-medium text-primary hover:opacity-75 transition-opacity cursor-pointer"
+      className={cn(
+        'cursor-pointer text-sm font-medium text-primary transition-opacity hover:opacity-75',
+        className,
+      )}
       aria-label={`Switch to ${otherLocale === 'fr' ? 'Français' : 'English'}`}
     >
       {localeLabels[otherLocale]}

@@ -10,7 +10,7 @@ interface Props {
 
 export const Logo = ({ className, priority = false, loading }: Props) => {
   return (
-    <div className={clsx('w-[9.375rem] h-auto relative', className)}>
+    <div className={clsx('relative w-[9.375rem] shrink-0', className)}>
       <Image
         src="/ieeelogo_light.svg"
         alt="IEEE Logo"
@@ -18,7 +18,7 @@ export const Logo = ({ className, priority = false, loading }: Props) => {
         height={34 * 1.5}
         priority={priority}
         loading={loading}
-        className="block dark:hidden"
+        className="block h-auto w-full dark:hidden"
       />
 
       <Image
@@ -28,7 +28,7 @@ export const Logo = ({ className, priority = false, loading }: Props) => {
         height={34 * 1.5}
         priority={priority}
         loading={loading}
-        className="hidden dark:block"
+        className="hidden h-auto w-full dark:block"
       />
     </div>
   )
