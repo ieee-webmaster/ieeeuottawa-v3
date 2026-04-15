@@ -1,4 +1,13 @@
 {
+  "nav": {
+    "home": "IEEE UOttawa — accueil",
+    "primary": "Principal",
+    "search": "Rechercher",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "followUs": "Suivez-nous",
+    "language": "Langue"
+  },
   "events": {
     "title": "Événements",
     "description": "Parcourez les événements à venir et passés organisés par IEEE UOttawa.",

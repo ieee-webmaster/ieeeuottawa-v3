@@ -10,6 +10,7 @@ type CMSLinkType = {
   className?: string
   label?: string | null
   newTab?: boolean | null
+  onClick?: () => void
   reference?: {
     relationTo: string
     value: object | string | number | null
@@ -27,6 +28,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     className,
     label,
     newTab,
+    onClick,
     reference,
     size: sizeFromProps,
     url,
@@ -44,7 +46,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
 
   if (appearance === 'inline') {
     return (
-      <Link className={cn(className)} href={href} {...newTabProps}>
+      <Link className={cn(className)} href={href} onClick={onClick} {...newTabProps}>
         {label}
         {children}
       </Link>
@@ -53,7 +55,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
 
   return (
     <Button asChild className={className} size={size} variant={appearance}>
-      <Link className={cn(className)} href={href} {...newTabProps}>
+      <Link className={cn(className)} href={href} onClick={onClick} {...newTabProps}>
         {label}
         {children}
       </Link>
