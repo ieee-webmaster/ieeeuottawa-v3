@@ -77,6 +77,7 @@ export interface Config {
     teams: Team;
     committee: Committee;
     docs: Doc;
+    socialLinks: SocialLink;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -104,6 +105,7 @@ export interface Config {
     teams: TeamsSelect<false> | TeamsSelect<true>;
     committee: CommitteeSelect<false> | CommitteeSelect<true>;
     docs: DocsSelect<false> | DocsSelect<true>;
+    socialLinks: SocialLinksSelect<false> | SocialLinksSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -980,6 +982,30 @@ export interface Doc {
   createdAt: string;
 }
 /**
+ * Reusable social links for the header and footer.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "socialLinks".
+ */
+export interface SocialLink {
+  id: number;
+  /**
+   * Platform name shown in accessible labels, and optionally in the header.
+   */
+  label: string;
+  url: string;
+  /**
+   * Dark icon for light backgrounds (SVG recommended).
+   */
+  lightIcon: number | Media;
+  /**
+   * Light icon for dark backgrounds (SVG recommended).
+   */
+  darkIcon: number | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
@@ -1208,6 +1234,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'docs';
         value: number | Doc;
+      } | null)
+    | ({
+        relationTo: 'socialLinks';
+        value: number | SocialLink;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1690,6 +1720,18 @@ export interface DocsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "socialLinks_select".
+ */
+export interface SocialLinksSelect<T extends boolean = true> {
+  label?: T;
+  url?: T;
+  lightIcon?: T;
+  darkIcon?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects_select".
  */
 export interface RedirectsSelect<T extends boolean = true> {
@@ -1993,6 +2035,14 @@ export interface Header {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Choose which social links to show in the header.
+   */
+  socialLinks?: (number | SocialLink)[] | null;
+  /**
+   * Show each social platform name next to its icon on desktop.
+   */
+  showSocialLinkLabels?: boolean | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -2026,6 +2076,18 @@ export interface Footer {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Choose which social links to show in the footer.
+   */
+  socialLinks?: (number | SocialLink)[] | null;
+  /**
+   * Phone number shown in the footer.
+   */
+  contactPhone?: string | null;
+  /**
+   * Address or location text shown in the footer.
+   */
+  contactLocation?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -2048,6 +2110,8 @@ export interface HeaderSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  socialLinks?: T;
+  showSocialLinkLabels?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -2071,6 +2135,9 @@ export interface FooterSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  socialLinks?: T;
+  contactPhone?: T;
+  contactLocation?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
