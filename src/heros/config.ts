@@ -68,6 +68,9 @@ export const hero: Field = {
       type: 'upload',
       relationTo: 'media',
       label: 'Logo (Affinity Group Only)',
+      admin: {
+        condition: (_, { type } = {}) => type === 'affinityGroup',
+      },
     },
     {
       name: 'media',
