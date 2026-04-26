@@ -1,6 +1,5 @@
 'use client'
-import { useHeaderTheme } from '@/providers/HeaderTheme'
-import React, { useEffect } from 'react'
+import React from 'react'
 
 import type { Page } from '@/payload-types'
 
@@ -9,12 +8,6 @@ import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 
 export const AffinityGroupHero: React.FC<Page['hero']> = ({ links, media, richText, logo }) => {
-  const { setHeaderTheme } = useHeaderTheme()
-
-  useEffect(() => {
-    setHeaderTheme('light')
-  }, [setHeaderTheme])
-
   return (
     <section className="relative flex min-h-[68vh] items-center bg-slate-50 py-12 text-foreground dark:bg-slate-950 md:min-h-[60vh] md:py-16">
       <div className="container relative z-10 grid items-center gap-8 md:grid-cols-2 md:gap-12">
