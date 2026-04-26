@@ -9,8 +9,8 @@ import RichText from '@/components/RichText'
 
 export const AffinityGroupHero: React.FC<Page['hero']> = ({ links, media, richText, logo }) => {
   return (
-    <section className="relative flex min-h-[68vh] items-center bg-slate-50 py-12 text-foreground dark:bg-slate-950 md:min-h-[60vh] md:py-16">
-      <div className="container relative z-10 grid items-center gap-8 md:grid-cols-2 md:gap-12">
+    <section className="relative -mt-16 bg-slate-50 py-8 text-foreground dark:bg-slate-950 md:py-10">
+      <div className="container relative z-10 grid items-start gap-8 md:grid-cols-2 md:gap-12">
         <div className="flex flex-col items-start gap-4 md:gap-6">
           {logo && typeof logo === 'object' && (
             <div className="mb-2">
@@ -44,8 +44,8 @@ export const AffinityGroupHero: React.FC<Page['hero']> = ({ links, media, richTe
             <Media
               priority
               resource={media}
-              className="w-full max-w-3xl overflow-hidden rounded-2xl border border-border bg-background"
-              imgClassName="w-full object-contain"
+              className="w-full max-w-2xl overflow-hidden rounded-2xl border border-border bg-background"
+              imgClassName="w-full max-h-[28rem] object-contain"
             />
           </div>
         )}
