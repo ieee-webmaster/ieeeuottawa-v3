@@ -2,11 +2,19 @@ import type { CollectionConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
+import { Accordion } from '@/blocks/Accordion/config'
 import { Archive } from '@/blocks/ArchiveBlock/config'
+import { Banner } from '@/blocks/Banner/config'
+import { CardGrid } from '@/blocks/CardGrid/config'
+import { CTABand } from '@/blocks/CTABand/config'
 import { CallToAction } from '@/blocks/CallToAction/config'
 import { Content } from '@/blocks/Content/config'
 import { FormBlock } from '@/blocks/Form/config'
+import { Gallery } from '@/blocks/Gallery/config'
 import { MediaBlock } from '@/blocks/MediaBlock/config'
+import { LogoGrid } from '@/blocks/LogoGrid/config'
+import { QuickLinks } from '@/blocks/QuickLinks/config'
+import { SplitSection } from '@/blocks/SplitSection/config'
 import { hero } from '@/heros/config'
 import { slugField } from 'payload'
 import { populatePublishedAt } from '@/hooks/populatePublishedAt'
@@ -73,7 +81,21 @@ export const Pages: CollectionConfig<'pages'> = {
             {
               name: 'layout',
               type: 'blocks',
-              blocks: [CallToAction, Content, MediaBlock, Archive, FormBlock],
+              blocks: [
+                CallToAction,
+                Content,
+                MediaBlock,
+                Archive,
+                Accordion,
+                FormBlock,
+                Banner,
+                SplitSection,
+                CardGrid,
+                QuickLinks,
+                LogoGrid,
+                CTABand,
+                Gallery,
+              ],
               required: true,
               localized: true,
               admin: {
