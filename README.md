@@ -164,9 +164,9 @@ This command will check for any migrations that have not yet been run and try to
 
 > _WARNING: Migrations are a pain in the ass to work with. Please be careful as they can easily corrupt the production database if done incorrectly. Only run migrations if you know what you're doing. ⚠️_
 
-### Localization
+### Internationalization / Localization
 
-We use i18n for localization, and all content on the website must be available in both English and French. Any content added to the CMS must be translated into both languages and added in the appropriate language view using the language switcher on the top right of the admin panel. For static content, such as section titles and subtitles, there is a dedicated file for both [french](/messages/fr.json) and [english](/messages/en.json) text.
+We use [`next-intl`](https://next-intl.dev/) to implement localization (`l10n`) and internationalization (`i18n`). All website content must be available in both English and French. Any content added to the CMS must be translated into both languages (unless intentionally non-localized, such as brand names) and entered in the appropriate language view using the language switcher in the top-right corner of the admin panel. For static content (for example, section titles and subtitles), use the dedicated language files: [French](/messages/fr.json) and [English](/messages/en.json).
 
 ## Questions ❓
 
