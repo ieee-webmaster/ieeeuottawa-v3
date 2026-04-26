@@ -12,7 +12,7 @@ This is the official website of the IEEE uOttawa Student Branch. It serves as a 
 - In production, Payload uses Neon (a Postgres-based cloud database) to store all of the content for the website, and Vercel Blob Storage to store all of the media assets. Both of these services are integrated into Vercel and were automatically set up when the project was deployed. **Please ensure a proper backup exists before making any destructive changes to the production database or blob storage, as data loss can occur.**
 - For local development, every developer can run their own instance of the database using Docker. This creates a distinct environment where changes won't affect what is currently deployed. Setup instructions are explained in [Getting Started](#getting-started).
 
-### Useful links 🔗
+## Useful links 🔗
 
 Github:
 
@@ -40,13 +40,13 @@ Contact:
 
 ## Development 🛠️
 
-#### Prequisites
+### Prequisites
 
 1. [Node.js](https://nodejs.org/en/download) (v18 or higher)
 2. [Docker](https://www.docker.com/get-started) to run a local instance of the Postgres database
 3. [Pnpm](https://pnpm.io/installation) - like npm but better. `npm install -g pnpm`
 
-#### Getting started
+### Getting started
 
 1. First clone the repo if you have not done so already.
 
@@ -54,12 +54,11 @@ Contact:
 git clone https://github.com/ieee-webmaster/ieeeuottawa-v3.git
 ```
 
-   <br>
-2. Set up your environment. `cp .env.example .env` to copy the example environment variables. You'll need to edit:
-   `POSTGRES_URL`: Set `<your-local-db-name>` to the db name in [docker-compose.yml](./docker-compose.yml)
-   `PAYLOAD_SECRET`: Set `<your-payload-secret>` to a long random string
-   `PREVIEW_SECRET`: Set `<your-preview-secret>` to a long random string
-   <br>
+&nbsp;<br> 2. Set up your environment. `cp .env.example .env` to copy the example environment variables. You'll need to edit:
+`POSTGRES_URL`: Set `<your-local-db-name>` to the db name in [docker-compose.yml](./docker-compose.yml)
+`PAYLOAD_SECRET`: Set `<your-payload-secret>` to a long random string
+`PREVIEW_SECRET`: Set `<your-preview-secret>` to a long random string
+<br>
 
 3. Start a local instance of the Postgres database using Docker.
 
@@ -81,11 +80,11 @@ That's it! Changes made in `./src` will be reflected in your app. Create an admi
 
 > NOTICE: seeding the database is destructive because it drops your current database to populate a fresh one from the seed template. Only run this command if you are starting a new project or can afford to lose your current data. ⚠️
 
-### Contribution guidelines
+## Contribution guidelines
 
 We welcome contributions from anyone! If you would like to contribute, please follow these guidelines:
 
-#### Conventional commits
+### Conventional commits
 
 To keep our commit history clean and organized, we follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification. This means that all commit messages should be formatted as `<type>: <description>`
 
@@ -104,7 +103,7 @@ Example:
 feat: add new events page with calendar integration
 ```
 
-#### External contributions
+### External contributions
 
 If you are not part of the team but would like to contribute, please follow these guidelines:
 
@@ -114,7 +113,7 @@ If you are not part of the team but would like to contribute, please follow thes
 
 A member of the IEEE uOttawa team will review your pull request and provide feedback or merge it if it meets the project's standards!
 
-#### Credit
+### Credit
 
 We credit all contributors to the project in the [humans file](./docs/humans.md). If you would like to be credited for your contributions, please make sure to add your name and GitHub profile to the humans file.
 
@@ -144,7 +143,7 @@ Postgres and other SQL-based databases follow a strict schema for managing your 
 
 Note that often times when making big schema changes you can run the risk of losing data if you're not manually migrating it.
 
-#### Migrations
+### Migrations
 
 [Migrations](https://payloadcms.com/docs/database/migrations) are essentially SQL code versions that keeps track of your schema. When deploy with Postgres you will need to make sure you create and then run your migrations.
 
