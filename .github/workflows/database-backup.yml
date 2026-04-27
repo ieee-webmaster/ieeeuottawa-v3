@@ -12,6 +12,7 @@ jobs:
     env:
       POSTGRES_URL: ${{ secrets.POSTGRES_URL_NO_POOLING }}
       BACKUP_POSTGRES_URL: ${{ secrets.BACKUP_POSTGRES_URL_NO_POOLING }}
+      BACKUP_ENCRYPTION_PUBLIC_KEY: ${{ secrets.BACKUP_ENCRYPTION_PUBLIC_KEY }}
       PG_BIN: /usr/lib/postgresql/17/bin
 
     steps:
@@ -19,14 +20,15 @@ jobs:
         run: |
           test -n "$POSTGRES_URL"
           test -n "$BACKUP_POSTGRES_URL"
+          test -n "$BACKUP_ENCRYPTION_PUBLIC_KEY"
 
-      - name: Install PostgreSQL 17 client
+      - name: Install PostgreSQL 17 client and age
         run: |
           sudo install -d /usr/share/postgresql-common/pgdg
           sudo curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
           echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
           sudo apt-get update
-          sudo apt-get install -y postgresql-client-17
+          sudo apt-get install -y postgresql-client-17 age
 
       - name: Create SQL backup
         run: |
@@ -57,9 +59,27 @@ jobs:
         run: |
           "$PG_BIN/psql" "$BACKUP_POSTGRES_URL" -v ON_ERROR_STOP=1 -f "$BACKUP_FILE"
 
-      - name: Upload SQL backup artifact
+      - name: Compress and encrypt SQL backup
+        run: |
+          RECIPIENT_FILE="$(mktemp)"
+          trap 'rm -f "$RECIPIENT_FILE"' EXIT
+
+          printf '%s\n' "$BACKUP_ENCRYPTION_PUBLIC_KEY" > "$RECIPIENT_FILE"
+
+          gzip -9 "$BACKUP_FILE"
+          COMPRESSED_BACKUP_FILE="$BACKUP_FILE.gz"
+
+          age --encrypt \
+            --recipients-file "$RECIPIENT_FILE" \
+            --output "$COMPRESSED_BACKUP_FILE.age" \
+            "$COMPRESSED_BACKUP_FILE"
+
+          rm -f "$COMPRESSED_BACKUP_FILE"
+
+      - name: Upload encrypted SQL backup artifact
         uses: actions/upload-artifact@v4
         with:
-          name: postgres-backup
-          path: backups/*.sql
+          name: postgres-backup-encrypted
+          path: backups/*.sql.gz.age
+          if-no-files-found: error
           retention-days: 7
