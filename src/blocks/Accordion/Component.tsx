@@ -51,11 +51,11 @@ export const AccordionBlockComponent: React.FC<AccordionBlockProps> = ({
             <div className={cn('h-px w-full', themeRule[t])} />
             <ul role="list">
               {items.map((item, index) => (
-                <li key={index} className={cn('border-b', themeBorderClass(t))}>
+                <li key={item.id ?? index} className={cn('border-b', themeBorderClass(t))}>
                   <details className="group">
                     <summary
                       className={cn(
-                        'grid cursor-pointer list-none grid-cols-[auto_1fr_auto] items-baseline gap-x-5 gap-y-2 py-6 transition-colors',
+                        'grid cursor-pointer list-none grid-cols-[auto_1fr_auto] items-baseline gap-x-5 gap-y-2 py-6 transition-colors [&::-webkit-details-marker]:hidden',
                         t === 'dark' ? 'hover:bg-white/[0.03]' : 'hover:bg-foreground/[0.02]',
                       )}
                     >

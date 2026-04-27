@@ -58,6 +58,7 @@ export const SectionShell: React.FC<SectionShellProps> = ({
   return (
     <As
       data-block-theme={theme}
+      data-theme={theme === 'dark' ? 'dark' : undefined}
       className={cn('relative w-full', sectionShellClasses[theme], padding, className)}
     >
       {bare ? children : <div className={cn('container', innerClassName)}>{children}</div>}

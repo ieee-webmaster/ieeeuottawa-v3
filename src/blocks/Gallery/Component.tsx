@@ -49,21 +49,31 @@ export const GalleryBlockComponent: React.FC<GalleryBlockProps> = ({
           {items.map((item, index) => {
             const featureSpan =
               layout === 'featureMix' && index === 0 ? 'md:col-span-2 md:row-span-2' : undefined
+            const revealOnInteraction = Boolean(item.enableLink)
+            const mediaSize =
+              layout === 'grid'
+                ? '(max-width: 768px) 50vw, 33vw'
+                : featureSpan
+                  ? '(max-width: 768px) 50vw, 50vw'
+                  : '(max-width: 768px) 50vw, 25vw'
 
             return (
               <figure
-                key={index}
+                key={item.id ?? index}
                 className={cn('group relative overflow-hidden bg-foreground/5', featureSpan)}
               >
                 {typeof item.media === 'object' && item.media !== null ? (
                   <Media
+                    fill
                     className={cn(
-                      'overflow-hidden',
+                      'relative overflow-hidden',
                       layout === 'grid' && 'aspect-[4/3]',
                       layout === 'featureMix' && (featureSpan ? 'aspect-[5/4]' : 'aspect-square'),
                     )}
-                    imgClassName="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                    imgClassName="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                    pictureClassName="relative block h-full w-full"
                     resource={item.media}
+                    size={mediaSize}
                   />
                 ) : null}
 
@@ -75,7 +85,9 @@ export const GalleryBlockComponent: React.FC<GalleryBlockProps> = ({
                 {(item.caption || item.enableLink) && (
                   <figcaption
                     className={cn(
-                      'absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-black/85 via-black/65 to-transparent px-4 pb-4 pt-12 text-white transition-transform duration-500 ease-out group-hover:translate-y-0 group-focus-within:translate-y-0',
+                      'absolute inset-x-0 bottom-0 translate-y-0 bg-gradient-to-t from-black/85 via-black/65 to-transparent px-4 pb-4 pt-12 text-white transition-transform duration-500 ease-out',
+                      revealOnInteraction &&
+                        'md:translate-y-full md:group-hover:translate-y-0 md:group-focus-within:translate-y-0',
                     )}
                   >
                     {item.caption ? (
