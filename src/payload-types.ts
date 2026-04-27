@@ -1053,10 +1053,6 @@ export interface CardGridBlock {
           } | null);
       url?: string | null;
       label: string;
-      /**
-       * Choose how the link should be rendered.
-       */
-      appearance?: ('default' | 'outline') | null;
     };
     id?: string | null;
   }[];
@@ -1095,10 +1091,6 @@ export interface QuickLinksBlock {
           } | null);
       url?: string | null;
       label: string;
-      /**
-       * Choose how the link should be rendered.
-       */
-      appearance?: ('default' | 'outline') | null;
     };
     id?: string | null;
   }[];
@@ -1139,10 +1131,6 @@ export interface LogoGridBlock {
           } | null);
       url?: string | null;
       label: string;
-      /**
-       * Choose how the link should be rendered.
-       */
-      appearance?: ('default' | 'outline') | null;
     };
     id?: string | null;
   }[];
@@ -1224,10 +1212,6 @@ export interface GalleryBlock {
           } | null);
       url?: string | null;
       label: string;
-      /**
-       * Choose how the link should be rendered.
-       */
-      appearance?: ('default' | 'outline') | null;
     };
     id?: string | null;
   }[];
@@ -1876,7 +1860,6 @@ export interface CardGridBlockSelect<T extends boolean = true> {
               reference?: T;
               url?: T;
               label?: T;
-              appearance?: T;
             };
         id?: T;
       };
@@ -1906,7 +1889,6 @@ export interface QuickLinksBlockSelect<T extends boolean = true> {
               reference?: T;
               url?: T;
               label?: T;
-              appearance?: T;
             };
         id?: T;
       };
@@ -1938,7 +1920,6 @@ export interface LogoGridBlockSelect<T extends boolean = true> {
               reference?: T;
               url?: T;
               label?: T;
-              appearance?: T;
             };
         id?: T;
       };
@@ -1997,7 +1978,6 @@ export interface GalleryBlockSelect<T extends boolean = true> {
               reference?: T;
               url?: T;
               label?: T;
-              appearance?: T;
             };
         id?: T;
       };

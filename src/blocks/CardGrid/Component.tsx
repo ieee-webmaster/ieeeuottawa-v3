@@ -31,6 +31,12 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = ({
 }) => {
   const t = (theme ?? 'default') as BlockTheme
   const total = cards?.length ?? 0
+  const mediaSize =
+    columns === '2'
+      ? '(max-width: 768px) 100vw, 50vw'
+      : columns === '4'
+        ? '(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw'
+        : '(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw'
 
   return (
     <SectionShell theme={t}>
@@ -53,16 +59,19 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = ({
       {cards && cards.length > 0 ? (
         <div className={cn('grid gap-x-8 gap-y-14 pt-10 md:pt-14', gridColumnClasses[columns])}>
           {cards.map((card, index) => (
-            <article key={index} className="group flex h-full flex-col gap-5">
+            <article key={card.id ?? index} className="group flex h-full flex-col gap-5">
               {card.media && typeof card.media === 'object' ? (
                 <div className="relative overflow-hidden">
                   <Media
+                    fill
                     className={cn(
-                      'aspect-[4/3] overflow-hidden bg-foreground/5 transition-transform duration-700 ease-out group-hover:scale-[1.04]',
+                      'relative aspect-[4/3] overflow-hidden bg-foreground/5 transition-transform duration-700 ease-out group-hover:scale-[1.04]',
                       t === 'dark' && 'bg-white/5',
                     )}
-                    imgClassName="h-full w-full object-cover"
+                    imgClassName="object-cover"
+                    pictureClassName="relative block h-full w-full"
                     resource={card.media}
+                    size={mediaSize}
                   />
                   <span className="absolute left-3 top-3 rounded-sm bg-black/55 px-2 py-1 font-mono text-[0.7rem] tracking-[0.2em] text-white backdrop-blur-sm">
                     {String(index + 1).padStart(2, '0')}

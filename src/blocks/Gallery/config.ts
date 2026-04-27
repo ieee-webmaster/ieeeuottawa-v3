@@ -63,6 +63,7 @@ export const Gallery: Block = {
           type: 'checkbox',
         },
         link({
+          appearances: false,
           overrides: {
             admin: {
               condition: (_data, siblingData) => Boolean(siblingData?.enableLink),

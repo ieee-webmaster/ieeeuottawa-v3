@@ -69,9 +69,9 @@ export const CTABandBlock: React.FC<CTABandBlockProps> = ({
               centered ? 'justify-center' : 'md:col-span-5 md:justify-end lg:col-span-4',
             )}
           >
-            {links.map(({ link }, index) => (
+            {links.map(({ id, link }, index) => (
               <CMSLink
-                key={index}
+                key={id ?? index}
                 size="lg"
                 {...link}
                 className={cn(

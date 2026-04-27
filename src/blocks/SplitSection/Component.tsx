@@ -27,6 +27,7 @@ export const SplitSectionBlock: React.FC<SplitSectionBlockProps> = ({
 }) => {
   const t = (theme ?? 'default') as BlockTheme
   const mediaLeft = mediaPosition === 'left'
+  const caption = media && typeof media === 'object' ? media.caption : null
 
   return (
     <SectionShell theme={t}>
@@ -60,8 +61,8 @@ export const SplitSectionBlock: React.FC<SplitSectionBlockProps> = ({
 
           {links && links.length > 0 ? (
             <div className="flex flex-wrap gap-3">
-              {links.map(({ link }, index) => (
-                <CMSLink key={index} size="lg" {...link} />
+              {links.map(({ id, link }, index) => (
+                <CMSLink key={id ?? index} size="lg" {...link} />
               ))}
             </div>
           ) : null}
@@ -72,24 +73,22 @@ export const SplitSectionBlock: React.FC<SplitSectionBlockProps> = ({
           {media && typeof media === 'object' ? (
             <figure className="relative">
               <Media
+                fill
                 className={cn(
-                  'overflow-hidden bg-foreground/5',
+                  'relative overflow-hidden bg-foreground/5',
                   mediaAspectClasses[mediaAspect],
                   t === 'dark' && 'bg-white/5',
                 )}
-                imgClassName="h-full w-full object-cover"
+                imgClassName="object-cover"
+                pictureClassName="relative block h-full w-full"
                 resource={media}
+                size="(max-width: 1024px) 100vw, 58vw"
               />
-              {/* Caption strip with media metadata */}
-              <figcaption
-                className={cn(
-                  'mt-3 flex items-center justify-between gap-4 font-mono text-[0.7rem] uppercase tracking-[0.22em]',
-                  themeMutedText[t],
-                )}
-              >
-                <span aria-hidden="true" className={cn('h-px flex-1', themeRule[t])} />
-                <span>{mediaAspect}</span>
-              </figcaption>
+              {caption ? (
+                <figcaption className={cn('mt-4', themeMutedText[t])}>
+                  <RichText data={caption} enableGutter={false} />
+                </figcaption>
+              ) : null}
             </figure>
           ) : null}
         </div>

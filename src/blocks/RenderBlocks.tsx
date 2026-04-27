@@ -46,6 +46,7 @@ export const RenderBlocks: React.FC<{
       <Fragment>
         {blocks.map((block, index) => {
           const { blockType } = block
+          const key = block.id ?? index
 
           if (blockType && blockType in blockComponents) {
             const Block = blockComponents[blockType]
@@ -60,13 +61,13 @@ export const RenderBlocks: React.FC<{
 
               if (blocksNeedingOuterSpacing.has(blockType)) {
                 return (
-                  <div className="my-16" key={index}>
+                  <div className="my-16" key={key}>
                     {renderedBlock}
                   </div>
                 )
               }
 
-              return <Fragment key={index}>{renderedBlock}</Fragment>
+              return <Fragment key={key}>{renderedBlock}</Fragment>
             }
           }
           return null

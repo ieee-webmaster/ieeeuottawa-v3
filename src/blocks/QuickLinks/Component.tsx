@@ -49,14 +49,14 @@ export const QuickLinksBlock: React.FC<QuickLinksBlockProps> = ({
           <div className="grid gap-px bg-foreground/10 pt-px md:grid-cols-2 lg:grid-cols-3">
             {links.map((item, index) => (
               <article
-                key={index}
+                key={item.id ?? index}
                 className={cn(
-                  'group relative flex flex-col gap-6 p-7 transition-colors duration-300 md:p-8',
+                  'group relative flex flex-col gap-6 p-7 transition-colors duration-300 focus-within:ring-2 focus-within:ring-inset md:p-8',
                   // Use theme bg as tile bg so the gap-px reads as hairlines
-                  t === 'dark' && 'bg-[#03164f] hover:bg-[#04205f]',
-                  t === 'accent' && 'bg-background hover:bg-primary/5',
-                  t === 'muted' && 'bg-background hover:bg-foreground/[0.03]',
-                  t === 'default' && 'bg-background hover:bg-foreground/[0.03]',
+                  t === 'dark' && 'bg-[#03164f] hover:bg-[#04205f] focus-within:ring-white/80',
+                  t === 'accent' && 'bg-background hover:bg-primary/5 focus-within:ring-primary',
+                  t === 'muted' && 'bg-background hover:bg-foreground/[0.03] focus-within:ring-primary',
+                  t === 'default' && 'bg-background hover:bg-foreground/[0.03] focus-within:ring-primary',
                 )}
               >
                 <div className="flex items-start justify-between gap-4">
@@ -85,7 +85,7 @@ export const QuickLinksBlock: React.FC<QuickLinksBlockProps> = ({
                   {...item.link}
                   label={undefined}
                   appearance="inline"
-                  className="absolute inset-0 z-10"
+                  className="absolute inset-0 z-10 focus-visible:outline-none"
                 >
                   <span className="sr-only">{item.link?.label ?? item.title}</span>
                 </CMSLink>
@@ -98,12 +98,18 @@ export const QuickLinksBlock: React.FC<QuickLinksBlockProps> = ({
             className={cn('divide-y', t === 'dark' ? 'divide-white/10' : 'divide-foreground/10')}
           >
             {links.map((item, index) => (
-              <li key={index} className="group relative">
+              <li
+                key={item.id ?? index}
+                className={cn(
+                  'group relative transition-shadow focus-within:ring-2 focus-within:ring-inset',
+                  t === 'dark' ? 'focus-within:ring-white/80' : 'focus-within:ring-primary',
+                )}
+              >
                 <CMSLink
                   {...item.link}
                   label={undefined}
                   appearance="inline"
-                  className="absolute inset-0 z-10"
+                  className="absolute inset-0 z-10 focus-visible:outline-none"
                 >
                   <span className="sr-only">{item.link?.label ?? item.title}</span>
                 </CMSLink>

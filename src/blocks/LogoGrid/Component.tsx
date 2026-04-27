@@ -47,10 +47,12 @@ export const LogoGridBlock: React.FC<LogoGridBlockProps> = ({
           >
             {items.map((item, index) => (
               <div
-                key={index}
+                key={item.id ?? index}
                 className={cn(
-                  'group relative flex aspect-[4/3] flex-col items-center justify-center gap-3 p-6 transition-colors',
-                  t === 'dark' ? 'hover:bg-white/[0.04]' : 'hover:bg-foreground/[0.03]',
+                  'group relative flex aspect-[4/3] flex-col items-center justify-center gap-3 p-6 transition-colors focus-within:ring-2 focus-within:ring-inset',
+                  t === 'dark'
+                    ? 'hover:bg-white/[0.04] focus-within:ring-white/80'
+                    : 'hover:bg-foreground/[0.03] focus-within:ring-primary',
                 )}
               >
                 {item.logo && typeof item.logo === 'object' ? (
@@ -77,7 +79,7 @@ export const LogoGridBlock: React.FC<LogoGridBlockProps> = ({
                     {...item.link}
                     label={undefined}
                     appearance="inline"
-                    className="absolute inset-0 z-10"
+                    className="absolute inset-0 z-10 focus-visible:outline-none"
                   >
                     <span className="sr-only">{item.link?.label ?? item.name}</span>
                   </CMSLink>
@@ -88,7 +90,7 @@ export const LogoGridBlock: React.FC<LogoGridBlockProps> = ({
         ) : (
           <ul role="list" className="divide-y divide-foreground/10 dark:divide-white/10">
             {items.map((item, index) => (
-              <li key={index}>
+              <li key={item.id ?? index}>
                 <article
                   className={cn(
                     'group grid gap-6 py-8 md:grid-cols-12 md:items-center md:gap-10',

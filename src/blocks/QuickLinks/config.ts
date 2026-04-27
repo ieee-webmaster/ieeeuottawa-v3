@@ -13,7 +13,7 @@ const quickLinkFields: Field[] = [
     name: 'description',
     type: 'textarea',
   },
-  link(),
+  link({ appearances: false }),
 ]
 
 export const QuickLinks: Block = {
