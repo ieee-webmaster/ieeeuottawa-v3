@@ -1,5 +1,6 @@
 import type { Block } from 'payload'
 
+import { themeField } from '@/blocks/theme'
 import { linkGroup } from '@/fields/linkGroup'
 
 export const CTABand: Block = {
@@ -44,30 +45,7 @@ export const CTABand: Block = {
           ],
           required: true,
         },
-        {
-          name: 'theme',
-          type: 'select',
-          defaultValue: 'accent',
-          options: [
-            {
-              label: 'Default',
-              value: 'default',
-            },
-            {
-              label: 'Muted',
-              value: 'muted',
-            },
-            {
-              label: 'Accent',
-              value: 'accent',
-            },
-            {
-              label: 'Dark',
-              value: 'dark',
-            },
-          ],
-          required: true,
-        },
+        themeField('accent'),
       ],
     },
   ],

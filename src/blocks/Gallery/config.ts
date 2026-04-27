@@ -1,5 +1,6 @@
 import type { Block } from 'payload'
 
+import { themeField } from '@/blocks/theme'
 import { link } from '@/fields/link'
 
 export const Gallery: Block = {
@@ -38,30 +39,7 @@ export const Gallery: Block = {
           ],
           required: true,
         },
-        {
-          name: 'theme',
-          type: 'select',
-          defaultValue: 'default',
-          options: [
-            {
-              label: 'Default',
-              value: 'default',
-            },
-            {
-              label: 'Muted',
-              value: 'muted',
-            },
-            {
-              label: 'Accent',
-              value: 'accent',
-            },
-            {
-              label: 'Dark',
-              value: 'dark',
-            },
-          ],
-          required: true,
-        },
+        themeField(),
       ],
     },
     {

@@ -6,6 +6,7 @@ import {
   InlineToolbarFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
+import { themeField } from '@/blocks/theme'
 
 export const Accordion: Block = {
   slug: 'accordion',
@@ -24,30 +25,7 @@ export const Accordion: Block = {
       name: 'description',
       type: 'textarea',
     },
-    {
-      name: 'theme',
-      type: 'select',
-      defaultValue: 'default',
-      options: [
-        {
-          label: 'Default',
-          value: 'default',
-        },
-        {
-          label: 'Muted',
-          value: 'muted',
-        },
-        {
-          label: 'Accent',
-          value: 'accent',
-        },
-        {
-          label: 'Dark',
-          value: 'dark',
-        },
-      ],
-      required: true,
-    },
+    themeField(),
     {
       name: 'items',
       type: 'array',

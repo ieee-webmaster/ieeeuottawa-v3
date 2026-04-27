@@ -1,8 +1,9 @@
 import React from 'react'
 
 import { cn } from '@/utilities/ui'
+import type { BlockTheme } from '@/blocks/theme'
 
-export type BlockTheme = 'default' | 'muted' | 'accent' | 'dark'
+export type { BlockTheme } from '@/blocks/theme'
 
 export const sectionShellClasses: Record<BlockTheme, string> = {
   default: 'bg-transparent text-foreground',
@@ -59,11 +60,7 @@ export const SectionShell: React.FC<SectionShellProps> = ({
       data-block-theme={theme}
       className={cn('relative w-full', sectionShellClasses[theme], padding, className)}
     >
-      {bare ? (
-        children
-      ) : (
-        <div className={cn('container', innerClassName)}>{children}</div>
-      )}
+      {bare ? children : <div className={cn('container', innerClassName)}>{children}</div>}
     </As>
   )
 }
@@ -89,9 +86,7 @@ export const Eyebrow: React.FC<EyebrowProps> = ({
         className,
       )}
     >
-      {withRule ? (
-        <span aria-hidden="true" className={cn('h-px w-8', themeRule[theme])} />
-      ) : null}
+      {withRule ? <span aria-hidden="true" className={cn('h-px w-8', themeRule[theme])} /> : null}
       {children}
     </span>
   )
@@ -110,11 +105,7 @@ export const IndexNumber: React.FC<IndexNumberProps> = ({ value, total, theme, c
 
   return (
     <span
-      className={cn(
-        'font-mono text-[0.7rem] tracking-[0.18em]',
-        themeKickerText[theme],
-        className,
-      )}
+      className={cn('font-mono text-[0.7rem] tracking-[0.18em]', themeKickerText[theme], className)}
     >
       {formatted}
       {totalFormatted ? <span className={cn('opacity-50')}>{totalFormatted}</span> : null}
