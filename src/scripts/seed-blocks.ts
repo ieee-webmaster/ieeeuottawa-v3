@@ -51,6 +51,7 @@ async function ensureMedia(payload: Payload, req: PayloadRequest, file: File, al
     where: { filename: { equals: file.name } },
     limit: 1,
     depth: 0,
+    overrideAccess: true,
   })
 
   if (existing.docs[0]) {
@@ -59,6 +60,7 @@ async function ensureMedia(payload: Payload, req: PayloadRequest, file: File, al
         collection: 'media',
         id: existing.docs[0].id,
         data: { alt },
+        overrideAccess: true,
         req,
       })
     }
@@ -70,6 +72,7 @@ async function ensureMedia(payload: Payload, req: PayloadRequest, file: File, al
     collection: 'media',
     data: { alt },
     file,
+    overrideAccess: true,
     req,
   })
 }
@@ -111,6 +114,7 @@ async function seedBlocksDemo() {
   await payload.delete({
     collection: 'pages',
     where: { slug: { equals: 'blocks-demo' } },
+    overrideAccess: true,
     req,
   })
 
@@ -318,6 +322,7 @@ async function seedBlocksDemo() {
         },
       ],
     },
+    overrideAccess: true,
     req,
   })
 

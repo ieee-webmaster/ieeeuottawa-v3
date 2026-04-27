@@ -6,13 +6,7 @@ import type { GalleryBlock as GalleryBlockProps } from '@/payload-types'
 import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
-import {
-  Eyebrow,
-  SectionShell,
-  themeMutedText,
-  themeRule,
-  type BlockTheme,
-} from '@/blocks/_shared'
+import { Eyebrow, SectionShell, themeMutedText, themeRule, type BlockTheme } from '@/blocks/_shared'
 
 export const GalleryBlockComponent: React.FC<GalleryBlockProps> = ({
   description,
@@ -54,24 +48,24 @@ export const GalleryBlockComponent: React.FC<GalleryBlockProps> = ({
         >
           {items.map((item, index) => {
             const featureSpan =
-              layout === 'featureMix' && index === 0
-                ? 'md:col-span-2 md:row-span-2'
-                : undefined
+              layout === 'featureMix' && index === 0 ? 'md:col-span-2 md:row-span-2' : undefined
 
             return (
               <figure
                 key={index}
                 className={cn('group relative overflow-hidden bg-foreground/5', featureSpan)}
               >
-                <Media
-                  className={cn(
-                    'overflow-hidden',
-                    layout === 'grid' && 'aspect-[4/3]',
-                    layout === 'featureMix' && (featureSpan ? 'aspect-[5/4]' : 'aspect-square'),
-                  )}
-                  imgClassName="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
-                  resource={item.media}
-                />
+                {typeof item.media === 'object' && item.media !== null ? (
+                  <Media
+                    className={cn(
+                      'overflow-hidden',
+                      layout === 'grid' && 'aspect-[4/3]',
+                      layout === 'featureMix' && (featureSpan ? 'aspect-[5/4]' : 'aspect-square'),
+                    )}
+                    imgClassName="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                    resource={item.media}
+                  />
+                ) : null}
 
                 {/* Index stamp */}
                 <span className="absolute right-3 top-3 rounded-sm bg-black/55 px-2 py-1 font-mono text-[0.65rem] tracking-[0.22em] text-white backdrop-blur-sm">

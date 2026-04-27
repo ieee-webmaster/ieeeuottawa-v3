@@ -61,7 +61,6 @@ export const LogoGridBlock: React.FC<LogoGridBlockProps> = ({
                         ? 'invert opacity-60 group-hover:opacity-90'
                         : 'dark:invert dark:opacity-80 dark:group-hover:opacity-100',
                     )}
-                    loading="eager"
                     resource={item.logo}
                   />
                 ) : null}
@@ -108,7 +107,6 @@ export const LogoGridBlock: React.FC<LogoGridBlockProps> = ({
                           'h-16 w-16 object-contain',
                           t === 'dark' ? 'invert opacity-90' : 'dark:invert dark:opacity-90',
                         )}
-                        loading="eager"
                         resource={item.logo}
                       />
                     ) : null}
