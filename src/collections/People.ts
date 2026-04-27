@@ -6,7 +6,7 @@ export const People: CollectionConfig = {
   slug: 'people',
   folders: true,
   admin: {
-    useAsTitle: "fullName",
+    useAsTitle: 'fullName',
   },
   access: {
     create: authenticated,
@@ -25,10 +25,6 @@ export const People: CollectionConfig = {
       name: 'headshot',
       type: 'upload',
       relationTo: 'media',
-    },
-    {
-      name: 'Contact Email',
-      type: 'email',
     },
     {
       name: 'Linkedin Profile',

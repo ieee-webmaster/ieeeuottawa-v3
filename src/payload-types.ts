@@ -485,6 +485,7 @@ export interface Team {
     | {
         role: 'exec' | 'commish' | 'coord';
         positionTitle: string;
+        positionEmail?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -499,7 +500,6 @@ export interface Person {
   id: number;
   fullName: string;
   headshot?: (number | null) | Media;
-  'Contact Email'?: string | null;
   'Linkedin Profile'?: string | null;
   folder?: (number | null) | FolderInterface;
   updatedAt: string;
@@ -2186,7 +2186,6 @@ export interface EventsSelect<T extends boolean = true> {
 export interface PeopleSelect<T extends boolean = true> {
   fullName?: T;
   headshot?: T;
-  'Contact Email'?: T;
   'Linkedin Profile'?: T;
   folder?: T;
   updatedAt?: T;
@@ -2204,6 +2203,7 @@ export interface TeamsSelect<T extends boolean = true> {
     | {
         role?: T;
         positionTitle?: T;
+        positionEmail?: T;
         id?: T;
       };
   updatedAt?: T;
