@@ -32,6 +32,8 @@ const blockComponents = {
   splitSection: SplitSectionBlock,
 }
 
+const blocksNeedingOuterSpacing = new Set(['cta', 'formBlock', 'mediaBlock'])
+
 export const RenderBlocks: React.FC<{
   blocks: Page['layout'][0][]
 }> = (props) => {
@@ -49,12 +51,22 @@ export const RenderBlocks: React.FC<{
             const Block = blockComponents[blockType]
 
             if (Block) {
-              return (
-                <Fragment key={index}>
+              const renderedBlock = (
+                <>
                   {/* @ts-expect-error there may be some mismatch between the expected types here */}
                   <Block {...block} disableInnerContainer />
-                </Fragment>
+                </>
               )
+
+              if (blocksNeedingOuterSpacing.has(blockType)) {
+                return (
+                  <div className="my-16" key={index}>
+                    {renderedBlock}
+                  </div>
+                )
+              }
+
+              return <Fragment key={index}>{renderedBlock}</Fragment>
             }
           }
           return null
