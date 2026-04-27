@@ -1,24 +1,18 @@
 import React from 'react'
+import { ArrowUpRight } from 'lucide-react'
 
 import type { GalleryBlock as GalleryBlockProps } from '@/payload-types'
 
 import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
-
-const sectionThemeClasses: Record<NonNullable<GalleryBlockProps['theme']>, string> = {
-  default: 'border-transparent bg-transparent text-foreground',
-  muted: 'border-border bg-card text-card-foreground',
-  accent: 'border-primary/15 bg-primary/5 text-foreground',
-  dark: 'border-slate-800 bg-slate-950 text-white',
-}
-
-const itemThemeClasses: Record<NonNullable<GalleryBlockProps['theme']>, string> = {
-  default: 'border-border bg-card text-card-foreground',
-  muted: 'border-border bg-background text-foreground',
-  accent: 'border-primary/15 bg-background text-foreground',
-  dark: 'border-slate-800 bg-slate-900 text-white',
-}
+import {
+  Eyebrow,
+  SectionShell,
+  themeMutedText,
+  themeRule,
+  type BlockTheme,
+} from '@/blocks/_shared'
 
 export const GalleryBlockComponent: React.FC<GalleryBlockProps> = ({
   description,
@@ -28,93 +22,87 @@ export const GalleryBlockComponent: React.FC<GalleryBlockProps> = ({
   theme = 'default',
   title,
 }) => {
+  const t = (theme ?? 'default') as BlockTheme
+  const total = items?.length ?? 0
+
   return (
-    <div className="container">
-      <section
-        className={cn('space-y-8 rounded-[1.5rem] border p-6 md:p-8', sectionThemeClasses[theme])}
-      >
-        <div className="max-w-3xl space-y-4">
-          {eyebrow ? (
-            <p
-              className={cn(
-                'text-xs font-semibold uppercase tracking-[0.24em]',
-                theme !== 'dark' && 'text-muted-foreground',
-              )}
-            >
-              {eyebrow}
-            </p>
+    <SectionShell theme={t}>
+      <header className="mb-12 flex flex-col gap-6 md:mb-16 md:flex-row md:items-end md:justify-between md:gap-10">
+        <div className="max-w-2xl space-y-5">
+          {eyebrow ? <Eyebrow theme={t}>{eyebrow}</Eyebrow> : null}
+          <h2 className="text-balance text-3xl font-medium leading-[1.1] tracking-tight sm:text-4xl md:text-[2.75rem]">
+            {title}
+          </h2>
+          {description ? (
+            <p className={cn('text-base leading-relaxed', themeMutedText[t])}>{description}</p>
           ) : null}
-
-          <div className="space-y-3">
-            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h2>
-            {description ? (
-              <p
-                className={cn(
-                  'text-base leading-relaxed',
-                  theme !== 'dark' && 'text-muted-foreground',
-                )}
-              >
-                {description}
-              </p>
-            ) : null}
-          </div>
         </div>
+        <p className={cn('font-mono text-xs tracking-[0.2em]', themeMutedText[t])}>
+          {String(total).padStart(3, '0')} <span className="opacity-60">items</span>
+        </p>
+      </header>
 
-        {items && items.length > 0 ? (
-          <div
-            className={cn(
-              'grid gap-5',
-              layout === 'grid' ? 'md:grid-cols-2 xl:grid-cols-3' : 'md:grid-cols-2 xl:grid-cols-4',
-            )}
-          >
-            {items.map((item, index) => {
-              const featureMixSpan =
-                layout === 'featureMix' && index % 5 === 0
-                  ? 'xl:col-span-2 xl:row-span-2'
-                  : undefined
+      <div className={cn('h-px w-full', themeRule[t])} />
 
-              return (
-                <article
-                  key={index}
+      {items && items.length > 0 ? (
+        <div
+          className={cn(
+            'grid gap-3 pt-8 md:gap-4 md:pt-10',
+            layout === 'grid' && 'grid-cols-2 md:grid-cols-3',
+            layout === 'featureMix' && 'grid-cols-2 md:grid-cols-4 md:grid-rows-2',
+          )}
+        >
+          {items.map((item, index) => {
+            const featureSpan =
+              layout === 'featureMix' && index === 0
+                ? 'md:col-span-2 md:row-span-2'
+                : undefined
+
+            return (
+              <figure
+                key={index}
+                className={cn('group relative overflow-hidden bg-foreground/5', featureSpan)}
+              >
+                <Media
                   className={cn(
-                    'overflow-hidden rounded-[1.25rem] border',
-                    itemThemeClasses[theme],
-                    featureMixSpan,
+                    'overflow-hidden',
+                    layout === 'grid' && 'aspect-[4/3]',
+                    layout === 'featureMix' && (featureSpan ? 'aspect-[5/4]' : 'aspect-square'),
                   )}
-                >
-                  <Media
+                  imgClassName="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                  resource={item.media}
+                />
+
+                {/* Index stamp */}
+                <span className="absolute right-3 top-3 rounded-sm bg-black/55 px-2 py-1 font-mono text-[0.65rem] tracking-[0.22em] text-white backdrop-blur-sm">
+                  {String(index + 1).padStart(3, '0')}
+                </span>
+
+                {(item.caption || item.enableLink) && (
+                  <figcaption
                     className={cn(
-                      'overflow-hidden',
-                      layout === 'grid' ? 'aspect-[4/3]' : 'aspect-[4/3] xl:aspect-[5/4]',
-                      featureMixSpan && 'xl:aspect-[4/3]',
+                      'absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-black/85 via-black/65 to-transparent px-4 pb-4 pt-12 text-white transition-transform duration-500 ease-out group-hover:translate-y-0 group-focus-within:translate-y-0',
                     )}
-                    imgClassName="h-full w-full object-cover"
-                    resource={item.media}
-                  />
-
-                  {(item.caption || item.enableLink) && (
-                    <div className="space-y-3 p-4">
-                      {item.caption ? (
-                        <p
-                          className={cn(
-                            'text-sm leading-relaxed',
-                            theme !== 'dark' && 'text-muted-foreground',
-                            theme === 'dark' && 'text-white/75',
-                          )}
-                        >
-                          {item.caption}
-                        </p>
-                      ) : null}
-
-                      {item.enableLink ? <CMSLink {...item.link} /> : null}
-                    </div>
-                  )}
-                </article>
-              )
-            })}
-          </div>
-        ) : null}
-      </section>
-    </div>
+                  >
+                    {item.caption ? (
+                      <p className="text-sm leading-relaxed text-white/90">{item.caption}</p>
+                    ) : null}
+                    {item.enableLink ? (
+                      <CMSLink
+                        {...item.link}
+                        appearance="inline"
+                        className="mt-3 inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-white hover:text-[hsl(208,80%,80%)]"
+                      >
+                        <ArrowUpRight aria-hidden="true" className="h-4 w-4" />
+                      </CMSLink>
+                    ) : null}
+                  </figcaption>
+                )}
+              </figure>
+            )
+          })}
+        </div>
+      ) : null}
+    </SectionShell>
   )
 }

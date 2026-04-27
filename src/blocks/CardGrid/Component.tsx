@@ -1,29 +1,24 @@
 import React from 'react'
+import { ArrowUpRight } from 'lucide-react'
 
 import type { CardGridBlock as CardGridBlockProps } from '@/payload-types'
 
 import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
-
-const sectionThemeClasses: Record<NonNullable<CardGridBlockProps['theme']>, string> = {
-  default: 'border-transparent bg-transparent text-foreground',
-  muted: 'border-border bg-card text-card-foreground',
-  accent: 'border-primary/15 bg-primary/5 text-foreground',
-  dark: 'border-slate-800 bg-slate-950 text-white',
-}
-
-const cardThemeClasses: Record<NonNullable<CardGridBlockProps['theme']>, string> = {
-  default: 'border-border bg-card text-card-foreground',
-  muted: 'border-border bg-background text-foreground',
-  accent: 'border-primary/15 bg-background text-foreground',
-  dark: 'border-slate-800 bg-slate-900 text-white',
-}
+import {
+  Eyebrow,
+  SectionShell,
+  themeKickerText,
+  themeMutedText,
+  themeRule,
+  type BlockTheme,
+} from '@/blocks/_shared'
 
 const gridColumnClasses: Record<NonNullable<CardGridBlockProps['columns']>, string> = {
   '2': 'md:grid-cols-2',
-  '3': 'md:grid-cols-2 xl:grid-cols-3',
-  '4': 'md:grid-cols-2 xl:grid-cols-4',
+  '3': 'md:grid-cols-2 lg:grid-cols-3',
+  '4': 'md:grid-cols-2 lg:grid-cols-4',
 }
 
 export const CardGridBlock: React.FC<CardGridBlockProps> = ({
@@ -34,95 +29,94 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = ({
   theme = 'default',
   title,
 }) => {
+  const t = (theme ?? 'default') as BlockTheme
+  const total = cards?.length ?? 0
+
   return (
-    <div className="container">
-      <section
-        className={cn('space-y-8 rounded-[1.5rem] border p-6 md:p-8', sectionThemeClasses[theme])}
-      >
-        <div className="max-w-3xl space-y-4">
-          {eyebrow ? (
-            <p
-              className={cn(
-                'text-xs font-semibold uppercase tracking-[0.24em]',
-                theme !== 'dark' && 'text-muted-foreground',
-              )}
-            >
-              {eyebrow}
-            </p>
-          ) : null}
-
-          <div className="space-y-3">
-            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h2>
-            {description ? (
-              <p
-                className={cn(
-                  'text-base leading-relaxed',
-                  theme !== 'dark' && 'text-muted-foreground',
-                )}
-              >
-                {description}
-              </p>
-            ) : null}
-          </div>
+    <SectionShell theme={t}>
+      <header className="mb-12 grid gap-6 md:mb-16 md:grid-cols-12 md:items-end md:gap-10">
+        <div className="space-y-5 md:col-span-7">
+          {eyebrow ? <Eyebrow theme={t}>{eyebrow}</Eyebrow> : null}
+          <h2 className="text-balance text-3xl font-medium leading-[1.1] tracking-tight sm:text-4xl md:text-[2.75rem]">
+            {title}
+          </h2>
         </div>
+        <div className="md:col-span-5">
+          {description ? (
+            <p className={cn('text-base leading-relaxed', themeMutedText[t])}>{description}</p>
+          ) : null}
+        </div>
+      </header>
 
-        {cards && cards.length > 0 ? (
-          <div className={cn('grid gap-6', gridColumnClasses[columns])}>
-            {cards.map((card, index) => (
-              <article
-                key={index}
-                className={cn(
-                  'flex h-full flex-col overflow-hidden rounded-[1.25rem] border',
-                  cardThemeClasses[theme],
-                )}
-              >
-                {card.media && typeof card.media === 'object' ? (
+      <div className={cn('h-px w-full', themeRule[t])} />
+
+      {cards && cards.length > 0 ? (
+        <div className={cn('grid gap-x-8 gap-y-14 pt-10 md:pt-14', gridColumnClasses[columns])}>
+          {cards.map((card, index) => (
+            <article key={index} className="group flex h-full flex-col gap-5">
+              {card.media && typeof card.media === 'object' ? (
+                <div className="relative overflow-hidden">
                   <Media
-                    className="aspect-[4/3] overflow-hidden border-b border-border"
+                    className={cn(
+                      'aspect-[4/3] overflow-hidden bg-foreground/5 transition-transform duration-700 ease-out group-hover:scale-[1.04]',
+                      t === 'dark' && 'bg-white/5',
+                    )}
                     imgClassName="h-full w-full object-cover"
                     resource={card.media}
                   />
+                  <span className="absolute left-3 top-3 rounded-sm bg-black/55 px-2 py-1 font-mono text-[0.7rem] tracking-[0.2em] text-white backdrop-blur-sm">
+                    {String(index + 1).padStart(2, '0')}
+                    <span className="opacity-50">{`/${String(total).padStart(2, '0')}`}</span>
+                  </span>
+                </div>
+              ) : null}
+
+              <div className="flex flex-1 flex-col gap-3">
+                {card.kicker ? (
+                  <p
+                    className={cn(
+                      'font-mono text-[0.7rem] uppercase tracking-[0.22em]',
+                      themeKickerText[t],
+                    )}
+                  >
+                    {card.kicker}
+                  </p>
                 ) : null}
 
-                <div className="flex flex-1 flex-col gap-4 p-5">
-                  <div className="space-y-2">
-                    {card.kicker ? (
-                      <p
-                        className={cn(
-                          'text-xs font-semibold uppercase tracking-[0.22em]',
-                          theme !== 'dark' && 'text-muted-foreground',
-                        )}
-                      >
-                        {card.kicker}
-                      </p>
-                    ) : null}
+                <h3 className="text-balance text-xl font-medium leading-tight tracking-tight transition-colors duration-300 group-hover:text-primary md:text-2xl">
+                  {card.title}
+                </h3>
 
-                    <h3 className="text-xl font-semibold tracking-tight">{card.title}</h3>
+                {card.description ? (
+                  <p className={cn('text-sm leading-relaxed', themeMutedText[t])}>
+                    {card.description}
+                  </p>
+                ) : null}
 
-                    {card.description ? (
-                      <p
-                        className={cn(
-                          'text-sm leading-relaxed',
-                          theme !== 'dark' && 'text-muted-foreground',
-                          theme === 'dark' && 'text-white/75',
-                        )}
-                      >
-                        {card.description}
-                      </p>
-                    ) : null}
+                {card.enableLink ? (
+                  <div className="mt-auto inline-flex items-center gap-2 pt-3">
+                    <CMSLink
+                      {...card.link}
+                      appearance="inline"
+                      className={cn(
+                        'inline-flex items-center gap-2 font-mono text-[0.72rem] uppercase tracking-[0.22em] transition-colors',
+                        t === 'dark'
+                          ? 'text-white hover:text-[hsl(208,80%,72%)]'
+                          : 'text-primary hover:text-secondary',
+                      )}
+                    >
+                      <ArrowUpRight
+                        aria-hidden="true"
+                        className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                      />
+                    </CMSLink>
                   </div>
-
-                  {card.enableLink ? (
-                    <div className="mt-auto pt-2">
-                      <CMSLink {...card.link} />
-                    </div>
-                  ) : null}
-                </div>
-              </article>
-            ))}
-          </div>
-        ) : null}
-      </section>
-    </div>
+                ) : null}
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : null}
+    </SectionShell>
   )
 }
