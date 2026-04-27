@@ -163,6 +163,14 @@ This command will check for any migrations that have not yet been run and try to
 
 > _WARNING: Migrations are a pain in the ass to work with. Please be careful as they can easily corrupt the production database if done incorrectly. Only run migrations if you know what you're doing. ⚠️_
 
+### Backups
+
+In order to avoid having to redo everything from scratch in the event of data loss, we create database backups every 3 days, apply them to a backup database (useful for a quick fix), and store snapshots as encrypted artifacts containing SQL files that can reconstruct the state of the database at the time of the snapshot. This is all done through a single GitHub Actions script, [`database-backup.yml`](./.github/workflows/database-backup.yml).
+
+Only the webmaster can recover snapshots. GitHub Actions only has access to the public key, which is enough to encrypt new backups but not enough to read old ones.
+
+For more context about backups, you can read this PR: [Database backups](https://github.com/ieee-webmaster/ieeeuottawa-v3/pull/48)
+
 ### Internationalization / Localization
 
 We use [`next-intl`](https://next-intl.dev/) to implement localization (`l10n`) and internationalization (`i18n`). All website content must be available in both English and French. Any content added to the CMS must be translated into both languages (unless intentionally non-localized, such as brand names) and entered in the appropriate language view using the language switcher in the top-right corner of the admin panel. For static content (for example, section titles and subtitles), use the dedicated language files: [French](/messages/fr.json) and [English](/messages/en.json).
