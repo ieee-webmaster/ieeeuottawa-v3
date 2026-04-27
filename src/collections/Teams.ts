@@ -23,10 +23,10 @@ export const Teams: CollectionConfig = {
       localized: true,
     },
     {
-        name: 'coverImage',
-        type: 'upload',
-        relationTo: 'media',
-        label: 'Cover Image',
+      name: 'coverImage',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Cover Image',
     },
     {
       name: 'positions',
@@ -49,6 +49,12 @@ export const Teams: CollectionConfig = {
           required: true,
           label: 'Position Title',
           localized: true,
+        },
+        {
+          name: 'positionEmail',
+          type: 'email',
+          label: 'Position Email',
+          localized: false,
         },
       ],
     },
