@@ -147,21 +147,25 @@ Note that often times when making big schema changes you can run the risk of los
 
 [Migrations](https://payloadcms.com/docs/database/migrations) are essentially SQL code versions that keeps track of your schema. When deploy with Postgres you will need to make sure you create and then run your migrations.
 
-Locally create a migration
-
 ```bash
 pnpm payload migrate:create
 ```
 
-This creates the migration files you will need to push alongside with your new configuration.
+This creates the migration files you will need to push alongside with your new schema changes. This is what tells the production database how to update its schema without losing data.
 
 ```bash
 pnpm payload migrate
 ```
 
-This command will check for any migrations that have not yet been run and try to run them and it will keep a record of migrations that have been run in the database.
+This is the command that is ran in production on Vercel after every push. It checks for any new migrations that have not yet been run and runs them. This is what updates the production database schema to match your new code changes. It ran on the production database when you push to the main branch.
 
 > _WARNING: Migrations are a pain in the ass to work with. Please be careful as they can easily corrupt the production database if done incorrectly. Only run migrations if you know what you're doing. ⚠️_
+
+### Sync
+
+When you pull new code that contains schema changes, your local database needs to know what to do with them. You might be prompted in your terminal to select `create column`, or `rename column`, and this can easily create a mess in your environment. If you're familiar with the changes, you can follow the prompts and update your local database's schema this way. If not, the easiest solution is to delete the volume for your local database in Docker. This just means that the next time you launch your app you'll need to re-create a user login and re-seed the db, but it's better than corrupting your database.
+
+In production, it's not as easy. When you have existing data, you can't always just **delete everyting**. This is where proper management of migrations comes in. It's also common practice to squash migrations every once in a while. This means that you delete all the old migration files and create a new migration file that contains the SQL code for the current state of the schema. This way, when you pull new code, there's only one migration file to run instead of a long chain of them.
 
 ### Backups
 
