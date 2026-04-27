@@ -76,6 +76,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
   }
 
   const loading = loadingFromProps || (!priority ? 'lazy' : undefined)
+  const svgSrc = typeof src === 'string' && src.includes('.svg') ? src : null
 
   // NOTE: this is used by the browser to determine which image to download at different screen sizes
   const sizes = sizeFromProps
@@ -83,6 +84,15 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
     : Object.entries(breakpoints)
         .map(([, value]) => `(max-width: ${value}px) ${value * 2}w`)
         .join(', ')
+
+  if (svgSrc) {
+    return (
+      <picture className={cn(pictureClassName)}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img alt={alt || ''} className={cn(imgClassName)} loading={loading} src={svgSrc} />
+      </picture>
+    )
+  }
 
   return (
     <picture className={cn(pictureClassName)}>
