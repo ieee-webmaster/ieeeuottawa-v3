@@ -9,7 +9,7 @@ import RichText from '@/components/RichText'
 
 export const AffinityGroupHero: React.FC<Page['hero']> = ({ links, media, richText, logo }) => {
   return (
-    <section className="relative -mt-16 bg-slate-50 py-8 text-foreground dark:bg-slate-950 md:py-10">
+    <section className="relative bg-slate-50 py-16 text-foreground dark:bg-slate-950 md:py-20">
       <div className="container relative z-10 grid items-start gap-8 md:grid-cols-2 md:gap-12">
         <div className="flex flex-col items-start gap-4 md:gap-6">
           {logo && typeof logo === 'object' && (

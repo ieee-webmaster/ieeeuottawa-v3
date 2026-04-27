@@ -70,19 +70,7 @@ export const CTABandBlock: React.FC<CTABandBlockProps> = ({
             )}
           >
             {links.map(({ id, link }, index) => (
-              <CMSLink
-                key={id ?? index}
-                size="lg"
-                {...link}
-                className={cn(
-                  t === 'dark' &&
-                    link.appearance === 'default' &&
-                    'bg-white text-primary hover:bg-white/90',
-                  t === 'dark' &&
-                    link.appearance === 'outline' &&
-                    'border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white',
-                )}
-              />
+              <CMSLink key={id ?? index} size="lg" {...link} />
             ))}
           </div>
         ) : null}
