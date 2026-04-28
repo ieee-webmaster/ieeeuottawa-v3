@@ -19,8 +19,8 @@ async function main() {
   const structure = await fs.readFile(path.join(DATA_DIR, 'structure.txt'), 'utf8')
   const people = await loadPeople(DATA_DIR)
   const teamsByName = parseTeams(structure)
-  await applyPositionEmails(DATA_DIR, teamsByName)
   const { committees, fallbackPeople } = parseCommittees(structure, teamsByName, people)
+  applyPositionEmails(structure, teamsByName)
   const teams = Array.from(teamsByName.values())
 
   console.log('Loaded local import data:')

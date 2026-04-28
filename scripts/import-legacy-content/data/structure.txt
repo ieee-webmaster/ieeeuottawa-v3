@@ -39,7 +39,7 @@ Executive: président, vice-président, co-président, vp événements, vp commu
 MDSC:
 English:
 Executive: chair, vice-chair, co-chair, vp events, vp communications, vp francophone affairs, vp sustainability
-Commissioner: pathway commissioner
+Commissioner: pathway commissioner (education & public policy), pathway commissioner (sustainability & art), pathway commissioner (software)
 Coordinator: first-year coordinator
 
 French:
@@ -102,7 +102,10 @@ MDSC
 co-chair, abby-wilson
 co-chair, victoria-richard
 events, danella-nduwayo
-sustainability, hannah-faller
+communications, darim-alladin
+pathway commissioner (sustainability & art), hannah-faller
+pathway commissioner (education & public policy), gemma-rudnicki
+first-year coordinator, vanshika-vanshika
 
 -----
 
@@ -305,3 +308,71 @@ mcnaughton, ivor-benderavage
 WIE
 chair, linda-tang
 vice-chair, mikeli-habash
+
+
+
+
+
+
+
+----------
+
+
+Emails:
+
+IEEE
+chair, chair@ieeeuottawa.ca
+co-chair, chair@ieeeuottawa.ca
+vice-chair, vice-chair@ieeeuottawa.ca
+treasurer, treasurer@ieeeuottawa.ca
+secretary, secretary@ieeeuottawa.ca
+mcnaughton, mcnaughton@ieeeuottawa.ca
+external, external@ieeeuottawa.ca
+internal, internal@ieeeuottawa.ca
+academic, academic@ieeeuottawa.ca
+social, social@ieeeuottawa.ca
+communications, communications@ieeeuottawa.ca
+webmaster, webmaster@ieeeuottawa.ca
+merch, merch@ieeeuottawa.ca
+equity, equity@ieeeuottawa.ca
+
+seg, seg@ieeeuottawa.ca
+ceg, ceg@ieeeuottawa.ca
+elg, elg@ieeeuottawa.ca
+bmdes, bmdes@ieeeuottawa.ca
+comp-tech, comp-tech@ieeeuottawa.ca
+translations@ieeeuottawa.ca
+
+media, media-outreach@ieeeuottawa.ca
+technical, technical@ieeeuottawa.ca
+software-tech, software-tech@ieeeuottawa.ca
+industry, industry@ieeeuottawa.ca
+design, design@ieeeuottawa.ca
+
+WIE
+chair, wie-chair@ieeeuottawa.ca
+co-chair, wie-chair@ieeeuottawa.ca
+vice-chair, wie-vicechair@ieeeuottawa.ca
+finance, wie-finance@ieeeuottawa.ca
+external, wie-external@ieeeuottawa.ca
+internal, wie-internal@ieeeuottawa.ca
+communications, wie-communications@ieeeuottawa.ca
+design, wie-design@ieeeuottawa.ca
+
+CEGSC
+chair, cegsc-chair@ieeeuottawa.ca
+co-chair, cegsc-chair@ieeeuottawa.ca
+vice-chair, cegsc-vice-chair@ieeeuottawa.ca
+events, cegsc-events@ieeeuottawa.ca
+communications, cegsc-communications@ieeeuottawa.ca
+
+MDSC
+chair, mdsc-chair@ieeeuottawa.ca
+co-chair, mdsc-chair@ieeeuottawa.ca
+events, mdsc-events@ieeeuottawa.ca
+francophone affairs, mdsc-francophoneaffairs@ieeeuottawa.ca
+communications, mdsc-communications@ieeeuottawa.ca
+pathway commissioner (education & public policy), mdsc-education@ieeeuottawa.ca
+pathway commissioner (software), mdsc-software@ieeeuottawa.ca
+pathway commissioner (sustainability & arts), mdsc-sustainability@ieeeuottawa.ca
+first-year coordinator, mdsc-first-year@ieeeuottawa.ca
