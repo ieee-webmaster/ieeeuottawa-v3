@@ -46,12 +46,17 @@ export function parseCommittees(
   let currentTeam: CommitteeData['teams'][number] | undefined
   let currentTeamData: TeamData | undefined
 
-  for (const line of raw
-    .slice(sectionStart + 'List of committees:'.length)
+  const sectionEnd = raw.indexOf('Emails:', sectionStart)
+  const committeeSection = raw.slice(
+    sectionStart + 'List of committees:'.length,
+    sectionEnd === -1 ? undefined : sectionEnd,
+  )
+
+  for (const line of committeeSection
     .split('\n')
     .map((entry) => entry.trim())
     .filter(Boolean)) {
-    if (line === '-----') continue
+    if (/^-+$/.test(line)) continue
 
     const year = normalizeYear(line)
     if (year) {

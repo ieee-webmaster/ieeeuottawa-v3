@@ -1,6 +1,3 @@
-import fs from 'node:fs/promises'
-import path from 'node:path'
-
 import type { Team } from '@/payload-types'
 import { type Payload } from 'payload'
 
@@ -86,16 +83,35 @@ export function parseTeams(raw: string) {
   return teams
 }
 
-export async function applyPositionEmails(dataDir: string, teams: Map<string, TeamData>) {
-  const entries = JSON.parse(
-    await fs.readFile(path.join(dataDir, 'position-emails.json'), 'utf8'),
-  ) as Array<{ email: string; position: string; team: string }>
+export function applyPositionEmails(raw: string, teams: Map<string, TeamData>) {
+  const sectionStart = raw.indexOf('Emails:')
+  if (sectionStart === -1) return
 
-  for (const entry of entries) {
-    const team = teams.get(entry.team)
-    const position = team ? findPosition(team, entry.position) : undefined
+  let currentTeam: TeamData | undefined
+
+  for (const line of raw
+    .slice(sectionStart + 'Emails:'.length)
+    .split('\n')
+    .map((entry) => entry.trim())
+    .filter(Boolean)) {
+    if (/^-+$/.test(line)) continue
+
+    const team = teams.get(line.replace(/:$/, ''))
+    if (team) {
+      currentTeam = team
+      continue
+    }
+
+    if (!currentTeam) continue
+
+    const entry = parsePositionEmail(line)
+    if (!entry) continue
+
+    const position = findPosition(currentTeam, entry.position)
     if (!position) {
-      console.warn(`Position email did not match a team position: ${entry.team} / ${entry.position}`)
+      console.warn(
+        `Position email did not match a team position: ${currentTeam.name} / ${entry.position}`,
+      )
       continue
     }
 
@@ -183,10 +199,16 @@ export function inferRoleValue(value: string): RoleValue {
 function roleKeys(value: string) {
   const keys = new Set<string>()
   const normalized = value.trim().toLowerCase()
-  keys.add(slugify(normalized))
+  const slug = slugify(normalized)
+  keys.add(slug)
   keys.add(slugify(normalized.replace(/^vp\s+/, '')))
   keys.add(slugify(normalized.replace(/\s+commissioner$/, '')))
   keys.add(slugify(normalized.replace(/\s+coordinator$/, '')))
+  if (slug === 'mdd-commissioner') keys.add('bmdes')
+  if (slug === 'software-technical-coordinator') keys.add('software-tech')
+  if (slug === 'pathway-commissioner-sustainability-art') {
+    keys.add('pathway-commissioner-sustainability-arts')
+  }
   if (normalized.includes('mcnaughton')) {
     keys.add('mcnaughton')
     keys.add('mmcnaughton')
@@ -200,4 +222,18 @@ function splitList(value: string) {
     .split(',')
     .map((entry) => entry.trim())
     .filter(Boolean)
+}
+
+function parsePositionEmail(line: string) {
+  const parts = line.split(',').map((entry) => entry.trim())
+  if (parts.length >= 2 && parts[0] && parts[1]) {
+    return { email: parts[1], position: parts[0] }
+  }
+
+  if (!line.includes('@')) return undefined
+
+  return {
+    email: line,
+    position: line.split('@', 1)[0],
+  }
 }

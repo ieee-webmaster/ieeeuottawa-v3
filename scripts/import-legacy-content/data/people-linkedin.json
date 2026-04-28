@@ -68,6 +68,10 @@
     "linkedin": "https://www.linkedin.com/in/ayush-sookun-7b2bb71ba/"
   },
   {
+    "name": "Basma Ben Taleb",
+    "linkedin": null
+  },
+  {
     "name": "Benjamin Flynn",
     "linkedin": null
   },
@@ -90,6 +94,14 @@
   {
     "name": "Daniel Thorp",
     "linkedin": "https://www.linkedin.com/in/arcanistzed/"
+  },
+  {
+    "name": "Danella Nduwayo",
+    "linkedin": "https://www.linkedin.com/in/danella-nduwayo/"
+  },
+  {
+    "name": "Darim Alladin",
+    "linkedin": "https://www.linkedin.com/in/darim-alladin/"
   },
   {
     "name": "Deniz Jasarbasic",
@@ -144,12 +156,20 @@
     "linkedin": "https://www.linkedin.com/in/frederick-wilson-andrews/"
   },
   {
+    "name": "Gemma Rudnicki",
+    "linkedin": null
+  },
+  {
     "name": "Gianluca Coletti",
     "linkedin": null
   },
   {
     "name": "Gülse Öngü",
     "linkedin": "https://www.linkedin.com/in/gulse-ongu-9355b9331/"
+  },
+  {
+    "name": "Hannah Faller",
+    "linkedin": "https://www.linkedin.com/in/hannah-faller-029a85392"
   },
   {
     "name": "Heemel Saha",
@@ -424,6 +444,10 @@
     "linkedin": null
   },
   {
+    "name": "Sara Samihi",
+    "linkedin": null
+  },
+  {
     "name": "Scott Fulton",
     "linkedin": null
   },
@@ -484,7 +508,15 @@
     "linkedin": null
   },
   {
+    "name": "Vanshika Vanshika",
+    "linkedin": "https://www.linkedin.com/in/vans0090/"
+  },
+  {
     "name": "Victoria Hough",
+    "linkedin": null
+  },
+  {
+    "name": "Victoria Richard",
     "linkedin": null
   },
   {
@@ -494,21 +526,5 @@
   {
     "name": "Xavier Lermusieaux",
     "linkedin": "https://www.linkedin.com/in/xavierlermusieaux/"
-  },
-  {
-    "name": "Basma Ben Taleb",
-    "linkedin": null
-  },
-  {
-    "name": "Victoria Richard",
-    "linkedin": null
-  },
-  {
-    "name": "Danella Nduwayo",
-    "linkedin": null
-  },
-  {
-    "name": "Hannah Faller",
-    "linkedin": null
   }
 ]
