@@ -26,6 +26,18 @@ export default async function CommitteePage({ params }: Args) {
     limit: 1,
   })
 
+  const committeesResult = await payload.find({
+    collection: 'committee',
+    depth: 0,
+    sort: 'Year',
+    select: { Year: true },
+  })
+
+  const showEmail =
+    [...committeesResult.docs].sort(
+      (a, b) => Number(b.Year.slice(-2)) - Number(a.Year.slice(-2)),
+    )[0]?.Year === result.docs[0]?.Year // show if current year matches to last year
+
   const committee = result.docs[0] as Committee
   if (!committee) notFound()
 
@@ -161,7 +173,7 @@ export default async function CommitteePage({ params }: Args) {
                           </div>
 
                           <div className="flex gap-1 mt-3">
-                            {member.positionEmail && (
+                            {showEmail && member.positionEmail && (
                               <a
                                 href={`mailto:${member.positionEmail}`}
                                 className="p-2 rounded-full text-zinc-400 hover:text-primary hover:bg-primary/5 transition-all"
