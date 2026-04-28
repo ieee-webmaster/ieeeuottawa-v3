@@ -1,0 +1,50 @@
+name: Import Legacy Content
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_write:
+        description: Type IMPORT_LEGACY_CONTENT to allow the import to write data
+        required: false
+        default: ''
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+      CONFIRM_WRITE: ${{ inputs.confirm_write }}
+      PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+      POSTGRES_URL: ${{ secrets.POSTGRES_URL_NO_POOLING }}
+
+    steps:
+      - name: Validate required secrets
+        run: |
+          test -n "$PAYLOAD_SECRET"
+          test -n "$POSTGRES_URL"
+          test -n "$BLOB_READ_WRITE_TOKEN"
+          if [ "$CONFIRM_WRITE" != "IMPORT_LEGACY_CONTENT" ]; then
+            echo "Set confirm_write to IMPORT_LEGACY_CONTENT before importing legacy content."
+            exit 1
+          fi
+
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: 22
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Import legacy content
+        run: pnpm import:legacy

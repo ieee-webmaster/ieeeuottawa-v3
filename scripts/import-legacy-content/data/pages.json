@@ -1,0 +1,97 @@
+[
+  {
+    "hero": "Power Your Student Experience\n\nwith the best sub-association on campus.\n\nDive into an exciting year filled with events, workshops, and opportunities to connect with fellow EECS students.",
+    "heroFr": "Boostez votre vie étudiante\n\navec la meilleure sous-association du campus.\n\nLa nouvelle équipe d'exécutifs pour l'année scolaire 2024-2025 a été élue !",
+    "imageUrl": "https://ieeeuottawa.ca/images/LOGO_HALLOWEEN.svg",
+    "layout": [
+      {
+        "content": "Sponsored By",
+        "contentFr": "Sponsorisé par"
+      },
+      {
+        "content": "Come visit us in the office\n\n800 King Edward Ave, Ottawa, ON K1N 6N5, STE 4026\n\nUse our lab equipment and 3D printer\nNeed to use a breadboard, wire strippers or CD-Rs? Need to use an Altera DE2 Board or an oscilloscope for a project? We got your back. We also have a new 3D printer at your disposal.\n\nGet homework help and mentorship\nNeed to study with your friends in a quiet environment to prepare for your midterm? Our office is the perfect place for that. Our execs are also available to help you with your homework or to provide mentorship.\n\nBorrow textbooks and hardware\nNeed to borrow a textbook for one of your courses, or a piece of hardware for a project? Take advantage of our carefully curated selection of EECS textbooks as well as our hardware library.",
+        "contentFr": "Passez nous voir dans notre bureau\n\n800 King Edward Ave, Ottawa, ON K1N 6N5, STE 4026\n\nUtilisez notre équipement de laboratoire et notre imprimante 3D\nBesoin d'une planche à pain, des pinces à dénuder ou des CD-R ? Besoin d'utiliser une carte Altera DE2 ou un oscilloscope pour un projet ? Nous avons tout! Nous avons également une nouvelle imprimante 3D à votre disposition.\n\nObtenez de l'aide pour vos devoirs et du mentorat\nBesoin d'étudier avec vos amis dans un environnement calme pour vous préparer pour votre mi-session ? Notre bureau est l'endroit idéal pour cela, nos exécutifs sont également disponibles pour vous fournir du mentorat.\n\nEmpruntez des manuels scolaires et du matériel\nBesoin d'emprunter un manuel pour l'un de vos cours ou un morceau de matériel pour un projet ? Profitez gratuitement de notre sélection de manuels EECS adapté à vos besoins ainsi que de notre bibliothèque de matériel."
+      },
+      {
+        "content": "Stay up to date\n\nVisit our instagram page to keep up with our latest events and updates.",
+        "contentFr": "Restez à jour\n\nVisitez notre page Instagram pour rester à jour avec nos derniers événements et mises à jour."
+      },
+      {
+        "content": "Get in touch\n\nGot a question? Event suggestions? Feedback? We want to hear it! Send us a message and we will get back to you as soon as we can.",
+        "contentFr": "Contactez-nous\n\nVous avez une question ? Des suggestions d'événements ? Des commentaires ? Nous voulons les entendre ! Envoyez-nous un message et nous vous répondrons dès que possible."
+      }
+    ],
+    "slug": "home",
+    "title": "Home",
+    "titleFr": "Boostez votre vie étudiante"
+  },
+  {
+    "hero": "About\n\nThe IEEE uOttawa Student Branch is the official student branch for the University of Ottawa located in Region 7 and is associated with the IEEE Ottawa Section. It is also the official Sub-Association for ELG/CEG/SEG under the ESS.",
+    "heroFr": "À propos\n\nLa branche étudiante de l'IEEE uOttawa est la branche étudiante officielle de l'Université d'Ottawa située dans la Région 7 et est associée à la Section Ottawa de l'IEEE. Elle est aussi la sous-association officielle pour les ELG/CEG/SEG sous l'ESS.",
+    "imageUrl": "https://ieeeuottawa.ca/images/Connected World.jpeg",
+    "layout": [
+      {
+        "content": "Mission Statement\n\nThe University of Ottawa’s IEEE Student Branch was established to provide professional services to improve each student’s experience on campus. This includes accommodating students with access to up-to-date equipment, internet access, textbooks and a quiet work environment.",
+        "contentFr": "Notre mission\n\nLa branche étudiante IEEE de l'Université d'Ottawa a été établie pour fournir des services professionnels afin d'améliorer l'expérience de chaque étudiant sur le campus. Ceci inclut l'accommodation des étudiants avec l'accès à un équipement à jour, l'accès à l'internet, les manuels scolaires et un environnement de travail tranquille."
+      },
+      {
+        "content": "What We Offer\n\nMentorship\nLed by our Women In Engineering (WIE) chapter, Big Eng Little Eng is a mentorship program that pair first year students with upper year students to ease them into their new university life.\n\nQuiet Study Place\nOur office is a quiet study environment. Students are welcome to ask questions and seek academic help from our execs during their office hours.\n\nNetworking Opportunities\nOur student branch organizes multiple networking events connecting students to industry professionals such as WIE Tech Panel and Wine and Cheese.\n\nDry Lab Access\nOur office has a lab workspace where students can practice their technical skills. The lab is equipped with FGPAs, oscilloscopes, micro-controllers, a soldering station, and more.\n\nHardware Access\nOur office has a lot of hardware available for students to borrow for personal use or projects. We also have a new 3D printer. Consult the hardware inventory spreadsheet for the full list of available hardware.",
+        "contentFr": "À votre disposition\n\nMentorat\nDirigé par notre chapitre Women In Engineering (WIE), Big Eng Little Eng est un programme de mentorat qui jumelle des étudiants de première année avec des étudiants de niveau supérieur pour les aider à s'intégrer dans leur nouvelle vie universitaire.\n\nLieu d'étude calme\nNotre bureau est un environnement d'étude calme. Les étudiants sont invités à poser des questions et à chercher une aide académique auprès de nos exécutifs pendant leurs heures de bureau.\n\nOpportunités de réseautage\nNotre branche étudiante organise de nombreux événements de réseautage permettant aux étudiants de rencontrer des professionnels du secteur, tels que le WIE Tech Panel et le Wine and Cheese.\n\nAccès à un laboratoire sec\nNotre bureau dispose d'un espace de laboratoire où les étudiants peuvent mettre en pratique leurs compétences techniques. Le laboratoire est équipé de FGPA, d'oscilloscopes, de microcontrôleurs, d'une station de soudage, et plus encore.\n\nAccès à du matériel\nNotre bureau dispose de beaucoup de matériel disponible pour les étudiants à emprunter pour un usage personnel ou pour des projets. Nous avons également une nouvelle imprimante 3D. Consultez la feuille de calcul de l'inventaire du matériel pour la liste complète du matériel disponible."
+      },
+      {
+        "content": "WIE Affinity Group\n\nThe mission of the IEEE uOttawa Women In Engineering is to inspire, engage, encourage, and empower women to pursue the engineering field. They are responsible for organizing IEEE Wine & Cheese, one of our student branch's largest events.",
+        "contentFr": "Groupe d'affinité WIE\n\nLa mission de l'IEEE uOttawa Women In Engineering est d'inspirer, engager, encourager et fortifier les femmes à poursuivre le domaine de l'ingénierie. Elles sont responsables de l'organisation du Wine & Cheese de l'IEEE, l'un des plus grands événements de notre branche étudiante."
+      },
+      {
+        "content": "Want to get involved with the IEEE?\n\nFill out this form and an executive will email you when there are opportunities for volunteering!",
+        "contentFr": "Voulez-vous vous impliquer avec IEEE ?\n\nRemplissez ce formulaire et un responsable vous enverra un courriel lorsqu'il y aura des des opportunités de bénévolat !"
+      }
+    ],
+    "slug": "about",
+    "title": "About",
+    "titleFr": "À propos"
+  },
+  {
+    "hero": "McNaughton Centre\n\nNamed after General A. George Latta McNaughton, the McNaughton refers to our office located in SITE 4026. It is an inclusive space that provides students with the resources they need to succeed academically, professionally, and personally.",
+    "heroFr": "Centre McNaughton\n\nNommé d'après le général A. George Latta McNaughton, le McNaughton fait référence à notre bureau situé dans le SITE 4026. C'est un espace inclusif qui fournit aux étudiants les ressources dont ils ont besoin pour réussir sur le plan académique, professionnel et personnel.",
+    "imageUrl": "https://ieeeuottawa.ca/images/mcn/mcn-cover.jpeg",
+    "layout": [
+      {
+        "content": "Sponsored by\n\nThe IEEE Canadian Foundation",
+        "contentFr": "Sponsorisé par\n\nLa Fondation canadienne de l'IEEE"
+      },
+      {
+        "content": "Dry Lab Workspace\n\nThe McNaughton Centre provides students with a unique opportunity to develop the practical skills needed to excel in their EECS studies. Our dry lab workspace is equipped with cutting-edge technical tools, including FPGAs, oscilloscopes, multimeters, micro-controllers, and a state-of-the-art soldering station, as well as various other hardware and electronic components.",
+        "contentFr": "Laboratoire sec\n\nLe centre McNaughton offre aux étudiants une occasion unique de développer les compétences pratiques nécessaires pour exceller dans leurs études en SIGE. Notre espace de travail « labo sec » est équipé d'outils techniques de pointe, notamment des FPGAs, des oscilloscopes, des multimètres, des microcontrôleurs et une station de soudage communautaire conforme aux normes de l'industrie, ainsi que divers autres matériels et composants électroniques."
+      },
+      {
+        "content": "Access to 3D printer\n\nOur office provides students with access to a 3D printer, allowing them to bring their ideas to life. Whether you are working on a project for a class or a personal project, our 3D printer is available for you to use.",
+        "contentFr": "Access to 3D printer\n\nNotre bureau offre aux étudiants l'accès à une imprimante 3D, leur permettant de donner vie à leurs idées. Que vous travailliez sur un projet pour un cours ou un projet personnel, notre imprimante 3D est à votre disposition."
+      },
+      {
+        "content": "Quiet Study Place\n\nOur office provides a quiet environment for individual or group study sessions. Students are also welcome to seek academic assistance from our executives during their office hours.",
+        "contentFr": "Obtenez de l'aide pour vos devoirs\n\nNotre bureau offre un environnement calme pour des sessions d'étude individuelles ou en groupe. Les étudiants sont également les bienvenus pour demander de l'aide académique à nos dirigeants pendant leurs heures de bureau."
+      },
+      {
+        "content": "EECS Textbook Library\n\nOur office offers a vast selection of EECS (School of Electrical Engineering and Computer Science) textbooks as well as a handful of math, science, business, and elective textbooks for borrowing, all completely free of charge.",
+        "contentFr": "Bibliothèque de manuels SIGE\n\nNotre bureau propose une vaste sélection de manuels de cours SIGE (science informatique et de génie électrique) ainsi que quelques manuels de mathématiques, de sciences, de commerce et d'options, tous disponibles en prêt, et ce, gratuitement."
+      },
+      {
+        "content": "Relaxing Zone\n\nAt our office, we understand the demanding nature of the School of EECS curriculum and the need for students to take a break from their studies and work. We encourage all students, regardless of their major, to take advantage of our welcoming environment as a place to unwind, socialize, and enjoy themselves.",
+        "contentFr": "Relaxing Zone\n\nEn raison de la nature intensive des programmes d'école de SIGE, il est nécessaire pour les étudiants de faire une pause dans leurs études et leur travail. C'est pourquoi nous encourageons vivement tous les étudiants (SIGE ou non) à utiliser notre environnement de bureau comme un endroit détendu pour se détendre, se détendre et s'amuser."
+      }
+    ],
+    "slug": "mcnaughton-centre",
+    "title": "McNaughton Centre",
+    "titleFr": "Centre McNaughton"
+  },
+  {
+    "hero": "Office Hours\n\nWe look forward to hearing from you. Feel free to also join the official uOttawa Engineering discord server by clicking on this link : <https://discord.gg/jPHy6uUThH>",
+    "heroFr": "Heures de bureau\n\nNous sommes très heureux de recevoir vos commentaires. N'hésitez pas à rejoindre également le serveur discord officiel de serveur discord du Génie de l'Université d'Ottawa en cliquant sur ce lien : <https://discord.gg/jPHy6uUThH>",
+    "imageUrl": "https://ieeeuottawa.ca/images/office-hours-f2025.png",
+    "layout": [],
+    "slug": "office-hours",
+    "title": "Office Hours",
+    "titleFr": "Heures de bureau"
+  }
+]
