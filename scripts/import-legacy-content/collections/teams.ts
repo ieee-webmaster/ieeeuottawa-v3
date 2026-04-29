@@ -4,103 +4,26 @@ import path from 'node:path'
 import type { Team } from '@/payload-types'
 import { type Payload } from 'payload'
 
-import { IMPORT_CONTEXT, slugify } from '../helpers'
+import { IMPORT_CONTEXT } from '../helpers'
 
-const ROLE_VALUES = {
-  executives: 'exec',
-  commissioners: 'commish',
-  coordinators: 'coord',
-} as const
-const ROLE_LABELS = {
-  Executive: 'executives',
-  Commissioner: 'commissioners',
-  Coordinator: 'coordinators',
-} as const
-
-type RoleBucket = keyof typeof ROLE_VALUES
-export type RoleValue = (typeof ROLE_VALUES)[RoleBucket]
-export type TeamPosition = { en: string; fr: string; positionEmail?: string; role: RoleValue }
+export type RoleValue = 'commish' | 'coord' | 'exec'
+export type TeamPosition = {
+  positionEmail?: string
+  role: RoleValue
+  title: { en: string; fr: string }
+}
 export type TeamData = {
   name: string
-  positionLookup: Map<string, TeamPosition>
   positions: TeamPosition[]
 }
 
-export function parseTeams(raw: string) {
-  const sectionStart = raw.indexOf('List of teams:')
-  const sectionEnd = raw.indexOf('-----', sectionStart)
-  if (sectionStart === -1 || sectionEnd === -1) throw new Error('Missing team data in structure.txt')
+export async function loadTeams(dataDir: string) {
+  const teams = JSON.parse(await fs.readFile(path.join(dataDir, 'teams.json'), 'utf8')) as TeamData[]
+  const teamsByName = new Map<string, TeamData>()
 
-  const teams = new Map<string, TeamData>()
-  const blocks = raw
-    .slice(sectionStart, sectionEnd)
-    .split(/\n\s*-\s*\n/)
-    .map((block) => block.trim())
-    .filter(Boolean)
+  for (const team of teams) teamsByName.set(team.name, team)
 
-  for (const block of blocks) {
-    const lines = block
-      .split('\n')
-      .map((line) => line.trim())
-      .filter((line) => line && line !== 'List of teams:')
-    const teamName = lines.shift()?.replace(/:$/, '')
-    if (!teamName) continue
-
-    const rawPositions: Record<RoleBucket, { en: string[]; fr: string[] }> = {
-      executives: { en: [], fr: [] },
-      commissioners: { en: [], fr: [] },
-      coordinators: { en: [], fr: [] },
-    }
-    let locale: 'en' | 'fr' = 'en'
-
-    for (const line of lines) {
-      if (line === 'English:') {
-        locale = 'en'
-        continue
-      }
-      if (line === 'French:') {
-        locale = 'fr'
-        continue
-      }
-
-      const match = line.match(/^(Executive|Commissioner|Coordinator):\s*(.+)$/)
-      if (!match) continue
-
-      const bucket = ROLE_LABELS[match[1] as keyof typeof ROLE_LABELS]
-      rawPositions[bucket][locale] = splitList(match[2])
-    }
-
-    const team: TeamData = { name: teamName, positionLookup: new Map(), positions: [] }
-    for (const bucket of Object.keys(rawPositions) as RoleBucket[]) {
-      rawPositions[bucket].en.forEach((title, index) => {
-        addTeamPosition(team, {
-          en: title,
-          fr: rawPositions[bucket].fr[index] || title,
-          role: ROLE_VALUES[bucket],
-        })
-      })
-    }
-    teams.set(team.name, team)
-  }
-
-  return teams
-}
-
-export async function applyPositionEmails(dataDir: string, teams: Map<string, TeamData>) {
-  const entries = JSON.parse(
-    await fs.readFile(path.join(dataDir, 'position-emails.json'), 'utf8'),
-  ) as Array<{ email: string; position: string; team: string }>
-
-  for (const entry of entries) {
-    const team = teams.get(entry.team)
-    const position = team ? findPosition(team, entry.position) : undefined
-    if (!position) {
-      console.warn(`Position email did not match a team position: ${entry.team} / ${entry.position}`)
-      continue
-    }
-
-    position.positionEmail = entry.email
-  }
+  return teamsByName
 }
 
 export async function importTeams(payload: Payload, teams: TeamData[]) {
@@ -150,60 +73,10 @@ export async function importTeams(payload: Payload, teams: TeamData[]) {
 }
 
 function mapTeamPositions(team: TeamData, locale: 'en' | 'fr') {
-  return team.positions.map((position) => ({
+  return team.positions.map((position, index) => ({
+    id: `position-${index}`,
     positionEmail: position.positionEmail,
-    positionTitle: locale === 'fr' ? position.fr : position.en,
+    positionTitle: position.title[locale],
     role: position.role,
   }))
-}
-
-export function addTeamPosition(team: TeamData, position: TeamPosition) {
-  const existing = findPosition(team, position.en)
-  if (existing) return existing
-
-  team.positions.push(position)
-  for (const key of roleKeys(position.en)) team.positionLookup.set(key, position)
-  return position
-}
-
-export function findPosition(team: TeamData, rawRole: string) {
-  for (const key of roleKeys(rawRole)) {
-    const position = team.positionLookup.get(key)
-    if (position) return position
-  }
-}
-
-export function inferRoleValue(value: string): RoleValue {
-  const normalized = value.toLowerCase()
-  if (normalized.includes('commissioner')) return 'commish'
-  if (normalized.includes('coordinator')) return 'coord'
-  return 'exec'
-}
-
-function roleKeys(value: string) {
-  const keys = new Set<string>()
-  const normalized = value.trim().toLowerCase()
-  const slug = slugify(normalized)
-  keys.add(slug)
-  keys.add(slugify(normalized.replace(/^vp\s+/, '')))
-  keys.add(slugify(normalized.replace(/\s+commissioner$/, '')))
-  keys.add(slugify(normalized.replace(/\s+coordinator$/, '')))
-  if (slug === 'mdd-commissioner') keys.add('bmdes')
-  if (slug === 'software-technical-coordinator') keys.add('software-tech')
-  if (slug === 'pathway-commissioner-sustainability-art') {
-    keys.add('pathway-commissioner-sustainability-arts')
-  }
-  if (normalized.includes('mcnaughton')) {
-    keys.add('mcnaughton')
-    keys.add('mmcnaughton')
-  }
-
-  return keys
-}
-
-function splitList(value: string) {
-  return value
-    .split(',')
-    .map((entry) => entry.trim())
-    .filter(Boolean)
 }

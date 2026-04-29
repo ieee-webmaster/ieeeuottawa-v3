@@ -36,9 +36,9 @@ export async function importDocs(payload: Payload, dataDir: string) {
     ).docs[0]
 
     const englishData = {
-      generalDocuments: docs.generalDocuments.map((doc) => mapDoc(doc)),
-      meetingMinutes: yearDocs.meetingMinutes.map((doc) => mapDoc(doc)),
-      otherDocuments: yearDocs.otherDocuments.map((doc) => mapDoc(doc)),
+      generalDocuments: docs.generalDocuments.map((doc, index) => mapDoc(doc, `general-${index}`)),
+      meetingMinutes: yearDocs.meetingMinutes.map((doc, index) => mapDoc(doc, `meeting-${index}`)),
+      otherDocuments: yearDocs.otherDocuments.map((doc, index) => mapDoc(doc, `other-${index}`)),
       year: yearDocs.year,
     }
     const doc = existing
@@ -60,9 +60,15 @@ export async function importDocs(payload: Payload, dataDir: string) {
       collection: 'docs',
       context: IMPORT_CONTEXT,
       data: {
-        generalDocuments: docs.generalDocuments.map((entry) => mapDoc(entry, 'fr')),
-        meetingMinutes: yearDocs.meetingMinutes.map((entry) => mapDoc(entry, 'fr')),
-        otherDocuments: yearDocs.otherDocuments.map((entry) => mapDoc(entry, 'fr')),
+        generalDocuments: docs.generalDocuments.map((entry, index) =>
+          mapDoc(entry, `general-${index}`, 'fr'),
+        ),
+        meetingMinutes: yearDocs.meetingMinutes.map((entry, index) =>
+          mapDoc(entry, `meeting-${index}`, 'fr'),
+        ),
+        otherDocuments: yearDocs.otherDocuments.map((entry, index) =>
+          mapDoc(entry, `other-${index}`, 'fr'),
+        ),
       },
       id: doc.id,
       locale: 'fr',
@@ -70,10 +76,11 @@ export async function importDocs(payload: Payload, dataDir: string) {
   }
 }
 
-function mapDoc(doc: DocData, locale: 'en' | 'fr' = 'en') {
+function mapDoc(doc: DocData, id: string, locale: 'en' | 'fr' = 'en') {
   return {
     description: locale === 'fr' ? doc.descriptionFr || doc.description : doc.description,
     googleDocsUrl: doc.url,
+    id,
     meetingDate: doc.meetingDate,
     name: locale === 'fr' ? doc.nameFr || doc.name : doc.name,
   }

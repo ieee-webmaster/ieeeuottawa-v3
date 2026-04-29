@@ -4,43 +4,19 @@ import path from 'node:path'
 import type { Person } from '@/payload-types'
 import { type Payload } from 'payload'
 
-import {
-  findLocalAssetsBySlug,
-  IMPORT_CONTEXT,
-  slugify,
-  titleFromSlug,
-  upsertMediaFromLocalFile,
-} from '../helpers'
+import { findLocalAssetsBySlug, IMPORT_CONTEXT, upsertMediaFromLocalFile } from '../helpers'
 
 export type PersonData = { linkedin?: string | null; name: string; slug: string }
 
 export async function loadPeople(dataDir: string) {
   const people = new Map<string, PersonData>()
-  const entries = JSON.parse(
-    await fs.readFile(path.join(dataDir, 'people-linkedin.json'), 'utf8'),
-  ) as Array<{
-    linkedin?: string | null
-    name: string
-  }>
+  const entries = JSON.parse(await fs.readFile(path.join(dataDir, 'people.json'), 'utf8')) as PersonData[]
 
   for (const entry of entries) {
-    const slug = resolvePersonSlug(entry.name)
-    people.set(slug, { linkedin: entry.linkedin, name: entry.name, slug })
+    people.set(entry.slug, entry)
   }
 
   return people
-}
-
-export function ensurePerson(people: Map<string, PersonData>, personSlug: string) {
-  if (people.has(personSlug)) return undefined
-
-  const name = titleFromSlug(personSlug)
-  people.set(personSlug, { name, slug: personSlug })
-  return name
-}
-
-export function resolvePersonSlug(value: string) {
-  return slugify(value)
 }
 
 export async function importPeople(

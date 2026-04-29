@@ -19,37 +19,20 @@ type OldFeaturedItem = {
 }
 type OldSection = {
   actions?: OldAction[]
-  backgroundImage?: { url?: string }
   items?: OldFeaturedItem[]
-  media?: { url?: string }
-  subtitle?: string
-  subtitleFr?: string
-  text?: string | null
-  textFr?: string | null
   title?: string
-  titleFr?: string
   type?: string
 }
 type OldPage = {
   sections?: OldSection[]
-  socialImage?: string
-  title?: string
 }
 
 async function main() {
   await fs.mkdir(DATA_DIR, { recursive: true })
 
   const docsPage = await fetchOldPage('/documents/')
-  const pages = await Promise.all(
-    ['/', '/about/', '/mcnaughton-centre/', '/office-hours/'].map(async (route) =>
-      pageFromOldData(route, await fetchOldPage(route)),
-    ),
-  )
 
-  await Promise.all([
-    writeJson('docs.json', docsFromOldData(docsPage)),
-    writeJson('pages.json', pages),
-  ])
+  await writeJson('docs.json', docsFromOldData(docsPage))
 }
 
 async function fetchOldPage(route: string): Promise<OldPage> {
@@ -92,23 +75,6 @@ function docsFromOldData(page: OldPage) {
   return { generalDocuments, years }
 }
 
-function pageFromOldData(route: string, page: OldPage) {
-  const heroSection = (page.sections ?? []).find((section) => section.type === 'HeroSection')
-
-  return {
-    hero: sectionText(heroSection),
-    heroFr: sectionText(heroSection, 'fr'),
-    imageUrl: normalizeOldSiteUrl(page.socialImage || heroSection?.backgroundImage?.url),
-    layout: (page.sections ?? [])
-      .filter((section) => section !== heroSection)
-      .map((section) => ({ content: sectionText(section), contentFr: sectionText(section, 'fr') }))
-      .filter((section) => section.content || section.contentFr),
-    slug: route === '/' ? 'home' : route.replace(/^\//, '').replace(/\/$/, ''),
-    title: page.title || 'Untitled',
-    titleFr: heroSection?.titleFr || page.title || 'Untitled',
-  }
-}
-
 function docFromOldItem(item: OldFeaturedItem) {
   const url = normalizeOldSiteUrl(item.actions?.find((action) => action.url)?.url)
   if (!item.title || !url) return undefined
@@ -121,23 +87,6 @@ function docFromOldItem(item: OldFeaturedItem) {
     nameFr: item.titleFr || item.title,
     url,
   }
-}
-
-function sectionText(section: OldSection | undefined, locale: 'en' | 'fr' = 'en') {
-  if (!section) return ''
-  const title = locale === 'fr' ? section.titleFr || section.title : section.title
-  const subtitle = locale === 'fr' ? section.subtitleFr || section.subtitle : section.subtitle
-  const text = cleanText(locale === 'fr' ? section.textFr || section.text : section.text)
-  const items = (section.items ?? [])
-    .map((item) => {
-      const itemTitle = locale === 'fr' ? item.titleFr || item.title : item.title
-      const itemSubtitle = locale === 'fr' ? item.subtitleFr || item.subtitle : item.subtitle
-      const itemText = cleanText(locale === 'fr' ? item.textFr || item.text : item.text)
-      return [itemTitle, itemSubtitle, itemText].filter(Boolean).join('\n')
-    })
-    .filter(Boolean)
-
-  return [title, subtitle, text, ...items].filter(Boolean).join('\n\n')
 }
 
 function parseMeetingDate(value?: string | null) {
