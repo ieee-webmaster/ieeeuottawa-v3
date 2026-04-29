@@ -18,7 +18,9 @@ export type TeamData = {
 }
 
 export async function loadTeams(dataDir: string) {
-  const teams = JSON.parse(await fs.readFile(path.join(dataDir, 'teams.json'), 'utf8')) as TeamData[]
+  const teams = JSON.parse(
+    await fs.readFile(path.join(dataDir, 'teams.json'), 'utf8'),
+  ) as TeamData[]
   const teamsByName = new Map<string, TeamData>()
 
   for (const team of teams) teamsByName.set(team.name, team)
@@ -55,12 +57,14 @@ export async function importTeams(payload: Payload, teams: TeamData[]) {
           locale: 'en',
         })
 
+    const positionIds = doc.positions?.map((position) => position?.id) ?? []
+
     await payload.update({
       collection: 'teams',
       context: IMPORT_CONTEXT,
       data: {
         name: team.name,
-        positions: mapTeamPositions(team, 'fr'),
+        positions: mapTeamPositions(team, 'fr', positionIds),
       },
       id: doc.id,
       locale: 'fr',
@@ -72,9 +76,13 @@ export async function importTeams(payload: Payload, teams: TeamData[]) {
   return ids
 }
 
-function mapTeamPositions(team: TeamData, locale: 'en' | 'fr') {
+function mapTeamPositions(
+  team: TeamData,
+  locale: 'en' | 'fr',
+  ids: Array<string | null | undefined> = [],
+) {
   return team.positions.map((position, index) => ({
-    id: `position-${index}`,
+    ...(ids[index] ? { id: ids[index] } : {}),
     positionEmail: position.positionEmail,
     positionTitle: position.title[locale],
     role: position.role,
