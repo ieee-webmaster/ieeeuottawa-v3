@@ -1,46 +1,97 @@
 [
   { "team": "IEEE", "position": "chair", "email": "chair@ieeeuottawa.ca" },
+  { "team": "IEEE", "position": "co-chair", "email": "chair@ieeeuottawa.ca" },
   { "team": "IEEE", "position": "vice-chair", "email": "vice-chair@ieeeuottawa.ca" },
   { "team": "IEEE", "position": "treasurer", "email": "treasurer@ieeeuottawa.ca" },
-  {
-    "team": "IEEE",
-    "position": "McNaughton Centre Director",
-    "email": "mcnaughton@ieeeuottawa.ca"
-  },
   { "team": "IEEE", "position": "secretary", "email": "secretary@ieeeuottawa.ca" },
-  { "team": "IEEE", "position": "vp internal", "email": "internal@ieeeuottawa.ca" },
-  { "team": "IEEE", "position": "vp external", "email": "external@ieeeuottawa.ca" },
-  { "team": "IEEE", "position": "vp academic", "email": "academic@ieeeuottawa.ca" },
+  { "team": "IEEE", "position": "mcnaughton", "email": "mcnaughton@ieeeuottawa.ca" },
+  { "team": "IEEE", "position": "external", "email": "external@ieeeuottawa.ca" },
+  { "team": "IEEE", "position": "internal", "email": "internal@ieeeuottawa.ca" },
+  { "team": "IEEE", "position": "academic", "email": "academic@ieeeuottawa.ca" },
+  { "team": "IEEE", "position": "social", "email": "social@ieeeuottawa.ca" },
   {
     "team": "IEEE",
-    "position": "vp communications",
+    "position": "communications",
     "email": "communications@ieeeuottawa.ca"
   },
-  { "team": "IEEE", "position": "vp equity", "email": "equity@ieeeuottawa.ca" },
-  { "team": "IEEE", "position": "vp social", "email": "social@ieeeuottawa.ca" },
-  { "team": "IEEE", "position": "vp merch", "email": "merch@ieeeuottawa.ca" },
   { "team": "IEEE", "position": "webmaster", "email": "webmaster@ieeeuottawa.ca" },
+  { "team": "IEEE", "position": "merch", "email": "merch@ieeeuottawa.ca" },
+  { "team": "IEEE", "position": "equity", "email": "equity@ieeeuottawa.ca" },
+  { "team": "IEEE", "position": "seg", "email": "seg@ieeeuottawa.ca" },
+  { "team": "IEEE", "position": "ceg", "email": "ceg@ieeeuottawa.ca" },
+  { "team": "IEEE", "position": "elg", "email": "elg@ieeeuottawa.ca" },
+  { "team": "IEEE", "position": "bmdes", "email": "bmdes@ieeeuottawa.ca" },
+  { "team": "IEEE", "position": "comp-tech", "email": "comp-tech@ieeeuottawa.ca" },
   {
     "team": "IEEE",
-    "position": "design commissioner",
-    "email": "communications@ieeeuottawa.ca"
+    "position": "translations",
+    "email": "translations@ieeeuottawa.ca"
   },
-  { "team": "IEEE", "position": "seg commissioner", "email": "academic@ieeeuottawa.ca" },
-  { "team": "IEEE", "position": "ceg commissioner", "email": "academic@ieeeuottawa.ca" },
-  { "team": "IEEE", "position": "elg commissioner", "email": "academic@ieeeuottawa.ca" },
-  { "team": "IEEE", "position": "comp-tech commissioner", "email": "academic@ieeeuottawa.ca" },
-  { "team": "IEEE", "position": "mdd commissioner", "email": "academic@ieeeuottawa.ca" },
+  { "team": "IEEE", "position": "media", "email": "media-outreach@ieeeuottawa.ca" },
+  { "team": "IEEE", "position": "technical", "email": "technical@ieeeuottawa.ca" },
   {
     "team": "IEEE",
-    "position": "translations commissioner",
-    "email": "communications@ieeeuottawa.ca"
+    "position": "software-tech",
+    "email": "software-tech@ieeeuottawa.ca"
   },
-  { "team": "WIE", "position": "chair", "email": "wie@ieeeuottawa.ca" },
-  { "team": "WIE", "position": "vice-chair", "email": "wie@ieeeuottawa.ca" },
-  { "team": "WIE", "position": "co-chair", "email": "wie@ieeeuottawa.ca" },
-  { "team": "WIE", "position": "vp finance", "email": "wie@ieeeuottawa.ca" },
-  { "team": "WIE", "position": "vp external", "email": "wie@ieeeuottawa.ca" },
-  { "team": "WIE", "position": "vp internal", "email": "wie@ieeeuottawa.ca" },
-  { "team": "WIE", "position": "vp communications", "email": "wie@ieeeuottawa.ca" },
-  { "team": "WIE", "position": "design commissioner", "email": "wie@ieeeuottawa.ca" }
+  { "team": "IEEE", "position": "industry", "email": "industry@ieeeuottawa.ca" },
+  { "team": "IEEE", "position": "design", "email": "design@ieeeuottawa.ca" },
+  { "team": "WIE", "position": "chair", "email": "wie-chair@ieeeuottawa.ca" },
+  { "team": "WIE", "position": "co-chair", "email": "wie-chair@ieeeuottawa.ca" },
+  { "team": "WIE", "position": "vice-chair", "email": "wie-vicechair@ieeeuottawa.ca" },
+  { "team": "WIE", "position": "finance", "email": "wie-finance@ieeeuottawa.ca" },
+  { "team": "WIE", "position": "external", "email": "wie-external@ieeeuottawa.ca" },
+  { "team": "WIE", "position": "internal", "email": "wie-internal@ieeeuottawa.ca" },
+  {
+    "team": "WIE",
+    "position": "communications",
+    "email": "wie-communications@ieeeuottawa.ca"
+  },
+  { "team": "WIE", "position": "design", "email": "wie-design@ieeeuottawa.ca" },
+  { "team": "CEGSC", "position": "chair", "email": "cegsc-chair@ieeeuottawa.ca" },
+  { "team": "CEGSC", "position": "co-chair", "email": "cegsc-chair@ieeeuottawa.ca" },
+  {
+    "team": "CEGSC",
+    "position": "vice-chair",
+    "email": "cegsc-vice-chair@ieeeuottawa.ca"
+  },
+  { "team": "CEGSC", "position": "events", "email": "cegsc-events@ieeeuottawa.ca" },
+  {
+    "team": "CEGSC",
+    "position": "communications",
+    "email": "cegsc-communications@ieeeuottawa.ca"
+  },
+  { "team": "MDSC", "position": "chair", "email": "mdsc-chair@ieeeuottawa.ca" },
+  { "team": "MDSC", "position": "co-chair", "email": "mdsc-chair@ieeeuottawa.ca" },
+  { "team": "MDSC", "position": "events", "email": "mdsc-events@ieeeuottawa.ca" },
+  {
+    "team": "MDSC",
+    "position": "francophone affairs",
+    "email": "mdsc-francophoneaffairs@ieeeuottawa.ca"
+  },
+  {
+    "team": "MDSC",
+    "position": "communications",
+    "email": "mdsc-communications@ieeeuottawa.ca"
+  },
+  {
+    "team": "MDSC",
+    "position": "pathway commissioner (education & public policy)",
+    "email": "mdsc-education@ieeeuottawa.ca"
+  },
+  {
+    "team": "MDSC",
+    "position": "pathway commissioner (software)",
+    "email": "mdsc-software@ieeeuottawa.ca"
+  },
+  {
+    "team": "MDSC",
+    "position": "pathway commissioner (sustainability & arts)",
+    "email": "mdsc-sustainability@ieeeuottawa.ca"
+  },
+  {
+    "team": "MDSC",
+    "position": "first-year coordinator",
+    "email": "mdsc-first-year@ieeeuottawa.ca"
+  }
 ]

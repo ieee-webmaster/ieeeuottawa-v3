@@ -8,7 +8,6 @@ import { getPayload } from 'payload'
 
 import { importCommittees, parseCommittees } from './collections/committee'
 import { importDocs } from './collections/docs'
-import { importEvents } from './collections/events'
 import { importPages } from './collections/pages'
 import { importPeople, loadPeople } from './collections/people'
 import { applyPositionEmails, importTeams, parseTeams } from './collections/teams'
@@ -20,7 +19,7 @@ async function main() {
   const people = await loadPeople(DATA_DIR)
   const teamsByName = parseTeams(structure)
   const { committees, fallbackPeople } = parseCommittees(structure, teamsByName, people)
-  applyPositionEmails(structure, teamsByName)
+  await applyPositionEmails(DATA_DIR, teamsByName)
   const teams = Array.from(teamsByName.values())
 
   console.log('Loaded local import data:')
@@ -38,10 +37,6 @@ async function main() {
   await importCommittees(payload, DATA_DIR, committees, peopleBySlug, teamIds)
   await importDocs(payload, DATA_DIR)
   await importPages(payload, DATA_DIR)
-
-  const eventHostTeamId = teamIds.get('IEEE')
-  if (!eventHostTeamId) throw new Error('Missing IEEE team for event hosting relationship')
-  await importEvents(payload, DATA_DIR, eventHostTeamId)
 }
 
 void main().catch((error: unknown) => {
