@@ -227,6 +227,7 @@ export interface Page {
     | BannerBlock
     | SplitSectionBlock
     | CardGridBlock
+    | CommitteeTeamMembersBlock
     | QuickLinksBlock
     | LogoGridBlock
     | CTABandBlock
@@ -1062,6 +1063,44 @@ export interface CardGridBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CommitteeTeamMembersBlock".
+ */
+export interface CommitteeTeamMembersBlock {
+  committee: number | Committee;
+  team: number | Team;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'committeeTeamMembers';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "committee".
+ */
+export interface Committee {
+  id: number;
+  Year: string;
+  coverImage?: (number | null) | Media;
+  teams?:
+    | {
+        team: number | Team;
+        members?:
+          | {
+              /**
+               * Select a position from the selected team
+               */
+              role: string;
+              person: number | Person;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "QuickLinksBlock".
  */
 export interface QuickLinksBlock {
@@ -1218,33 +1257,6 @@ export interface GalleryBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'gallery';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "committee".
- */
-export interface Committee {
-  id: number;
-  Year: string;
-  coverImage?: (number | null) | Media;
-  teams?:
-    | {
-        team: number | Team;
-        members?:
-          | {
-              /**
-               * Select a position from the selected team
-               */
-              role: string;
-              person: number | Person;
-              id?: string | null;
-            }[]
-          | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1672,6 +1684,7 @@ export interface PagesSelect<T extends boolean = true> {
         banner?: T | BannerBlockSelect<T>;
         splitSection?: T | SplitSectionBlockSelect<T>;
         cardGrid?: T | CardGridBlockSelect<T>;
+        committeeTeamMembers?: T | CommitteeTeamMembersBlockSelect<T>;
         quickLinks?: T | QuickLinksBlockSelect<T>;
         logoGrid?: T | LogoGridBlockSelect<T>;
         ctaBand?: T | CTABandBlockSelect<T>;
@@ -1863,6 +1876,16 @@ export interface CardGridBlockSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CommitteeTeamMembersBlock_select".
+ */
+export interface CommitteeTeamMembersBlockSelect<T extends boolean = true> {
+  committee?: T;
+  team?: T;
   id?: T;
   blockName?: T;
 }

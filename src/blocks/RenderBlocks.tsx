@@ -6,6 +6,7 @@ import { AccordionBlockComponent } from '@/blocks/Accordion/Component'
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
 import { BannerBlock } from '@/blocks/Banner/Component'
 import { CardGridBlock } from '@/blocks/CardGrid/Component'
+import { CommitteeTeamMembersBlock } from '@/blocks/CommitteeTeamMembers/Component'
 import { CTABandBlock } from '@/blocks/CTABand/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { ContentBlock } from '@/blocks/Content/Component'
@@ -21,6 +22,7 @@ const blockComponents = {
   archive: ArchiveBlock,
   banner: BannerBlock,
   cardGrid: CardGridBlock,
+  committeeTeamMembers: CommitteeTeamMembersBlock,
   ctaBand: CTABandBlock,
   content: ContentBlock,
   cta: CallToActionBlock,
