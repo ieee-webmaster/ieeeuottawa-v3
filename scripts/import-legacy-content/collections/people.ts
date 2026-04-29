@@ -12,12 +12,6 @@ import {
   upsertMediaFromLocalFile,
 } from '../helpers'
 
-const PERSON_ALIASES: Record<string, string> = {
-  'abigail-wilson': 'abby-wilson',
-  'ishaaq-ahamed': 'is-haaq-ahamed',
-  'vladislav-jidkov': 'vlad-jidkov',
-}
-
 export type PersonData = { linkedin?: string | null; name: string; slug: string }
 
 export async function loadPeople(dataDir: string) {
@@ -46,8 +40,7 @@ export function ensurePerson(people: Map<string, PersonData>, personSlug: string
 }
 
 export function resolvePersonSlug(value: string) {
-  const slug = slugify(value)
-  return PERSON_ALIASES[slug] || slug
+  return slugify(value)
 }
 
 export async function importPeople(
