@@ -212,7 +212,8 @@
         "title": {
           "en": "First-Year Coordinator",
           "fr": "Coordonnateur première année"
-        }
+        },
+        "positionEmail": "firstyear@ieeeuottawa.ca"
       },
       {
         "role": "coord",
