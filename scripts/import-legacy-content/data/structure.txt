@@ -196,8 +196,9 @@ photonics vice-chair, maryam-abbasi
 elg commissioner, abbygail-powell
 ceg commissioner, saheen-jeyarajah
 seg commissioner, daniel-thorp
+translations commissioner, saifdine sahbani
 
-first-year coordinator, sacha arseneault
+first-year coordinator, sacha-arseneault
 first-year coordinator, mohamad-sabbagh
 first-year coordinator, krisha-veera
 
@@ -211,7 +212,7 @@ external, somana-debnath
 
 2021-22
 IEEE
-chair, vladislav-jidkov
+chair, vlad-jidkov
 vice-chair, madison-smrtka
 treasurer, benjamin-flynn
 secretary, pavly-saleh
@@ -224,7 +225,7 @@ mcnaughton, juan-hiedra-primera
 
 ceg commissioner, gianluca-coletti
 elg commissioner, ethan-bowering
-seg commissioner, ishaaq-ahamed
+seg commissioner, is-haaq-ahamed
 design commissioner, valerie-grant
 equity commissioner, avneesh-chaudhary
 translations commissioner, nizar-zariouh
