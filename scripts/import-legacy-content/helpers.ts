@@ -1,4 +1,3 @@
-import crypto from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
@@ -48,8 +47,13 @@ export async function upsertMediaFromLocalFile(payload: Payload, filePath: strin
   const file = await fs.readFile(filePath)
   const extension = path.extname(filePath).toLowerCase()
   const baseName = path.basename(filePath, extension)
-  const pathHash = crypto.createHash('sha1').update(filePath).digest('hex').slice(0, 12)
-  const uploadName = `${slugify(baseName)}-${pathHash}${extension}`
+  const uploadName = `${slugify(baseName)}${extension}`
+  const uploadFile = {
+    data: file,
+    mimetype: MIME_TYPES[extension as keyof typeof MIME_TYPES] || 'application/octet-stream',
+    name: uploadName,
+    size: file.byteLength,
+  }
   const existing = (
     await payload.find({
       collection: 'media',
@@ -59,60 +63,23 @@ export async function upsertMediaFromLocalFile(payload: Payload, filePath: strin
     })
   ).docs[0]
 
-  if (existing) return existing.id
+  if (existing) {
+    const updated: Media = await payload.update({
+      collection: 'media',
+      context: IMPORT_CONTEXT,
+      data: { alt },
+      file: uploadFile,
+      id: existing.id,
+    })
 
-  const created: Media = await payload.create({
-    collection: 'media',
-    context: IMPORT_CONTEXT,
-    data: { alt },
-    file: {
-      data: file,
-      mimetype: MIME_TYPES[extension as keyof typeof MIME_TYPES] || 'application/octet-stream',
-      name: uploadName,
-      size: file.byteLength,
-    },
-  })
-
-  return created.id
-}
-
-export async function upsertMediaFromUrl(payload: Payload, url: string, alt: string) {
-  const response = await fetch(url)
-  if (!response.ok) {
-    console.warn(`Unable to download media asset: ${url}`)
-    return undefined
+    return updated.id
   }
 
-  const file = Buffer.from(await response.arrayBuffer())
-  const parsedUrl = new URL(url)
-  const extension = path.extname(parsedUrl.pathname).toLowerCase()
-  const baseName = path.basename(parsedUrl.pathname, extension) || 'legacy-asset'
-  const pathHash = crypto.createHash('sha1').update(url).digest('hex').slice(0, 12)
-  const uploadName = `${slugify(decodeURIComponent(baseName))}-${pathHash}${extension}`
-  const existing = (
-    await payload.find({
-      collection: 'media',
-      limit: 1,
-      pagination: false,
-      where: { filename: { equals: uploadName } },
-    })
-  ).docs[0]
-
-  if (existing) return existing.id
-
   const created: Media = await payload.create({
     collection: 'media',
     context: IMPORT_CONTEXT,
     data: { alt },
-    file: {
-      data: file,
-      mimetype:
-        response.headers.get('content-type') ||
-        MIME_TYPES[extension as keyof typeof MIME_TYPES] ||
-        'application/octet-stream',
-      name: uploadName,
-      size: file.byteLength,
-    },
+    file: uploadFile,
   })
 
   return created.id

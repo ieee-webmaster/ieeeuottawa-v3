@@ -1,0 +1,447 @@
+[
+  {
+    "name": "IEEE",
+    "positions": [
+      {
+        "role": "exec",
+        "title": {
+          "en": "Chair",
+          "fr": "Président"
+        },
+        "positionEmail": "chair@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "Vice Chair",
+          "fr": "Vice-président"
+        },
+        "positionEmail": "vice-chair@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "Co-Chair",
+          "fr": "Co-président"
+        },
+        "positionEmail": "chair@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "Treasurer",
+          "fr": "Trésorier"
+        },
+        "positionEmail": "treasurer@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "McNaughton Centre Director",
+          "fr": "Directeur du Centre McNaughton"
+        },
+        "positionEmail": "mcnaughton@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "Secretary",
+          "fr": "Secrétaire"
+        },
+        "positionEmail": "secretary@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "VP Internal",
+          "fr": "VP Interne"
+        },
+        "positionEmail": "internal@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "VP External",
+          "fr": "VP Externe"
+        },
+        "positionEmail": "external@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "VP Academic",
+          "fr": "VP Académique"
+        },
+        "positionEmail": "academic@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "VP Communications",
+          "fr": "VP Communications"
+        },
+        "positionEmail": "communications@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "VP Equity",
+          "fr": "VP Équité"
+        },
+        "positionEmail": "equity@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "VP Social",
+          "fr": "VP Social"
+        },
+        "positionEmail": "social@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "VP Merch",
+          "fr": "VP Merch"
+        },
+        "positionEmail": "merch@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "VP Philanthropy",
+          "fr": "VP Philanthropie"
+        }
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "Webmaster",
+          "fr": "Webmaster"
+        },
+        "positionEmail": "webmaster@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "Photonics Chair",
+          "fr": "Président photonique"
+        }
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "Photonics Vice Chair",
+          "fr": "Vice-président photonique"
+        }
+      },
+      {
+        "role": "commish",
+        "title": {
+          "en": "SEG Commissioner",
+          "fr": "Commissaire SEG"
+        },
+        "positionEmail": "seg@ieeeuottawa.ca"
+      },
+      {
+        "role": "commish",
+        "title": {
+          "en": "CEG Commissioner",
+          "fr": "Commissaire CEG"
+        },
+        "positionEmail": "ceg@ieeeuottawa.ca"
+      },
+      {
+        "role": "commish",
+        "title": {
+          "en": "ELG Commissioner",
+          "fr": "Commissaire ELG"
+        },
+        "positionEmail": "elg@ieeeuottawa.ca"
+      },
+      {
+        "role": "commish",
+        "title": {
+          "en": "Comp-Tech Commissioner",
+          "fr": "Commissaire Comp-Tech"
+        },
+        "positionEmail": "comp-tech@ieeeuottawa.ca"
+      },
+      {
+        "role": "commish",
+        "title": {
+          "en": "MDD Commissioner",
+          "fr": "Commissaire MDD"
+        },
+        "positionEmail": "bmdes@ieeeuottawa.ca"
+      },
+      {
+        "role": "commish",
+        "title": {
+          "en": "Design Commissioner",
+          "fr": "Commissaire design"
+        },
+        "positionEmail": "design@ieeeuottawa.ca"
+      },
+      {
+        "role": "commish",
+        "title": {
+          "en": "Translations Commissioner",
+          "fr": "Commissaire traductions"
+        },
+        "positionEmail": "translations@ieeeuottawa.ca"
+      },
+      {
+        "role": "coord",
+        "title": {
+          "en": "Media Coordinator",
+          "fr": "Coordonnateur médias"
+        },
+        "positionEmail": "media-outreach@ieeeuottawa.ca"
+      },
+      {
+        "role": "coord",
+        "title": {
+          "en": "Industry Coordinator",
+          "fr": "Coordonnateur industrie"
+        },
+        "positionEmail": "industry@ieeeuottawa.ca"
+      },
+      {
+        "role": "coord",
+        "title": {
+          "en": "First-Year Coordinator",
+          "fr": "Coordonnateur première année"
+        }
+      },
+      {
+        "role": "coord",
+        "title": {
+          "en": "Technical Coordinator",
+          "fr": "Coordonnateur technique"
+        },
+        "positionEmail": "technical@ieeeuottawa.ca"
+      },
+      {
+        "role": "coord",
+        "title": {
+          "en": "Software Technical Coordinator",
+          "fr": "Coordonnateur technique logiciel"
+        },
+        "positionEmail": "software-tech@ieeeuottawa.ca"
+      }
+    ]
+  },
+  {
+    "name": "WIE",
+    "positions": [
+      {
+        "role": "exec",
+        "title": {
+          "en": "Chair",
+          "fr": "Présidente"
+        },
+        "positionEmail": "wie-chair@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "Vice Chair",
+          "fr": "Vice-présidente"
+        },
+        "positionEmail": "wie-vicechair@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "Co-Chair",
+          "fr": "Co-présidente"
+        },
+        "positionEmail": "wie-chair@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "VP Finance",
+          "fr": "Finances"
+        },
+        "positionEmail": "wie-finance@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "VP External",
+          "fr": "Externe"
+        },
+        "positionEmail": "wie-external@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "VP Internal",
+          "fr": "Interne"
+        },
+        "positionEmail": "wie-internal@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "VP Communications",
+          "fr": "Communications"
+        },
+        "positionEmail": "wie-communications@ieeeuottawa.ca"
+      },
+      {
+        "role": "commish",
+        "title": {
+          "en": "Design Commissioner",
+          "fr": "Commissaire design"
+        },
+        "positionEmail": "wie-design@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "Treasurer",
+          "fr": "Trésorier"
+        }
+      }
+    ]
+  },
+  {
+    "name": "CEGSC",
+    "positions": [
+      {
+        "role": "exec",
+        "title": {
+          "en": "Chair",
+          "fr": "Président"
+        },
+        "positionEmail": "cegsc-chair@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "Vice Chair",
+          "fr": "Vice-président"
+        },
+        "positionEmail": "cegsc-vice-chair@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "Co-Chair",
+          "fr": "Co-président"
+        },
+        "positionEmail": "cegsc-chair@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "VP Events",
+          "fr": "VP Événements"
+        },
+        "positionEmail": "cegsc-events@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "VP Communications",
+          "fr": "VP Communications"
+        },
+        "positionEmail": "cegsc-communications@ieeeuottawa.ca"
+      }
+    ]
+  },
+  {
+    "name": "MDSC",
+    "positions": [
+      {
+        "role": "exec",
+        "title": {
+          "en": "Chair",
+          "fr": "Président"
+        },
+        "positionEmail": "mdsc-chair@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "Vice Chair",
+          "fr": "Vice-président"
+        }
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "Co-Chair",
+          "fr": "Co-président"
+        },
+        "positionEmail": "mdsc-chair@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "VP Events",
+          "fr": "VP Événements"
+        },
+        "positionEmail": "mdsc-events@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "VP Communications",
+          "fr": "VP Communications"
+        },
+        "positionEmail": "mdsc-communications@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "VP Francophone Affairs",
+          "fr": "VP Affaires francophones"
+        },
+        "positionEmail": "mdsc-francophoneaffairs@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "VP Sustainability",
+          "fr": "VP Durabilité"
+        }
+      },
+      {
+        "role": "commish",
+        "title": {
+          "en": "Pathway Commissioner (Education & Public Policy)",
+          "fr": "Commissaire parcours"
+        },
+        "positionEmail": "mdsc-education@ieeeuottawa.ca"
+      },
+      {
+        "role": "commish",
+        "title": {
+          "en": "Pathway Commissioner (Sustainability & Art)",
+          "fr": "Commissaire parcours (durabilité et art)"
+        },
+        "positionEmail": "mdsc-sustainability@ieeeuottawa.ca"
+      },
+      {
+        "role": "commish",
+        "title": {
+          "en": "Pathway Commissioner (Software)",
+          "fr": "Commissaire parcours (logiciel)"
+        },
+        "positionEmail": "mdsc-software@ieeeuottawa.ca"
+      },
+      {
+        "role": "coord",
+        "title": {
+          "en": "First-Year Coordinator",
+          "fr": "Coordonnateur première année"
+        },
+        "positionEmail": "mdsc-first-year@ieeeuottawa.ca"
+      }
+    ]
+  }
+]

@@ -1,0 +1,900 @@
+[
+  {
+    "year": "2025-2026",
+    "coverImageFile": "2025-2026.jpg",
+    "teams": [
+      {
+        "name": "IEEE",
+        "members": [
+          {
+            "personSlug": "jad-mghabghab",
+            "roleTitle": "Chair"
+          },
+          {
+            "personSlug": "samuel-li",
+            "roleTitle": "Vice Chair"
+          },
+          {
+            "personSlug": "pronoy-fuad",
+            "roleTitle": "Treasurer"
+          },
+          {
+            "personSlug": "sofia-jadal",
+            "roleTitle": "Secretary"
+          },
+          {
+            "personSlug": "kevin-naveen",
+            "roleTitle": "McNaughton Centre Director"
+          },
+          {
+            "personSlug": "rory-mcculloch",
+            "roleTitle": "VP External"
+          },
+          {
+            "personSlug": "syed-yead-zaman",
+            "roleTitle": "VP Academic"
+          },
+          {
+            "personSlug": "aya-debbagh",
+            "roleTitle": "VP Social"
+          },
+          {
+            "personSlug": "xavier-lermusieaux",
+            "roleTitle": "VP Equity"
+          },
+          {
+            "personSlug": "farah-el-siss",
+            "roleTitle": "VP Merch"
+          },
+          {
+            "personSlug": "jana-mghabghab",
+            "roleTitle": "VP Communications"
+          },
+          {
+            "personSlug": "sacha-arseneault",
+            "roleTitle": "Webmaster"
+          },
+          {
+            "personSlug": "kushal-jayarathna",
+            "roleTitle": "ELG Commissioner"
+          },
+          {
+            "personSlug": "daniel-kisenko",
+            "roleTitle": "CEG Commissioner"
+          },
+          {
+            "personSlug": "casper-casey",
+            "roleTitle": "SEG Commissioner"
+          },
+          {
+            "personSlug": "rocco-de-oliveira",
+            "roleTitle": "Comp-Tech Commissioner"
+          },
+          {
+            "personSlug": "abby-wilson",
+            "roleTitle": "MDD Commissioner"
+          },
+          {
+            "personSlug": "meltem-selin",
+            "roleTitle": "Design Commissioner"
+          },
+          {
+            "personSlug": "mouad-ben-lahbib",
+            "roleTitle": "Translations Commissioner"
+          },
+          {
+            "personSlug": "renato-chea",
+            "roleTitle": "Translations Commissioner"
+          },
+          {
+            "personSlug": "gulse-ongu",
+            "roleTitle": "Media Coordinator"
+          },
+          {
+            "personSlug": "mohamed-boustta",
+            "roleTitle": "Technical Coordinator"
+          },
+          {
+            "personSlug": "adam-dia",
+            "roleTitle": "Technical Coordinator"
+          },
+          {
+            "personSlug": "marina-pedrosa",
+            "roleTitle": "Industry Coordinator"
+          },
+          {
+            "personSlug": "aparna-balaji",
+            "roleTitle": "First-Year Coordinator"
+          }
+        ]
+      },
+      {
+        "name": "WIE",
+        "members": [
+          {
+            "personSlug": "somana-debnath",
+            "roleTitle": "Chair"
+          },
+          {
+            "personSlug": "stuti-pandya",
+            "roleTitle": "Vice Chair"
+          },
+          {
+            "personSlug": "luke-irvine",
+            "roleTitle": "VP Finance"
+          },
+          {
+            "personSlug": "krisha-veera",
+            "roleTitle": "VP External"
+          },
+          {
+            "personSlug": "chloe-dupont",
+            "roleTitle": "VP Internal"
+          },
+          {
+            "personSlug": "aurelie-dumas",
+            "roleTitle": "VP Communications"
+          }
+        ]
+      },
+      {
+        "name": "CEGSC",
+        "members": [
+          {
+            "personSlug": "mariia-yermolenko",
+            "roleTitle": "Chair"
+          },
+          {
+            "personSlug": "paul-chukwu",
+            "roleTitle": "Vice Chair"
+          },
+          {
+            "personSlug": "asif-rahman",
+            "roleTitle": "VP Events"
+          },
+          {
+            "personSlug": "basma-ben-taleb",
+            "roleTitle": "VP Communications"
+          }
+        ]
+      },
+      {
+        "name": "MDSC",
+        "members": [
+          {
+            "personSlug": "abby-wilson",
+            "roleTitle": "Co-Chair"
+          },
+          {
+            "personSlug": "victoria-richard",
+            "roleTitle": "Co-Chair"
+          },
+          {
+            "personSlug": "danella-nduwayo",
+            "roleTitle": "VP Events"
+          },
+          {
+            "personSlug": "darim-alladin",
+            "roleTitle": "VP Communications"
+          },
+          {
+            "personSlug": "hannah-faller",
+            "roleTitle": "Pathway Commissioner (Sustainability & Art)"
+          },
+          {
+            "personSlug": "gemma-rudnicki",
+            "roleTitle": "Pathway Commissioner (Education & Public Policy)"
+          },
+          {
+            "personSlug": "vanshika-vanshika",
+            "roleTitle": "First-Year Coordinator"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "year": "2024-2025",
+    "coverImageFile": "2024-2025.jpg",
+    "teams": [
+      {
+        "name": "IEEE",
+        "members": [
+          {
+            "personSlug": "manaal-mujeebuddin",
+            "roleTitle": "Chair"
+          },
+          {
+            "personSlug": "jad-mghabghab",
+            "roleTitle": "Vice Chair"
+          },
+          {
+            "personSlug": "frederick-andrews",
+            "roleTitle": "Treasurer"
+          },
+          {
+            "personSlug": "kevin-naveen",
+            "roleTitle": "Secretary"
+          },
+          {
+            "personSlug": "fayza-oyarekhua",
+            "roleTitle": "McNaughton Centre Director"
+          },
+          {
+            "personSlug": "eric-eaton",
+            "roleTitle": "VP Internal"
+          },
+          {
+            "personSlug": "farah-el-siss",
+            "roleTitle": "VP External"
+          },
+          {
+            "personSlug": "samuel-li",
+            "roleTitle": "VP Academic"
+          },
+          {
+            "personSlug": "quinn-murnaghan",
+            "roleTitle": "VP Social"
+          },
+          {
+            "personSlug": "xavier-lermusieaux",
+            "roleTitle": "VP Equity"
+          },
+          {
+            "personSlug": "aya-debbagh",
+            "roleTitle": "VP Merch"
+          },
+          {
+            "personSlug": "akhil-chawathe",
+            "roleTitle": "VP Communications"
+          },
+          {
+            "personSlug": "sacha-arseneault",
+            "roleTitle": "Webmaster"
+          },
+          {
+            "personSlug": "ayush-sookun",
+            "roleTitle": "ELG Commissioner"
+          },
+          {
+            "personSlug": "mingye-chen",
+            "roleTitle": "CEG Commissioner"
+          },
+          {
+            "personSlug": "idika-poudel",
+            "roleTitle": "SEG Commissioner"
+          },
+          {
+            "personSlug": "abby-wilson",
+            "roleTitle": "MDD Commissioner"
+          },
+          {
+            "personSlug": "ria-prasana",
+            "roleTitle": "Design Commissioner"
+          },
+          {
+            "personSlug": "josue-dazogbo",
+            "roleTitle": "Translations Commissioner"
+          }
+        ]
+      },
+      {
+        "name": "WIE",
+        "members": [
+          {
+            "personSlug": "madison-moran",
+            "roleTitle": "Chair"
+          },
+          {
+            "personSlug": "somana-debnath",
+            "roleTitle": "Vice Chair"
+          },
+          {
+            "personSlug": "frederick-andrews",
+            "roleTitle": "Treasurer"
+          },
+          {
+            "personSlug": "stuti-pandya",
+            "roleTitle": "VP External"
+          },
+          {
+            "personSlug": "aurelie-dumas",
+            "roleTitle": "VP Internal"
+          },
+          {
+            "personSlug": "jana-mghabghab",
+            "roleTitle": "VP Communications"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "year": "2023-2024",
+    "coverImageFile": "2023-2024.jpg",
+    "teams": [
+      {
+        "name": "IEEE",
+        "members": [
+          {
+            "personSlug": "juan-hiedra-primera",
+            "roleTitle": "Chair"
+          },
+          {
+            "personSlug": "steven-li",
+            "roleTitle": "Vice Chair"
+          },
+          {
+            "personSlug": "frederick-andrews",
+            "roleTitle": "Treasurer"
+          },
+          {
+            "personSlug": "disala-de-silva",
+            "roleTitle": "McNaughton Centre Director"
+          },
+          {
+            "personSlug": "saheen-jeyarajah",
+            "roleTitle": "Secretary"
+          },
+          {
+            "personSlug": "jad-mghabghab",
+            "roleTitle": "VP Internal"
+          },
+          {
+            "personSlug": "farah-el-siss",
+            "roleTitle": "VP External"
+          },
+          {
+            "personSlug": "john-scales",
+            "roleTitle": "VP Academic"
+          },
+          {
+            "personSlug": "josh-gnanapragasam",
+            "roleTitle": "VP Social"
+          },
+          {
+            "personSlug": "deniz-jasarbasic",
+            "roleTitle": "VP Equity"
+          },
+          {
+            "personSlug": "sacha-arseneault",
+            "roleTitle": "VP Merch"
+          },
+          {
+            "personSlug": "daniel-thorp",
+            "roleTitle": "VP Communications"
+          },
+          {
+            "personSlug": "pavly-saleh",
+            "roleTitle": "VP Philanthropy"
+          },
+          {
+            "personSlug": "stefan-todorovic",
+            "roleTitle": "Webmaster"
+          },
+          {
+            "personSlug": "quinn-murnaghan",
+            "roleTitle": "ELG Commissioner"
+          },
+          {
+            "personSlug": "eric-eaton",
+            "roleTitle": "CEG Commissioner"
+          },
+          {
+            "personSlug": "rafael-arif",
+            "roleTitle": "SEG Commissioner"
+          },
+          {
+            "personSlug": "xavier-lermusieaux",
+            "roleTitle": "Translations Commissioner"
+          }
+        ]
+      },
+      {
+        "name": "WIE",
+        "members": [
+          {
+            "personSlug": "manaal-mujeebuddin",
+            "roleTitle": "Chair"
+          },
+          {
+            "personSlug": "madison-moran",
+            "roleTitle": "Vice Chair"
+          },
+          {
+            "personSlug": "emilie-des-rosiers",
+            "roleTitle": "Treasurer"
+          },
+          {
+            "personSlug": "nyah-wagner",
+            "roleTitle": "Design Commissioner"
+          },
+          {
+            "personSlug": "somana-debnath",
+            "roleTitle": "VP External"
+          },
+          {
+            "personSlug": "fayza-oyarekhua",
+            "roleTitle": "VP Internal"
+          },
+          {
+            "personSlug": "rachel-olugbemiro",
+            "roleTitle": "VP Communications"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "year": "2022-2023",
+    "coverImageFile": "2022-2023.jpg",
+    "teams": [
+      {
+        "name": "IEEE",
+        "members": [
+          {
+            "personSlug": "rikki-romana",
+            "roleTitle": "Chair"
+          },
+          {
+            "personSlug": "steven-li",
+            "roleTitle": "Vice Chair"
+          },
+          {
+            "personSlug": "benjamin-flynn",
+            "roleTitle": "Treasurer"
+          },
+          {
+            "personSlug": "juan-hiedra-primera",
+            "roleTitle": "McNaughton Centre Director"
+          },
+          {
+            "personSlug": "nizar-zariouh",
+            "roleTitle": "Secretary"
+          },
+          {
+            "personSlug": "mingye-chen",
+            "roleTitle": "VP Internal"
+          },
+          {
+            "personSlug": "disala-de-silva",
+            "roleTitle": "VP External"
+          },
+          {
+            "personSlug": "stefan-todorovic",
+            "roleTitle": "VP Academic"
+          },
+          {
+            "personSlug": "ethan-bowering",
+            "roleTitle": "VP Social"
+          },
+          {
+            "personSlug": "anjaliya-sonnilal",
+            "roleTitle": "VP Equity"
+          },
+          {
+            "personSlug": "sultan-oloyede",
+            "roleTitle": "VP Merch"
+          },
+          {
+            "personSlug": "pavly-saleh",
+            "roleTitle": "VP Communications"
+          },
+          {
+            "personSlug": "loic-kandikandi",
+            "roleTitle": "Webmaster"
+          },
+          {
+            "personSlug": "omid-mozafar",
+            "roleTitle": "Photonics Chair"
+          },
+          {
+            "personSlug": "maryam-abbasi",
+            "roleTitle": "Photonics Vice Chair"
+          },
+          {
+            "personSlug": "abbygail-powell",
+            "roleTitle": "ELG Commissioner"
+          },
+          {
+            "personSlug": "saheen-jeyarajah",
+            "roleTitle": "CEG Commissioner"
+          },
+          {
+            "personSlug": "daniel-thorp",
+            "roleTitle": "SEG Commissioner"
+          },
+          {
+            "personSlug": "saifdine-sahbani",
+            "roleTitle": "Translations Commissioner"
+          },
+          {
+            "personSlug": "sacha-arseneault",
+            "roleTitle": "First-Year Coordinator"
+          },
+          {
+            "personSlug": "mohamad-sabbagh",
+            "roleTitle": "First-Year Coordinator"
+          },
+          {
+            "personSlug": "krisha-veera",
+            "roleTitle": "First-Year Coordinator"
+          }
+        ]
+      },
+      {
+        "name": "WIE",
+        "members": [
+          {
+            "personSlug": "sophie-tomlin",
+            "roleTitle": "Chair"
+          },
+          {
+            "personSlug": "kaitlyn-dompaul",
+            "roleTitle": "Vice Chair"
+          },
+          {
+            "personSlug": "rachel-wendling",
+            "roleTitle": "Treasurer"
+          },
+          {
+            "personSlug": "nyah-wagner",
+            "roleTitle": "Design Commissioner"
+          },
+          {
+            "personSlug": "somana-debnath",
+            "roleTitle": "VP External"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "year": "2021-2022",
+    "coverImageFile": "2021-2022.jpg",
+    "teams": [
+      {
+        "name": "IEEE",
+        "members": [
+          {
+            "personSlug": "vlad-jidkov",
+            "roleTitle": "Chair"
+          },
+          {
+            "personSlug": "madison-smrtka",
+            "roleTitle": "Vice Chair"
+          },
+          {
+            "personSlug": "benjamin-flynn",
+            "roleTitle": "Treasurer"
+          },
+          {
+            "personSlug": "pavly-saleh",
+            "roleTitle": "Secretary"
+          },
+          {
+            "personSlug": "steven-li",
+            "roleTitle": "VP Internal"
+          },
+          {
+            "personSlug": "rikki-romana",
+            "roleTitle": "VP Academic"
+          },
+          {
+            "personSlug": "sultan-oloyede",
+            "roleTitle": "VP Social"
+          },
+          {
+            "personSlug": "alae-boufarrachene",
+            "roleTitle": "VP Communications"
+          },
+          {
+            "personSlug": "loic-kandikandi",
+            "roleTitle": "Webmaster"
+          },
+          {
+            "personSlug": "juan-hiedra-primera",
+            "roleTitle": "McNaughton Centre Director"
+          },
+          {
+            "personSlug": "gianluca-coletti",
+            "roleTitle": "CEG Commissioner"
+          },
+          {
+            "personSlug": "ethan-bowering",
+            "roleTitle": "ELG Commissioner"
+          },
+          {
+            "personSlug": "is-haaq-ahamed",
+            "roleTitle": "SEG Commissioner"
+          },
+          {
+            "personSlug": "valerie-grant",
+            "roleTitle": "Design Commissioner"
+          },
+          {
+            "personSlug": "avneesh-chaudhary",
+            "roleTitle": "VP Equity"
+          },
+          {
+            "personSlug": "nizar-zariouh",
+            "roleTitle": "Translations Commissioner"
+          }
+        ]
+      },
+      {
+        "name": "WIE",
+        "members": [
+          {
+            "personSlug": "victoria-hough",
+            "roleTitle": "Chair"
+          },
+          {
+            "personSlug": "eda-su-bicer",
+            "roleTitle": "Vice Chair"
+          },
+          {
+            "personSlug": "kaitlyn-dompaul",
+            "roleTitle": "Design Commissioner"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "year": "2020-2021",
+    "coverImageFile": "2020-2021.jpg",
+    "teams": [
+      {
+        "name": "IEEE",
+        "members": [
+          {
+            "personSlug": "michal-ridner",
+            "roleTitle": "Chair"
+          },
+          {
+            "personSlug": "madison-smrtka",
+            "roleTitle": "Vice Chair"
+          },
+          {
+            "personSlug": "sanat-nayar",
+            "roleTitle": "Treasurer"
+          },
+          {
+            "personSlug": "victoria-hough",
+            "roleTitle": "Secretary"
+          },
+          {
+            "personSlug": "alois-clerc",
+            "roleTitle": "VP External"
+          },
+          {
+            "personSlug": "ali-jafri",
+            "roleTitle": "VP Internal"
+          },
+          {
+            "personSlug": "vlad-jidkov",
+            "roleTitle": "VP Academic"
+          },
+          {
+            "personSlug": "mohit-kapur",
+            "roleTitle": "VP Social"
+          },
+          {
+            "personSlug": "nicholas-morin",
+            "roleTitle": "VP Communications"
+          },
+          {
+            "personSlug": "ryan-fleck",
+            "roleTitle": "Webmaster"
+          },
+          {
+            "personSlug": "omer-abubaker",
+            "roleTitle": "McNaughton Centre Director"
+          },
+          {
+            "personSlug": "khaled-atia",
+            "roleTitle": "Photonics Chair"
+          },
+          {
+            "personSlug": "neda-nouri",
+            "roleTitle": "Photonics Vice Chair"
+          },
+          {
+            "personSlug": "sirjan-singh-rekhi",
+            "roleTitle": "CEG Commissioner"
+          },
+          {
+            "personSlug": "erik-cassidy",
+            "roleTitle": "ELG Commissioner"
+          },
+          {
+            "personSlug": "justin-proulx",
+            "roleTitle": "SEG Commissioner"
+          },
+          {
+            "personSlug": "alae-boufarrachene",
+            "roleTitle": "Translations Commissioner"
+          }
+        ]
+      },
+      {
+        "name": "WIE",
+        "members": [
+          {
+            "personSlug": "shriya-gundala",
+            "roleTitle": "Chair"
+          },
+          {
+            "personSlug": "marla-jazzar",
+            "roleTitle": "Vice Chair"
+          },
+          {
+            "personSlug": "elma-khandaker",
+            "roleTitle": "Design Commissioner"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "year": "2019-2020",
+    "coverImageFile": "2019-2020.jpg",
+    "teams": [
+      {
+        "name": "IEEE",
+        "members": [
+          {
+            "personSlug": "robert-conrad",
+            "roleTitle": "Chair"
+          },
+          {
+            "personSlug": "amar-jasarbasic",
+            "roleTitle": "Vice Chair"
+          },
+          {
+            "personSlug": "sanat-nayar",
+            "roleTitle": "Treasurer"
+          },
+          {
+            "personSlug": "sean-mcasey",
+            "roleTitle": "Secretary"
+          },
+          {
+            "personSlug": "mahyar-gorji",
+            "roleTitle": "VP External"
+          },
+          {
+            "personSlug": "tae-kim",
+            "roleTitle": "VP Internal"
+          },
+          {
+            "personSlug": "marla-jazzar",
+            "roleTitle": "VP Academic"
+          },
+          {
+            "personSlug": "madison-smrtka",
+            "roleTitle": "VP Social"
+          },
+          {
+            "personSlug": "tony-kim",
+            "roleTitle": "VP Communications"
+          },
+          {
+            "personSlug": "nevin-ws-ganesan",
+            "roleTitle": "Webmaster"
+          },
+          {
+            "personSlug": "scott-fulton",
+            "roleTitle": "McNaughton Centre Director"
+          },
+          {
+            "personSlug": "erik-cassidy",
+            "roleTitle": "CEG Commissioner"
+          },
+          {
+            "personSlug": "reethi-paul",
+            "roleTitle": "ELG Commissioner"
+          },
+          {
+            "personSlug": "alois-clerc",
+            "roleTitle": "SEG Commissioner"
+          },
+          {
+            "personSlug": "ellie-rumsey",
+            "roleTitle": "Design Commissioner"
+          },
+          {
+            "personSlug": "nicholas-morin",
+            "roleTitle": "Translations Commissioner"
+          }
+        ]
+      },
+      {
+        "name": "WIE",
+        "members": [
+          {
+            "personSlug": "michal-ridner",
+            "roleTitle": "Chair"
+          },
+          {
+            "personSlug": "shriya-gundala",
+            "roleTitle": "Vice Chair"
+          },
+          {
+            "personSlug": "michelle-tang",
+            "roleTitle": "Design Commissioner"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "year": "2018-2019",
+    "coverImageFile": "2018-2019.jpg",
+    "teams": [
+      {
+        "name": "IEEE",
+        "members": [
+          {
+            "personSlug": "heemel-saha",
+            "roleTitle": "Chair"
+          },
+          {
+            "personSlug": "amar-jasarbasic",
+            "roleTitle": "Vice Chair"
+          },
+          {
+            "personSlug": "robert-conrad",
+            "roleTitle": "Treasurer"
+          },
+          {
+            "personSlug": "michal-ridner",
+            "roleTitle": "Secretary"
+          },
+          {
+            "personSlug": "aly-abdelrahman",
+            "roleTitle": "VP External"
+          },
+          {
+            "personSlug": "anushka-paliwal",
+            "roleTitle": "VP Internal"
+          },
+          {
+            "personSlug": "melody-habbouche",
+            "roleTitle": "VP Academic"
+          },
+          {
+            "personSlug": "john-zhao",
+            "roleTitle": "VP Social"
+          },
+          {
+            "personSlug": "madison-smrtka",
+            "roleTitle": "VP Communications"
+          },
+          {
+            "personSlug": "rushil-perera",
+            "roleTitle": "Webmaster"
+          },
+          {
+            "personSlug": "ivor-benderavage",
+            "roleTitle": "McNaughton Centre Director"
+          }
+        ]
+      },
+      {
+        "name": "WIE",
+        "members": [
+          {
+            "personSlug": "linda-tang",
+            "roleTitle": "Chair"
+          },
+          {
+            "personSlug": "mikeli-habash",
+            "roleTitle": "Vice Chair"
+          }
+        ]
+      }
+    ]
+  }
+]
