@@ -6,6 +6,7 @@ import { Accordion } from '@/blocks/Accordion/config'
 import { Archive } from '@/blocks/ArchiveBlock/config'
 import { Banner } from '@/blocks/Banner/config'
 import { CardGrid } from '@/blocks/CardGrid/config'
+import { CommitteeTeamMembers } from '@/blocks/CommitteeTeamMembers/config'
 import { CTABand } from '@/blocks/CTABand/config'
 import { CallToAction } from '@/blocks/CallToAction/config'
 import { Content } from '@/blocks/Content/config'
@@ -91,6 +92,7 @@ export const Pages: CollectionConfig<'pages'> = {
                 Banner,
                 SplitSection,
                 CardGrid,
+                CommitteeTeamMembers,
                 QuickLinks,
                 LogoGrid,
                 CTABand,
