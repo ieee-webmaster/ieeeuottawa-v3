@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { cleanText, normalizeOldSiteUrl, slugify } from './helpers'
+import { cleanText, normalizeOldSiteUrl } from './helpers'
 
 const SITE_URL = 'https://ieeeuottawa.ca'
 const DATA_DIR = path.resolve(process.cwd(), 'scripts/import-legacy-content/data')
@@ -39,7 +39,7 @@ type OldPage = {
 async function main() {
   await fs.mkdir(DATA_DIR, { recursive: true })
 
-  const [eventsPage, docsPage] = await Promise.all([fetchOldPage('/events/'), fetchOldPage('/documents/')])
+  const docsPage = await fetchOldPage('/documents/')
   const pages = await Promise.all(
     ['/', '/about/', '/mcnaughton-centre/', '/office-hours/'].map(async (route) =>
       pageFromOldData(route, await fetchOldPage(route)),
@@ -47,7 +47,6 @@ async function main() {
   )
 
   await Promise.all([
-    writeJson('events.json', eventsFromOldData(eventsPage)),
     writeJson('docs.json', docsFromOldData(docsPage)),
     writeJson('pages.json', pages),
   ])
@@ -62,33 +61,6 @@ async function fetchOldPage(route: string): Promise<OldPage> {
   if (!match) throw new Error(`Unable to find Next.js page data for ${route}`)
 
   return JSON.parse(match[1]).props.pageProps.page
-}
-
-function eventsFromOldData(page: OldPage) {
-  return (page.sections ?? [])
-    .flatMap((section) => section.items ?? [])
-    .map((item) => {
-      const english = extractLocation(cleanText(item.text), ['Location'])
-      const french = extractLocation(cleanText(item.textFr), ['Lieu', 'Location'])
-      const date = parseEventDate(item.subtitle || item.subtitleFr || '')
-      if (!item.title || !date) return undefined
-
-      const description = english.body || `${item.title} at ${english.location || 'uOttawa'}`
-      return {
-        actionUrl: normalizeOldSiteUrl(item.actions?.find((action) => action.url)?.url),
-        date,
-        description,
-        descriptionFr: french.body || cleanText(item.textFr) || description,
-        imageAlt: item.featuredImage?.altText || item.title,
-        imageUrl: normalizeOldSiteUrl(item.featuredImage?.url),
-        location: english.location || 'uOttawa',
-        locationFr: french.location || english.location || 'uOttawa',
-        slug: slugify(`${item.title}-${date.slice(0, 10)}`),
-        title: item.title,
-        titleFr: item.titleFr || item.title,
-      }
-    })
-    .filter(Boolean)
 }
 
 function docsFromOldData(page: OldPage) {
@@ -168,60 +140,12 @@ function sectionText(section: OldSection | undefined, locale: 'en' | 'fr' = 'en'
   return [title, subtitle, text, ...items].filter(Boolean).join('\n\n')
 }
 
-function extractLocation(rawText: string | undefined, prefixes: string[]) {
-  if (!rawText) return {}
-  const blocks = rawText
-    .split(/\n{2,}/)
-    .map((block) => block.trim())
-    .filter(Boolean)
-  if (!blocks.length) return {}
-
-  const firstBlock = blocks[0].replace(/\s*\n\s*/g, ' ').trim()
-  for (const prefix of prefixes) {
-    const match = firstBlock.match(new RegExp(`^${prefix}:\\s*(.+)$`, 'i'))
-    if (match) return { body: blocks.slice(1).join('\n\n').trim() || undefined, location: match[1].trim() }
-  }
-
-  return { body: rawText }
-}
-
 function parseMeetingDate(value?: string | null) {
   if (!value) return undefined
   const iso = value.match(/(\d{4}-\d{2}-\d{2})/)
   if (iso) return iso[1]
   const slashed = value.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/)
   if (slashed) return `${slashed[3]}-${slashed[1].padStart(2, '0')}-${slashed[2].padStart(2, '0')}`
-}
-
-function parseEventDate(rawValue: string) {
-  const isoDate = parseMeetingDate(rawValue)
-  if (!isoDate) return undefined
-
-  const normalized = rawValue.replace(/\s+/g, ' ').trim()
-  const [, fragment = ''] = normalized.split(',', 2)
-  const [startFragment, endFragment = ''] = fragment.split(/\s*[-–]\s*/)
-  const rangeMeridiem = endFragment.match(/\b(AM|PM)\b/i)?.[1]
-  const match = startFragment.trim().match(/(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?/i)
-  let hours = 0
-  let minutes = 0
-
-  if (fragment && match) {
-    hours = Number(match[1])
-    minutes = Number(match[2] || '0')
-    const meridiem = (match[3] || rangeMeridiem || '').toUpperCase()
-    if (meridiem === 'AM' && hours === 12) hours = 0
-    if (meridiem === 'PM' && hours < 12) hours += 12
-  }
-
-  return new Date(
-    Date.UTC(
-      Number(isoDate.slice(0, 4)),
-      Number(isoDate.slice(5, 7)) - 1,
-      Number(isoDate.slice(8, 10)),
-      hours,
-      minutes,
-    ),
-  ).toISOString()
 }
 
 async function writeJson(fileName: string, data: unknown) {

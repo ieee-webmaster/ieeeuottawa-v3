@@ -1,3 +1,6 @@
+import fs from 'node:fs/promises'
+import path from 'node:path'
+
 import type { Team } from '@/payload-types'
 import { type Payload } from 'payload'
 
@@ -83,35 +86,16 @@ export function parseTeams(raw: string) {
   return teams
 }
 
-export function applyPositionEmails(raw: string, teams: Map<string, TeamData>) {
-  const sectionStart = raw.indexOf('Emails:')
-  if (sectionStart === -1) return
+export async function applyPositionEmails(dataDir: string, teams: Map<string, TeamData>) {
+  const entries = JSON.parse(
+    await fs.readFile(path.join(dataDir, 'position-emails.json'), 'utf8'),
+  ) as Array<{ email: string; position: string; team: string }>
 
-  let currentTeam: TeamData | undefined
-
-  for (const line of raw
-    .slice(sectionStart + 'Emails:'.length)
-    .split('\n')
-    .map((entry) => entry.trim())
-    .filter(Boolean)) {
-    if (/^-+$/.test(line)) continue
-
-    const team = teams.get(line.replace(/:$/, ''))
-    if (team) {
-      currentTeam = team
-      continue
-    }
-
-    if (!currentTeam) continue
-
-    const entry = parsePositionEmail(line)
-    if (!entry) continue
-
-    const position = findPosition(currentTeam, entry.position)
+  for (const entry of entries) {
+    const team = teams.get(entry.team)
+    const position = team ? findPosition(team, entry.position) : undefined
     if (!position) {
-      console.warn(
-        `Position email did not match a team position: ${currentTeam.name} / ${entry.position}`,
-      )
+      console.warn(`Position email did not match a team position: ${entry.team} / ${entry.position}`)
       continue
     }
 
@@ -222,18 +206,4 @@ function splitList(value: string) {
     .split(',')
     .map((entry) => entry.trim())
     .filter(Boolean)
-}
-
-function parsePositionEmail(line: string) {
-  const parts = line.split(',').map((entry) => entry.trim())
-  if (parts.length >= 2 && parts[0] && parts[1]) {
-    return { email: parts[1], position: parts[0] }
-  }
-
-  if (!line.includes('@')) return undefined
-
-  return {
-    email: line,
-    position: line.split('@', 1)[0],
-  }
 }
