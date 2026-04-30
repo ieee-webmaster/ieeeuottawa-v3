@@ -37,7 +37,12 @@
     "landingDescription": "Explore our archive of official documents, meeting minutes, and miscellaneous documents.",
     "landingDescriptionCont": " Select an academic year to view its specific documentation.",
     "noYears": "No archives have been published yet.",
-    "archiveLabel": "View Archives"
+    "archiveLabel": "View Archives",
+    "archiveEyebrow": "Archive",
+    "allYears": "All Years",
+    "generalDocuments": "General Documents",
+    "meetingMinutes": "Meeting Minutes",
+    "otherDocuments": "Other Documents"
   },
   "committee": {
     "pageTitle": "Committees",

@@ -38,7 +38,12 @@
     "landingDescription": "Explorez notre archive de documents officiels, les procès-verbaux de réunions et les documents divers.",
     "landingDescriptionCont": " Sélectionnez une année académique pour voir sa documentation spécifique.",
     "noYears": "Aucune archive n'a encore été publiée.",
-    "archiveLabel": "Voir les Archives"
+    "archiveLabel": "Voir les Archives",
+    "archiveEyebrow": "Archive",
+    "allYears": "Toutes les années",
+    "generalDocuments": "Documents généraux",
+    "meetingMinutes": "Procès-verbaux",
+    "otherDocuments": "Autres documents"
   },
   "committee": {
     "pageTitle": "Comités",

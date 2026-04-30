@@ -1,9 +1,18 @@
 import Link from 'next/link'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
-import { FolderArchive, ArrowRight } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
-import type { Event, Config } from '@/payload-types'
+import type { Config } from '@/payload-types'
+import {
+  Eyebrow,
+  IndexNumber,
+  SectionShell,
+  themeMutedText,
+  themeRule,
+  type BlockTheme,
+} from '@/blocks/_shared'
+import { cn } from '@/utilities/ui'
 
 type Args = {
   params: Promise<{ locale: Config['locale'] }>
@@ -25,47 +34,64 @@ export default async function DocumentsPage({ params: paramsPromise }: Args) {
     namespace: 'docs',
   })
 
-  return (
-    <main className="max-w-7xl mx-auto px-4 sm: px-6 lg:px-8 py-16">
-      <header className="max-w-3xl mx-auto text-center mb-16">
-        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 mb-6">
-          {t('title')}
-        </h1>
+  const theme: BlockTheme = 'default'
+  const total = docs.length
 
-        <p className="text-lg text-gray-600 leading-relaxed">
-          {t('landingDescription')}
-          {t('landingDescriptionCont')}
-        </p>
+  return (
+    <SectionShell theme={theme} padding="py-20 md:py-28">
+      <header className="mb-12 grid gap-6 md:mb-16 md:grid-cols-12 md:items-end md:gap-10">
+        <div className="space-y-5 md:col-span-7">
+          <Eyebrow theme={theme}>{t('archiveLabel') || 'View Archives'}</Eyebrow>
+          <h1 className="text-balance text-4xl font-medium leading-[1.05] tracking-tight sm:text-5xl md:text-[3.25rem]">
+            {t('title')}
+          </h1>
+        </div>
+        <div className="md:col-span-5">
+          <p className={cn('text-base leading-relaxed', themeMutedText[theme])}>
+            {t('landingDescription')}
+            {t('landingDescriptionCont')}
+          </p>
+        </div>
       </header>
 
+      <div className={cn('h-px w-full', themeRule[theme])} />
+
       {docs.length === 0 ? (
-        <div className="text-center p-12 border-2 border-dashed border-gray-200 rounded-2xl text-gray-500 bg-gray-50">
+        <div className={cn('py-20 text-center text-sm', themeMutedText[theme])}>
           {t('noYears')}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {docs.map((doc) => (
-            <Link
+        <ul role="list" className="divide-y divide-foreground/10">
+          {docs.map((doc, index) => (
+            <li
               key={doc.id}
-              href={`/documents/${doc.year}`}
-              className="group flex items-center justify-between p-8 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg hover:border-[#03164f]/50 hover:-translate-y-1 transition-all duration-300"
+              className="group relative focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary"
             >
-              <div className="flex flex-col pr-4">
-                <span className="text-4xl font-extrabold text-gray-900 group-hover:text-[#03164f] tracking-tight transition-colors">
+              <Link
+                href={`/documents/${doc.year}`}
+                className="absolute inset-0 z-10 focus-visible:outline-none"
+              >
+                <span className="sr-only">{doc.year}</span>
+              </Link>
+              <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-6 gap-y-2 py-8 transition-all duration-300 group-hover:bg-foreground/[0.025] group-hover:pl-3 md:py-10">
+                <IndexNumber
+                  value={index + 1}
+                  total={total}
+                  theme={theme}
+                  className="self-center"
+                />
+                <span className="text-balance text-4xl font-medium leading-none tracking-tight transition-colors group-hover:text-primary md:text-5xl">
                   {doc.year}
                 </span>
-                <span className="text-xs font-bold text-gray-400 mt-1.5 tracking-wider uppercase">
-                  {t('archiveLabel') || 'View Archives'}
-                </span>
+                <ArrowUpRight
+                  aria-hidden="true"
+                  className="h-5 w-5 self-center text-primary transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                />
               </div>
-
-              <div className="w-14 h-14 shrink-0 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-[#03164f] transition-all duration-300">
-                <ArrowRight className="w-6 h-6 text-[#03164f] group-hover:text-white transition-colors duration-300 " />
-              </div>
-            </Link>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
-    </main>
+    </SectionShell>
   )
 }
