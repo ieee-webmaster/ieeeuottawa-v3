@@ -21,8 +21,8 @@ export const themeRule: Record<BlockTheme, string> = {
 }
 
 export const themeMutedText: Record<BlockTheme, string> = {
-  default: 'text-muted-foreground',
-  muted: 'text-muted-foreground',
+  default: 'text-foreground',
+  muted: 'text-foreground',
   accent: 'text-foreground/70',
   dark: 'text-white/65',
 }

@@ -1,7 +1,7 @@
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import { notFound } from 'next/navigation'
-import { Doc, Config } from '@/payload-types'
+import { Config } from '@/payload-types'
 import { YearlyDocument } from '../_components/YearlyDocument'
 
 export async function generateStaticParams() {
@@ -46,11 +46,11 @@ export default async function DocsPage({ params: paramsPromise }: Args) {
     limit: 1,
   })
 
-  const docs = result.docs[0] as Doc
+  const doc = result.docs[0]
 
-  if (!docs) {
+  if (!doc) {
     return notFound()
   }
 
-  return YearlyDocument(docs)
+  return await YearlyDocument(doc, locale)
 }
