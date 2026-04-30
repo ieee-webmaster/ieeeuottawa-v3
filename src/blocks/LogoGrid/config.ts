@@ -36,6 +36,8 @@ const logoItemFields: Field[] = [
 export const LogoGrid: Block = {
   slug: 'logoGrid',
   interfaceName: 'LogoGridBlock',
+  imageURL: '/admin/block-previews/logo-grid.svg',
+  imageAltText: 'Logo Grid block preview',
   fields: [
     {
       name: 'eyebrow',

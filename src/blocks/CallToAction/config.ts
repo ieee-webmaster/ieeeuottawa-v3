@@ -12,6 +12,8 @@ import { linkGroup } from '@/fields/linkGroup'
 export const CallToAction: Block = {
   slug: 'cta',
   interfaceName: 'CallToActionBlock',
+  imageURL: '/admin/block-previews/cta.svg',
+  imageAltText: 'Call to Action block preview',
   fields: [
     {
       name: 'richText',

@@ -39,6 +39,8 @@ const cardFields: Field[] = [
 export const CardGrid: Block = {
   slug: 'cardGrid',
   interfaceName: 'CardGridBlock',
+  imageURL: '/admin/block-previews/card-grid.svg',
+  imageAltText: 'Card Grid block preview',
   fields: [
     {
       name: 'eyebrow',

@@ -3,6 +3,8 @@ import type { Block } from 'payload'
 export const CommitteeTeamMembers: Block = {
   slug: 'committeeTeamMembers',
   interfaceName: 'CommitteeTeamMembersBlock',
+  imageURL: '/admin/block-previews/committee-team-members.svg',
+  imageAltText: 'Committee Team Members block preview',
   fields: [
     {
       name: 'committee',

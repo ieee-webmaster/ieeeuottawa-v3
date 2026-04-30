@@ -19,6 +19,8 @@ const quickLinkFields: Field[] = [
 export const QuickLinks: Block = {
   slug: 'quickLinks',
   interfaceName: 'QuickLinksBlock',
+  imageURL: '/admin/block-previews/quick-links.svg',
+  imageAltText: 'Quick Links block preview',
   fields: [
     {
       name: 'eyebrow',

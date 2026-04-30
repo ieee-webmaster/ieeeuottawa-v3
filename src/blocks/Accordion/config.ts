@@ -11,6 +11,8 @@ import { themeField } from '@/blocks/theme'
 export const Accordion: Block = {
   slug: 'accordion',
   interfaceName: 'AccordionBlock',
+  imageURL: '/admin/block-previews/accordion.svg',
+  imageAltText: 'Accordion block preview',
   fields: [
     {
       name: 'eyebrow',
