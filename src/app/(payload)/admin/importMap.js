@@ -19,6 +19,7 @@ import { HorizontalRuleFeatureClient as HorizontalRuleFeatureClient_e70f5e05f09f
 import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { FolderTableCell as FolderTableCell_ab83ff7e88da8d3530831f296ec4756a } from '@payloadcms/ui/rsc'
 import { FolderField as FolderField_ab83ff7e88da8d3530831f296ec4756a } from '@payloadcms/ui/rsc'
+import { TeamPositionRowLabel as TeamPositionRowLabel_52705664ac974051b20e1982444a42e1 } from '@/collections/Teams/RowLabel'
 import { CommitteePositionSelect as CommitteePositionSelect_246c74b4fcdbd351657ffb7a1bf4fcca } from '../../../components/CommitteePositionSelect'
 import { CommitteeMemberRowLabel as CommitteeMemberRowLabel_558617eb9db307ac4d2aa657a24a7e0f } from '@/collections/Committees/RowLabel'
 import { CommitteeTeamRowLabel as CommitteeTeamRowLabel_558617eb9db307ac4d2aa657a24a7e0f } from '@/collections/Committees/RowLabel'
@@ -54,6 +55,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/ui/rsc#FolderTableCell": FolderTableCell_ab83ff7e88da8d3530831f296ec4756a,
   "@payloadcms/ui/rsc#FolderField": FolderField_ab83ff7e88da8d3530831f296ec4756a,
+  "@/collections/Teams/RowLabel#TeamPositionRowLabel": TeamPositionRowLabel_52705664ac974051b20e1982444a42e1,
   "/components/CommitteePositionSelect#CommitteePositionSelect": CommitteePositionSelect_246c74b4fcdbd351657ffb7a1bf4fcca,
   "@/collections/Committees/RowLabel#CommitteeMemberRowLabel": CommitteeMemberRowLabel_558617eb9db307ac4d2aa657a24a7e0f,
   "@/collections/Committees/RowLabel#CommitteeTeamRowLabel": CommitteeTeamRowLabel_558617eb9db307ac4d2aa657a24a7e0f,

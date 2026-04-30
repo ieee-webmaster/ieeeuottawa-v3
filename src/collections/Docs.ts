@@ -30,6 +30,7 @@ export const Docs: CollectionConfig = {
       type: 'array',
       label: 'General Documents',
       admin: {
+        initCollapsed: true,
         description: 'General documents, bylaws, constitutions, etc.',
       },
       fields: [
@@ -64,6 +65,7 @@ export const Docs: CollectionConfig = {
       type: 'array',
       label: 'Meeting Minutes',
       admin: {
+        initCollapsed: true,
         description: 'Meeting minutes and agendas',
       },
       fields: [
@@ -106,6 +108,7 @@ export const Docs: CollectionConfig = {
       type: 'array',
       label: 'Other Documents',
       admin: {
+        initCollapsed: true,
         description: "Any other documents that don't fit into the above categories",
       },
       fields: [
