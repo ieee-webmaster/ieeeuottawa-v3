@@ -14,10 +14,10 @@ export const sectionShellClasses: Record<BlockTheme, string> = {
 }
 
 export const themeRule: Record<BlockTheme, string> = {
-  default: 'bg-foreground/15',
-  muted: 'bg-foreground/15',
+  default: 'bg-foreground/25',
+  muted: 'bg-foreground/25',
   accent: 'bg-primary/25',
-  dark: 'bg-white/15',
+  dark: 'bg-white/25',
 }
 
 export const themeMutedText: Record<BlockTheme, string> = {

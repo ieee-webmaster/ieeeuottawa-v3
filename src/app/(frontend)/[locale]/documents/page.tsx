@@ -61,7 +61,7 @@ export default async function DocumentsPage({ params: paramsPromise }: Args) {
           {t('noYears')}
         </div>
       ) : (
-        <ul role="list" className="divide-y divide-foreground/10">
+        <ul role="list" className="divide-y divide-foreground/20">
           {docs.map((doc, index) => (
             <li
               key={doc.id}

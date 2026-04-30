@@ -44,7 +44,7 @@ const DocumentSection = ({ label, items, theme, locale }: DocumentSectionProps) 
 
       <div className={cn('h-px w-full', themeRule[theme])} />
 
-      <ul role="list" className="divide-y divide-foreground/10">
+      <ul role="list" className="divide-y divide-foreground/20">
         {items.map((item, index) => (
           <li
             key={item.id || item.name}
