@@ -30,36 +30,32 @@ export default async function CommitteePage({ params }: Args) {
   if (!committee) notFound()
 
   const coverImage = committee.coverImage as Media | undefined
-  const executives: any[] = []
-  const commissioners: any[] = []
-  const coordinators: any[] = []
+  const rankLabels: Record<string, string> = {
+    exec: 'Executive',
+    commish: 'Commissioner',
+    coord: 'Coordinator',
+  }
 
-  committee.teams?.forEach((teamEntry) => {
-    const team = teamEntry.team as Team
-    teamEntry.members?.forEach((member) => {
-      const positionDef = team.positions?.find((p) => p.positionTitle === member.role)
-      const level = positionDef?.role
+  const sections = (committee.teams ?? [])
+    .map((teamEntry) => {
+      const team = teamEntry.team as Team
+      const data = (teamEntry.members ?? []).map((member) => {
+        const positionDef = team.positions?.find((p) => p.positionTitle === member.role)
+        const level = positionDef?.role
 
-      const personData = {
-        ...member,
-        teamName: team.name,
-        positionEmail: positionDef?.positionEmail,
-      }
+        return {
+          ...member,
+          teamName: team.name,
+          positionEmail: positionDef?.positionEmail,
+          rank: level ? (rankLabels[level] ?? level) : undefined,
+        }
+      })
 
-      if (level === 'exec') executives.push(personData)
-      else if (level === 'commish') commissioners.push(personData)
-      else coordinators.push(personData)
+      return { title: team.name, data }
     })
-  })
+    .filter((section) => section.data.length > 0)
 
-  const hasNoData =
-    executives.length === 0 && commissioners.length === 0 && coordinators.length === 0
-
-  const sections = [
-    { title: t('executives'), data: executives },
-    { title: t('commissioners'), data: commissioners },
-    { title: t('coordinators'), data: coordinators },
-  ]
+  const hasNoData = sections.length === 0
 
   return (
     <main className="max-w-[1400px] m-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 transition-colors duration-300">
@@ -155,9 +151,11 @@ export default async function CommitteePage({ params }: Args) {
                             <h3 className="text-base md:text-lg font-bold text-foreground leading-tight group-hover:text-primary transition-colors line-clamp-2">
                               {person.fullName}
                             </h3>
-                            <p className="text-[10px] md:text-[11px] text-muted-foreground font-medium opacity-80 line-clamp-1">
-                              {member.teamName}
-                            </p>
+                            {member.rank && (
+                              <p className="text-[10px] md:text-[11px] text-muted-foreground font-medium opacity-80 line-clamp-1">
+                                {member.rank}
+                              </p>
+                            )}
                           </div>
 
                           <div className="flex gap-1 mt-3">
