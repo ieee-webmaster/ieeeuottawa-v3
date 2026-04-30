@@ -95,7 +95,7 @@ export const QuickLinksBlock: React.FC<QuickLinksBlockProps> = ({
         ) : (
           <ul
             role="list"
-            className={cn('divide-y', t === 'dark' ? 'divide-white/10' : 'divide-foreground/10')}
+            className={cn('divide-y', t === 'dark' ? 'divide-white/20' : 'divide-foreground/20')}
           >
             {links.map((item, index) => (
               <li
