@@ -32,6 +32,12 @@ export const Teams: CollectionConfig = {
       name: 'positions',
       label: 'Positions',
       type: 'array',
+      admin: {
+        initCollapsed: true,
+        components: {
+          RowLabel: '@/collections/Teams/RowLabel#TeamPositionRowLabel',
+        },
+      },
       fields: [
         {
           name: 'role',
