@@ -13,6 +13,8 @@ import { linkGroup } from '@/fields/linkGroup'
 export const SplitSection: Block = {
   slug: 'splitSection',
   interfaceName: 'SplitSectionBlock',
+  imageURL: '/admin/block-previews/split-section.svg',
+  imageAltText: 'Split Section block preview',
   fields: [
     {
       name: 'eyebrow',

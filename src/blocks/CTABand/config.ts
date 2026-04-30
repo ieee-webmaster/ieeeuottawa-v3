@@ -6,6 +6,8 @@ import { linkGroup } from '@/fields/linkGroup'
 export const CTABand: Block = {
   slug: 'ctaBand',
   interfaceName: 'CTABandBlock',
+  imageURL: '/admin/block-previews/cta-band.svg',
+  imageAltText: 'CTA Band block preview',
   fields: [
     {
       name: 'eyebrow',

@@ -6,6 +6,8 @@ import { link } from '@/fields/link'
 export const Gallery: Block = {
   slug: 'gallery',
   interfaceName: 'GalleryBlock',
+  imageURL: '/admin/block-previews/gallery.svg',
+  imageAltText: 'Gallery block preview',
   fields: [
     {
       name: 'eyebrow',
