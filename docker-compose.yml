@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   postgres:
     image: postgres
@@ -11,3 +9,17 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
     env_file:
       - .env
+
+  vercel-blob:
+    image: ghcr.io/payloadcms/vercel-blob-emulator:latest
+    ports:
+      - '3100:3000'
+    env_file:
+      - .env
+    environment:
+      EMULATOR_BASE_URL: http://localhost:3100
+    volumes:
+      - vercel_blob_data:/data
+
+volumes:
+  vercel_blob_data:
