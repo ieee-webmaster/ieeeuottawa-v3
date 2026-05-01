@@ -10,7 +10,7 @@ This is the official website of the IEEE uOttawa Student Branch. It serves as a 
 - To make changes to the content of the production website, use the Payload admin panel https://ieeeuottawa-v3.vercel.app/admin. Since we are using a CMS (Content Management System), there is no need to make content changes through code. **Caution: any changes made here will be reflected on the live website immediately, so please ensure that you have the proper permissions and that you are making intentional changes.**
 - The website is [deployed serverless on Vercel](https://vercel.com/ieee-uottawa-webmaster/ieeeuottawa-v3). Only the webmaster account has modification permissions, but any contributor can view deployments and their logs. Please reach out to the webmaster if you would like to be added as a viewer to the project on Vercel.
 - In production, Payload uses Neon (a Postgres-based cloud database) to store all of the content for the website, and Vercel Blob Storage to store all of the media assets. Both of these services are integrated into Vercel and were automatically set up when the project was deployed. **Please ensure a proper backup exists before making any destructive changes to the production database or blob storage, as data loss can occur.**
-- For local development, every developer can run their own instance of the database using Docker. This creates a distinct environment where changes won't affect what is currently deployed. Setup instructions are explained in [Getting Started](#getting-started).
+- For local development, every developer can run their own instance of the database and the [Vercel Blob Emulator](https://github.com/payloadcms/vercel-blob-emulator) using Docker. This creates a distinct environment where changes won't affect what is currently deployed. Setup instructions are explained in [Getting Started](#getting-started).
 
 ## Useful links 🔗
 
@@ -60,7 +60,7 @@ git clone https://github.com/ieee-webmaster/ieeeuottawa-v3.git
 `PREVIEW_SECRET`: Set `<your-preview-secret>` to a long random string
 <br>
 
-3. Start a local instance of the Postgres database using Docker.
+3. Start a local instance of the Postgres database and Vercel Blob Emulator using Docker.
 
 ```bash
 docker-compose up
