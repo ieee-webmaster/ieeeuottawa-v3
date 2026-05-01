@@ -6,7 +6,7 @@
         "role": "exec",
         "title": {
           "en": "Chair",
-          "fr": "Président"
+          "fr": "Président(e)"
         },
         "positionEmail": "chair@ieeeuottawa.ca"
       },
@@ -14,7 +14,7 @@
         "role": "exec",
         "title": {
           "en": "Vice Chair",
-          "fr": "Vice-président"
+          "fr": "Vice-président(e)"
         },
         "positionEmail": "vice-chair@ieeeuottawa.ca"
       },
@@ -22,7 +22,7 @@
         "role": "exec",
         "title": {
           "en": "Co-Chair",
-          "fr": "Co-président"
+          "fr": "Co-président(e)"
         },
         "positionEmail": "chair@ieeeuottawa.ca"
       },
@@ -30,7 +30,7 @@
         "role": "exec",
         "title": {
           "en": "Treasurer",
-          "fr": "Trésorier"
+          "fr": "Trésorier(e)"
         },
         "positionEmail": "treasurer@ieeeuottawa.ca"
       },
@@ -102,7 +102,7 @@
         "role": "exec",
         "title": {
           "en": "VP Merch",
-          "fr": "VP Merch"
+          "fr": "VP Produits Dérivés"
         },
         "positionEmail": "merch@ieeeuottawa.ca"
       },
@@ -125,21 +125,21 @@
         "role": "exec",
         "title": {
           "en": "Photonics Chair",
-          "fr": "Président photonique"
+          "fr": "Président(e) Photonique"
         }
       },
       {
         "role": "exec",
         "title": {
           "en": "Photonics Vice Chair",
-          "fr": "Vice-président photonique"
+          "fr": "Vice-président(e) Photonique"
         }
       },
       {
         "role": "commish",
         "title": {
           "en": "SEG Commissioner",
-          "fr": "Commissaire SEG"
+          "fr": "Commissionnaire SEG"
         },
         "positionEmail": "seg@ieeeuottawa.ca"
       },
@@ -147,7 +147,7 @@
         "role": "commish",
         "title": {
           "en": "CEG Commissioner",
-          "fr": "Commissaire CEG"
+          "fr": "Commissionnaire CEG"
         },
         "positionEmail": "ceg@ieeeuottawa.ca"
       },
@@ -155,7 +155,7 @@
         "role": "commish",
         "title": {
           "en": "ELG Commissioner",
-          "fr": "Commissaire ELG"
+          "fr": "Commissionnaire ELG"
         },
         "positionEmail": "elg@ieeeuottawa.ca"
       },
@@ -163,7 +163,7 @@
         "role": "commish",
         "title": {
           "en": "Comp-Tech Commissioner",
-          "fr": "Commissaire Comp-Tech"
+          "fr": "Commissionnaire Comp-Tech"
         },
         "positionEmail": "comp-tech@ieeeuottawa.ca"
       },
@@ -171,7 +171,7 @@
         "role": "commish",
         "title": {
           "en": "MDD Commissioner",
-          "fr": "Commissaire MDD"
+          "fr": "Commissionnaire MDD"
         },
         "positionEmail": "bmdes@ieeeuottawa.ca"
       },
@@ -179,7 +179,7 @@
         "role": "commish",
         "title": {
           "en": "Design Commissioner",
-          "fr": "Commissaire design"
+          "fr": "Commissionnaire de design"
         },
         "positionEmail": "design@ieeeuottawa.ca"
       },
@@ -187,7 +187,7 @@
         "role": "commish",
         "title": {
           "en": "Translations Commissioner",
-          "fr": "Commissaire traductions"
+          "fr": "Commissionnaire des traductions"
         },
         "positionEmail": "translations@ieeeuottawa.ca"
       },
@@ -195,7 +195,7 @@
         "role": "coord",
         "title": {
           "en": "Media Coordinator",
-          "fr": "Coordonnateur médias"
+          "fr": "Coordinateur de médias"
         },
         "positionEmail": "media-outreach@ieeeuottawa.ca"
       },
@@ -203,7 +203,7 @@
         "role": "coord",
         "title": {
           "en": "Industry Coordinator",
-          "fr": "Coordonnateur industrie"
+          "fr": "Coordinateur industriel"
         },
         "positionEmail": "industry@ieeeuottawa.ca"
       },
@@ -211,7 +211,7 @@
         "role": "coord",
         "title": {
           "en": "First-Year Coordinator",
-          "fr": "Coordonnateur première année"
+          "fr": "Coordinateur de première année"
         },
         "positionEmail": "firstyear@ieeeuottawa.ca"
       },
@@ -219,7 +219,7 @@
         "role": "coord",
         "title": {
           "en": "Technical Coordinator",
-          "fr": "Coordonnateur technique"
+          "fr": "Coordinateur technique"
         },
         "positionEmail": "technical@ieeeuottawa.ca"
       },
@@ -227,7 +227,7 @@
         "role": "coord",
         "title": {
           "en": "Software Technical Coordinator",
-          "fr": "Coordonnateur technique logiciel"
+          "fr": "Coordinateur technique logiciel"
         },
         "positionEmail": "software-tech@ieeeuottawa.ca"
       }
@@ -240,7 +240,7 @@
         "role": "exec",
         "title": {
           "en": "Chair",
-          "fr": "Présidente"
+          "fr": "Président(e) WIE"
         },
         "positionEmail": "wie-chair@ieeeuottawa.ca"
       },
@@ -248,7 +248,7 @@
         "role": "exec",
         "title": {
           "en": "Vice Chair",
-          "fr": "Vice-présidente"
+          "fr": "Vice-président(e) WIE"
         },
         "positionEmail": "wie-vicechair@ieeeuottawa.ca"
       },
@@ -256,7 +256,7 @@
         "role": "exec",
         "title": {
           "en": "Co-Chair",
-          "fr": "Co-présidente"
+          "fr": "Co-président(e) WIE"
         },
         "positionEmail": "wie-chair@ieeeuottawa.ca"
       },
@@ -264,7 +264,15 @@
         "role": "exec",
         "title": {
           "en": "VP Finance",
-          "fr": "Finances"
+          "fr": "Finance WIE"
+        },
+        "positionEmail": "wie-finance@ieeeuottawa.ca"
+      },
+      {
+        "role": "exec",
+        "title": {
+          "en": "Treasurer",
+          "fr": "Trésorier(e) WIE"
         },
         "positionEmail": "wie-finance@ieeeuottawa.ca"
       },
@@ -272,7 +280,7 @@
         "role": "exec",
         "title": {
           "en": "VP External",
-          "fr": "Externe"
+          "fr": "WIE Externe"
         },
         "positionEmail": "wie-external@ieeeuottawa.ca"
       },
@@ -280,7 +288,7 @@
         "role": "exec",
         "title": {
           "en": "VP Internal",
-          "fr": "Interne"
+          "fr": "WIE Interne"
         },
         "positionEmail": "wie-internal@ieeeuottawa.ca"
       },
@@ -288,7 +296,7 @@
         "role": "exec",
         "title": {
           "en": "VP Communications",
-          "fr": "Communications"
+          "fr": "WIE Communications"
         },
         "positionEmail": "wie-communications@ieeeuottawa.ca"
       },
@@ -296,7 +304,7 @@
         "role": "commish",
         "title": {
           "en": "Design Commissioner",
-          "fr": "Commissaire design"
+          "fr": "Design WIE"
         },
         "positionEmail": "wie-design@ieeeuottawa.ca"
       }
@@ -309,7 +317,7 @@
         "role": "exec",
         "title": {
           "en": "Chair",
-          "fr": "Président"
+          "fr": "Président(e)"
         },
         "positionEmail": "cegsc-chair@ieeeuottawa.ca"
       },
@@ -317,7 +325,7 @@
         "role": "exec",
         "title": {
           "en": "Vice Chair",
-          "fr": "Vice-président"
+          "fr": "Vice-président(e)"
         },
         "positionEmail": "cegsc-vice-chair@ieeeuottawa.ca"
       },
@@ -325,7 +333,7 @@
         "role": "exec",
         "title": {
           "en": "Co-Chair",
-          "fr": "Co-président"
+          "fr": "Co-président(e)"
         },
         "positionEmail": "cegsc-chair@ieeeuottawa.ca"
       },
@@ -354,7 +362,7 @@
         "role": "exec",
         "title": {
           "en": "Chair",
-          "fr": "Président"
+          "fr": "Président(e)"
         },
         "positionEmail": "mdsc-chair@ieeeuottawa.ca"
       },
@@ -362,14 +370,14 @@
         "role": "exec",
         "title": {
           "en": "Vice Chair",
-          "fr": "Vice-président"
+          "fr": "Vice-président(e)"
         }
       },
       {
         "role": "exec",
         "title": {
           "en": "Co-Chair",
-          "fr": "Co-président"
+          "fr": "Co-président(e)"
         },
         "positionEmail": "mdsc-chair@ieeeuottawa.ca"
       },
@@ -401,7 +409,7 @@
         "role": "commish",
         "title": {
           "en": "Pathway Commissioner (Education & Public Policy)",
-          "fr": "Commissaire parcours"
+          "fr": "Commissionnaire de parcours (éducation et politiques publiques)"
         },
         "positionEmail": "mdsc-education@ieeeuottawa.ca"
       },
@@ -409,7 +417,7 @@
         "role": "commish",
         "title": {
           "en": "Pathway Commissioner (Sustainability & Art)",
-          "fr": "Commissaire parcours (durabilité et art)"
+          "fr": "Commissionnaire de parcours (durabilité et art)"
         },
         "positionEmail": "mdsc-sustainability@ieeeuottawa.ca"
       },
@@ -417,7 +425,7 @@
         "role": "commish",
         "title": {
           "en": "Pathway Commissioner (Software)",
-          "fr": "Commissaire parcours (logiciel)"
+          "fr": "Commissionnaire de parcours (logiciel)"
         },
         "positionEmail": "mdsc-software@ieeeuottawa.ca"
       },
@@ -425,7 +433,7 @@
         "role": "coord",
         "title": {
           "en": "First-Year Coordinator",
-          "fr": "Coordonnateur première année"
+          "fr": "Coordinateur de première année"
         },
         "positionEmail": "mdsc-first-year@ieeeuottawa.ca"
       }

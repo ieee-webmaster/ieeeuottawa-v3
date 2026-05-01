@@ -4,7 +4,7 @@ import path from 'node:path'
 import type { Team } from '@/payload-types'
 import { type Payload } from 'payload'
 
-import { IMPORT_CONTEXT } from '../helpers'
+import { createImportContext } from '../helpers'
 
 export type RoleValue = 'commish' | 'coord' | 'exec'
 export type TeamPosition = {
@@ -30,47 +30,53 @@ export async function loadTeams(dataDir: string) {
 
 export async function importTeams(payload: Payload, teams: TeamData[]) {
   const ids = new Map<string, Team['id']>()
+  console.log(`teams: importing ${teams.length} teams`)
 
   for (const team of teams) {
-    const positions = mapTeamPositions(team, 'en')
-    const existing = (
-      await payload.find({
+    try {
+      const positions = mapTeamPositions(team, 'en')
+      const existing = (
+        await payload.find({
+          collection: 'teams',
+          limit: 1,
+          locale: 'en',
+          pagination: false,
+          where: { name: { equals: team.name } },
+        })
+      ).docs[0]
+      const doc: Team = existing
+        ? await payload.update({
+            collection: 'teams',
+            context: createImportContext(),
+            data: { name: team.name, positions },
+            id: existing.id,
+            locale: 'en',
+          })
+        : await payload.create({
+            collection: 'teams',
+            context: createImportContext(),
+            data: { name: team.name, positions },
+            locale: 'en',
+          })
+
+      const positionIds = doc.positions?.map((position) => position?.id) ?? []
+
+      await payload.update({
         collection: 'teams',
-        limit: 1,
-        locale: 'en',
-        pagination: false,
-        where: { name: { equals: team.name } },
+        context: createImportContext(),
+        data: {
+          name: team.name,
+          positions: mapTeamPositions(team, 'fr', positionIds),
+        },
+        id: doc.id,
+        locale: 'fr',
       })
-    ).docs[0]
-    const doc: Team = existing
-      ? await payload.update({
-          collection: 'teams',
-          context: IMPORT_CONTEXT,
-          data: { name: team.name, positions },
-          id: existing.id,
-          locale: 'en',
-        })
-      : await payload.create({
-          collection: 'teams',
-          context: IMPORT_CONTEXT,
-          data: { name: team.name, positions },
-          locale: 'en',
-        })
 
-    const positionIds = doc.positions?.map((position) => position?.id) ?? []
-
-    await payload.update({
-      collection: 'teams',
-      context: IMPORT_CONTEXT,
-      data: {
-        name: team.name,
-        positions: mapTeamPositions(team, 'fr', positionIds),
-      },
-      id: doc.id,
-      locale: 'fr',
-    })
-
-    ids.set(team.name, doc.id)
+      ids.set(team.name, doc.id)
+      console.log(`teams: ${existing ? 'updated' : 'created'} ${team.name}`)
+    } catch (error) {
+      throw new Error(`teams: failed to import ${team.name}`, { cause: error })
+    }
   }
 
   return ids
