@@ -26,14 +26,14 @@ export const revalidatePage: CollectionAfterChangeHook<Page> = ({
     if (doc._status === 'published') {
       payload.logger.info(`Revalidating page at slug: ${doc.slug}`)
       revalidatePagePaths(doc.slug)
-      revalidateTag('pages-sitemap')
+      revalidateTag('pages-sitemap', { expire: 0 })
     }
 
     // If the page was previously published, we need to revalidate the old path
     if (previousDoc?._status === 'published' && doc._status !== 'published') {
       payload.logger.info(`Revalidating old page at slug: ${previousDoc.slug}`)
       revalidatePagePaths(previousDoc.slug)
-      revalidateTag('pages-sitemap')
+      revalidateTag('pages-sitemap', { expire: 0 })
     }
   }
   return doc
@@ -42,7 +42,7 @@ export const revalidatePage: CollectionAfterChangeHook<Page> = ({
 export const revalidateDelete: CollectionAfterDeleteHook<Page> = ({ doc, req: { context } }) => {
   if (!context.disableRevalidate) {
     revalidatePagePaths(doc?.slug)
-    revalidateTag('pages-sitemap')
+    revalidateTag('pages-sitemap', { expire: 0 })
   }
 
   return doc

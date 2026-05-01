@@ -1,5 +1,9 @@
 'use client'
 
+// Source: Payload CMS `with-vercel-website` template.
+// https://github.com/payloadcms/payload/tree/main/templates/with-vercel-website/src/providers/Theme
+// Local changes: added `react-hooks/set-state-in-effect` lint exceptions only.
+
 import React, { createContext, useCallback, use, useEffect, useState } from 'react'
 
 import type { Theme, ThemeContextType } from './types'
@@ -48,6 +52,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     document.documentElement.setAttribute('data-theme', themeToSet)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setThemeState(themeToSet)
   }, [])
 

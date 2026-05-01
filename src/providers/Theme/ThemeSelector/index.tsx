@@ -1,5 +1,9 @@
 'use client'
 
+// Source: Payload CMS `with-vercel-website` template.
+// https://github.com/payloadcms/payload/tree/main/templates/with-vercel-website/src/providers/Theme/ThemeSelector
+// Local changes: added `react-hooks/set-state-in-effect` lint exceptions only.
+
 import {
   Select,
   SelectContent,
@@ -30,6 +34,7 @@ export const ThemeSelector: React.FC = () => {
 
   React.useEffect(() => {
     const preference = window.localStorage.getItem(themeLocalStorageKey)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setValue(preference ?? 'auto')
   }, [])
 
