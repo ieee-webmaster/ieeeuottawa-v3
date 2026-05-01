@@ -5,12 +5,8 @@ import { useRouter } from '@/i18n/navigation'
 import { useCallback, useEffect, useRef } from 'react'
 
 type UseClickableCardType<T extends HTMLElement> = {
-  card: {
-    ref: RefObject<T | null>
-  }
-  link: {
-    ref: RefObject<HTMLAnchorElement | null>
-  }
+  cardRef: RefObject<T | null>
+  linkRef: RefObject<HTMLAnchorElement | null>
 }
 
 interface Props {
@@ -19,7 +15,7 @@ interface Props {
   scroll?: boolean
 }
 
-function useClickableCard<T extends HTMLElement>({
+function useClickableCard<T extends HTMLElement = HTMLElement>({
   external = false,
   newTab = false,
   scroll = true,
@@ -98,12 +94,8 @@ function useClickableCard<T extends HTMLElement>({
   }, [card, link, router])
 
   return {
-    card: {
-      ref: card,
-    },
-    link: {
-      ref: link,
-    },
+    cardRef: card,
+    linkRef: link,
   }
 }
 

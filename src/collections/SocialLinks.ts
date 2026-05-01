@@ -11,8 +11,8 @@ import { revalidateTag } from 'next/cache'
 import { validateHttpUrl } from '@/utilities/validateHttpUrl'
 
 const revalidateLinkedGlobals = () => {
-  revalidateTag('global_header')
-  revalidateTag('global_footer')
+  revalidateTag('global_header', { expire: 0 })
+  revalidateTag('global_footer', { expire: 0 })
 }
 
 const revalidateSocialLink: CollectionAfterChangeHook = ({ doc, req: { payload, context } }) => {
