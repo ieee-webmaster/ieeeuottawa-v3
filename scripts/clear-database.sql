@@ -3,7 +3,7 @@
 -- re-run migrations against an already-migrated schema.
 --
 -- Run with:
---   psql "$POSTGRES_URL" -f scripts/import-legacy-content/clear-database.sql
+--   psql "$POSTGRES_URL" -f scripts/clear-database.sql
 
 DO $$
 DECLARE
