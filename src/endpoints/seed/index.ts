@@ -1,5 +1,4 @@
-import type { CollectionSlug, GlobalSlug, Payload, PayloadRequest, File } from 'payload'
-import { readFile } from 'node:fs/promises'
+import type { CollectionSlug, Payload, PayloadRequest, File } from 'payload'
 
 import { contactForm as contactFormData } from './contact-form'
 import { contact as contactPageData } from './contact-page'
@@ -17,55 +16,13 @@ const collections: CollectionSlug[] = [
   'pages',
   'posts',
   'events',
-  'socialLinks',
   'teams',
   'forms',
   'form-submissions',
   'search',
 ]
 
-const emptyGlobals: { slug: GlobalSlug; data: Record<string, unknown> }[] = [
-  { slug: 'header', data: { navItems: [], socialLinks: [], showSocialLinkLabels: false } },
-  {
-    slug: 'footer',
-    data: { navItems: [], socialLinks: [], contactPhone: '', contactLocation: '' },
-  },
-]
-
 const categories = ['Technology', 'News', 'Finance', 'Design', 'Software', 'Engineering']
-
-const defaultSocialLinks = [
-  {
-    label: 'Instagram',
-    url: 'https://instagram.com/ieeeuottawa',
-    lightIconPath: './social-icons/instagram-light.svg',
-    darkIconPath: './social-icons/instagram-dark.svg',
-  },
-  {
-    label: 'Discord',
-    url: 'https://discord.gg/kyTRZ6Ke6J',
-    lightIconPath: './social-icons/discord-light.svg',
-    darkIconPath: './social-icons/discord-dark.svg',
-  },
-  {
-    label: 'YouTube',
-    url: 'https://www.youtube.com/channel/UCSv1Vna97rKa8w2ktRG8wRw/videos',
-    lightIconPath: './social-icons/youtube-light.svg',
-    darkIconPath: './social-icons/youtube-dark.svg',
-  },
-  {
-    label: 'Twitch',
-    url: 'https://www.twitch.tv/ieeeuottawa',
-    lightIconPath: './social-icons/twitch-light.svg',
-    darkIconPath: './social-icons/twitch-dark.svg',
-  },
-  {
-    label: 'LinkedIn',
-    url: 'https://linkedin.com/company/ieeeuottawa',
-    lightIconPath: './social-icons/linkedin-light.svg',
-    darkIconPath: './social-icons/linkedin-dark.svg',
-  },
-] as const
 
 const richTextParagraph = (text: string) => ({
   root: {
@@ -112,24 +69,13 @@ export const seed = async ({
   payload.logger.info('Seeding database...')
 
   // we need to clear the media directory before seeding
-  // as well as the collections and globals
+  // as well as the collections
   // this is because while `yarn seed` drops the database
   // the custom `/api/seed` endpoint does not
-  payload.logger.info(`— Clearing collections and globals...`)
+  payload.logger.info(`— Clearing collections...`)
 
   // clear the database — serialize deletes to avoid PostgreSQL deadlocks
   // on related/locale tables
-  for (const { slug, data } of emptyGlobals) {
-    await payload.updateGlobal({
-      slug,
-      data,
-      depth: 0,
-      context: {
-        disableRevalidate: true,
-      },
-    } as Parameters<typeof payload.updateGlobal>[0])
-  }
-
   for (const collection of collections) {
     await payload.db.deleteMany({ collection, req, where: {} })
   }
@@ -373,128 +319,6 @@ export const seed = async ({
       collection: 'pages',
       depth: 0,
       data: contactPageData({ contactForm: contactForm }),
-    }),
-  ])
-
-  payload.logger.info(`— Seeding social links...`)
-
-  const socialIconFiles = await Promise.all(
-    defaultSocialLinks.map(async ({ lightIconPath, darkIconPath }) => ({
-      darkIconFile: await fetchLocalFile(darkIconPath),
-      lightIconFile: await fetchLocalFile(lightIconPath),
-    })),
-  )
-
-  const socialIconDocs = await Promise.all(
-    defaultSocialLinks.map(({ label }, index) =>
-      Promise.all([
-        payload.create({
-          collection: 'media',
-          depth: 0,
-          context: {
-            disableRevalidate: true,
-          },
-          data: {
-            alt: `${label} icon for light theme`,
-          },
-          file: socialIconFiles[index].lightIconFile,
-        }),
-        payload.create({
-          collection: 'media',
-          depth: 0,
-          context: {
-            disableRevalidate: true,
-          },
-          data: {
-            alt: `${label} icon for dark theme`,
-          },
-          file: socialIconFiles[index].darkIconFile,
-        }),
-      ]),
-    ),
-  )
-
-  const socialLinkDocs = await Promise.all(
-    defaultSocialLinks.map(({ label, url }, index) =>
-      payload.create({
-        collection: 'socialLinks',
-        depth: 0,
-        context: {
-          disableRevalidate: true,
-        },
-        data: {
-          label,
-          url,
-          lightIcon: socialIconDocs[index][0].id,
-          darkIcon: socialIconDocs[index][1].id,
-        },
-      }),
-    ),
-  )
-
-  const defaultSocialLinkIDs = socialLinkDocs.map(({ id }) => id)
-
-  payload.logger.info(`— Seeding globals...`)
-
-  const [headerResult, footerResult] = await Promise.all([
-    payload.updateGlobal({
-      slug: 'header',
-      data: {
-        socialLinks: defaultSocialLinkIDs,
-        showSocialLinkLabels: false,
-        navItems: [
-          {
-            link: {
-              type: 'custom',
-              label: 'Posts',
-              url: '/posts',
-            },
-          },
-          {
-            link: {
-              type: 'reference',
-              label: 'Contact',
-              reference: {
-                relationTo: 'pages',
-                value: contactPage.id,
-              },
-            },
-          },
-        ],
-      },
-    }),
-    payload.updateGlobal({
-      slug: 'footer',
-      data: {
-        contactPhone: '613-562-5800 ext. 6196',
-        contactLocation: '800 King Edward Avenue, STE 4026',
-        socialLinks: defaultSocialLinkIDs,
-        navItems: [
-          {
-            link: {
-              type: 'custom',
-              label: 'Admin',
-              url: '/admin',
-            },
-          },
-          {
-            link: {
-              type: 'custom',
-              label: 'Source Code',
-              newTab: true,
-              url: 'https://github.com/payloadcms/payload/tree/main/templates/website',
-            },
-          },
-          {
-            link: {
-              type: 'custom',
-              label: 'Payload',
-              newTab: true,
-              url: 'https://payloadcms.com/',
-            },
-          },
-        ],
-      },
     }),
   ])
 
@@ -1011,75 +835,6 @@ export const seed = async ({
     },
   })
 
-  // --- Globals ---
-  // Include navItem row IDs to preserve EN labels (navItems array is not localized)
-  await payload.updateGlobal({
-    slug: 'header',
-    locale: 'fr',
-    data: {
-      socialLinks: defaultSocialLinkIDs,
-      navItems: [
-        {
-          id: headerResult.navItems?.[0]?.id,
-          link: {
-            type: 'custom',
-            label: 'Articles',
-            url: '/posts',
-          },
-        },
-        {
-          id: headerResult.navItems?.[1]?.id,
-          link: {
-            type: 'reference',
-            label: 'Contact',
-            reference: {
-              relationTo: 'pages',
-              value: contactPage.id,
-            },
-          },
-        },
-      ],
-    },
-  })
-
-  await payload.updateGlobal({
-    slug: 'footer',
-    locale: 'fr',
-    data: {
-      socialLinks: defaultSocialLinkIDs,
-      contactPhone: '613-562-5800 poste 6196',
-      contactLocation: '800, avenue King Edward, bureau 4026',
-      navItems: [
-        {
-          id: footerResult.navItems?.[0]?.id,
-          link: {
-            type: 'custom',
-            label: 'Administration',
-            url: '/admin',
-          },
-        },
-        {
-          id: footerResult.navItems?.[1]?.id,
-          link: {
-            type: 'custom',
-            label: 'Code source',
-            newTab: true,
-            url: 'https://github.com/payloadcms/payload/tree/main/templates/website',
-          },
-        },
-        {
-          id: footerResult.navItems?.[2]?.id,
-          link: {
-            type: 'custom',
-            label: 'Payload',
-            newTab: true,
-            url: 'https://payloadcms.com/',
-          },
-        },
-      ],
-    },
-  })
-
   await payload.update({
     collection: 'teams',
     id: teamDoc.id,
@@ -1161,16 +916,3 @@ async function fetchFileByURL(url: string, filename?: string): Promise<File> {
   }
 }
 
-async function fetchLocalFile(relativePath: string): Promise<File> {
-  const fileURL = new URL(relativePath, import.meta.url)
-  const data = await readFile(fileURL)
-  const name = fileURL.pathname.split('/').pop() || `file-${Date.now()}`
-  const extension = name.split('.').pop()?.toLowerCase()
-
-  return {
-    name,
-    data,
-    mimetype: extension === 'svg' ? 'image/svg+xml' : `image/${extension || 'jpeg'}`,
-    size: data.byteLength,
-  }
-}
