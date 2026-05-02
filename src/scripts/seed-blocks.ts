@@ -96,9 +96,9 @@ async function seedBlocksDemo() {
     loadFile('src/endpoints/seed/image-post2.webp'),
     loadFile('src/endpoints/seed/image-post3.webp'),
     loadFile('src/endpoints/seed/image-hero1.webp'),
-    loadFile('src/endpoints/seed/social-icons/discord-light.svg'),
-    loadFile('src/endpoints/seed/social-icons/linkedin-light.svg'),
-    loadFile('src/endpoints/seed/social-icons/instagram-light.svg'),
+    loadFile('scripts/import-legacy-content/data/social-icons/discord-light.svg'),
+    loadFile('scripts/import-legacy-content/data/social-icons/linkedin-light.svg'),
+    loadFile('scripts/import-legacy-content/data/social-icons/instagram-light.svg'),
   ])
 
   const [m1, m2, m3, mHero, discordLogo, linkedInLogo, instagramLogo] = await Promise.all([

@@ -20,6 +20,7 @@ const MIME_TYPES = {
   '.jpg': 'image/jpeg',
   '.pdf': 'application/pdf',
   '.png': 'image/png',
+  '.svg': 'image/svg+xml',
   '.webp': 'image/webp',
 } as const
 

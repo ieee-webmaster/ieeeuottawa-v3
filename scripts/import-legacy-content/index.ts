@@ -7,6 +7,7 @@ import { getPayload } from 'payload'
 
 import { importCommittees, loadCommittees } from './collections/committee'
 import { importDocs } from './collections/docs'
+import { importNavbar } from './collections/navbar'
 import { importPeople, loadPeople } from './collections/people'
 import { importTeams, loadTeams } from './collections/teams'
 
@@ -37,6 +38,7 @@ async function main() {
   const teamIds = await importTeams(payload, teams)
   await importCommittees(payload, DATA_DIR, committees, peopleBySlug, teamIds)
   await importDocs(payload, DATA_DIR)
+  await importNavbar(payload, DATA_DIR)
   console.log('Import complete')
 }
 
