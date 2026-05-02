@@ -3,6 +3,7 @@ import path from 'node:path'
 
 import type { Media } from '@/payload-types'
 import { type Payload } from 'payload'
+import sharp from 'sharp'
 
 export const IMPORT_CONTEXT = { disableRevalidate: true }
 
@@ -83,6 +84,20 @@ export async function upsertMediaFromLocalFile(payload: Payload, filePath: strin
     }
   }
 
+  const storedBlobMediaData = !forceMediaUpload
+    ? await getStoredBlobMediaData(filePath, uploadName, fileStats.size, alt)
+    : undefined
+
+  if (storedBlobMediaData) {
+    console.log(`media: using stored blob ${uploadName}`)
+    const created = (await payload.db.create({
+      collection: 'media',
+      data: storedBlobMediaData,
+    })) as Media
+
+    return created.id
+  }
+
   const file = await fs.readFile(filePath)
   const uploadFile = {
     data: file,
@@ -111,6 +126,7 @@ export async function upsertMediaFromLocalFile(payload: Payload, filePath: strin
     context: createImportContext(),
     data: { alt },
     file: uploadFile,
+    overwriteExistingFiles: true,
   })
 
   return created.id
@@ -206,6 +222,41 @@ async function findMissingMediaFiles(media: Media) {
   return missing
 }
 
+async function getStoredBlobMediaData(
+  filePath: string,
+  filename: string,
+  filesize: number,
+  alt: string,
+) {
+  const baseUrl = getBlobBaseUrl()
+  if (!baseUrl || !(await blobFileExists(baseUrl, filename))) return undefined
+
+  const { height, width } = await getImageMetadata(filePath)
+  const extension = path.extname(filename).toLowerCase()
+
+  return {
+    alt,
+    filename,
+    filesize,
+    height,
+    mimeType: MIME_TYPES[extension as keyof typeof MIME_TYPES] || 'application/octet-stream',
+    width,
+  }
+}
+
+async function getImageMetadata(filePath: string) {
+  try {
+    const metadata = await sharp(filePath).metadata()
+
+    return {
+      height: metadata.height,
+      width: metadata.width,
+    }
+  } catch {
+    return {}
+  }
+}
+
 function getMediaFilenames(media: Media) {
   const filenames = new Set<string>()
 
@@ -242,4 +293,3 @@ function getBlobBaseUrl() {
 function encodeBlobPath(filename: string) {
   return filename.split('/').map(encodeURIComponent).join('/')
 }
-
