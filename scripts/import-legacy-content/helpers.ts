@@ -2,6 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import type { Media } from '@/payload-types'
+import { del, list } from '@vercel/blob'
 import { type Payload } from 'payload'
 import sharp from 'sharp'
 
@@ -98,6 +99,10 @@ export async function upsertMediaFromLocalFile(payload: Payload, filePath: strin
     return created.id
   }
 
+  if (forceMediaUpload) {
+    await deleteStoredMediaFiles(uploadName, existing)
+  }
+
   const file = await fs.readFile(filePath)
   const uploadFile = {
     data: file,
@@ -107,26 +112,30 @@ export async function upsertMediaFromLocalFile(payload: Payload, filePath: strin
   }
 
   if (existing) {
-    console.log(`media: replacing ${uploadName}`)
-    const updated: Media = await payload.update({
-      collection: 'media',
-      context: createImportContext(),
-      data: { alt },
-      file: uploadFile,
-      id: existing.id,
-      overwriteExistingFiles: true,
+    const updated = await writeMediaWithRetry(payload, uploadName, existing, () => {
+      console.log(`media: replacing ${uploadName}`)
+      return payload.update({
+        collection: 'media',
+        context: createImportContext(),
+        data: { alt },
+        file: uploadFile,
+        id: existing.id,
+        overwriteExistingFiles: true,
+      })
     })
 
     return updated.id
   }
 
-  console.log(`media: uploading ${uploadName}`)
-  const created: Media = await payload.create({
-    collection: 'media',
-    context: createImportContext(),
-    data: { alt },
-    file: uploadFile,
-    overwriteExistingFiles: true,
+  const created = await writeMediaWithRetry(payload, uploadName, existing, () => {
+    console.log(`media: uploading ${uploadName}`)
+    return payload.create({
+      collection: 'media',
+      context: createImportContext(),
+      data: { alt },
+      file: uploadFile,
+      overwriteExistingFiles: true,
+    })
   })
 
   return created.id
@@ -242,6 +251,87 @@ async function getStoredBlobMediaData(
     mimeType: MIME_TYPES[extension as keyof typeof MIME_TYPES] || 'application/octet-stream',
     width,
   }
+}
+
+async function deleteStoredMediaFiles(filename: string, existing?: Media) {
+  const token = process.env.BLOB_READ_WRITE_TOKEN
+  if (!token) return
+
+  const filenames = new Set(existing ? getMediaFilenames(existing) : [])
+  const filenamePattern = getMediaFilenamePattern(filename)
+  let cursor: string | undefined
+
+  do {
+    const result = await list({ cursor, limit: 1000, prefix: getFilenameBase(filename), token })
+
+    for (const blob of result.blobs) {
+      if (filenamePattern.test(path.posix.basename(blob.pathname))) {
+        filenames.add(blob.pathname)
+      }
+    }
+
+    cursor = result.cursor
+  } while (cursor)
+
+  if (!filenames.size) return
+
+  console.log(`media: deleting ${filenames.size} stored blob file(s) for ${filename}`)
+  await del(Array.from(filenames), { token })
+}
+
+async function writeMediaWithRetry(
+  payload: Payload,
+  filename: string,
+  existing: Media | undefined,
+  write: () => Promise<Media>,
+) {
+  const maxAttempts = forceMediaUpload ? 3 : 1
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      return await write()
+    } catch (error) {
+      if (attempt === maxAttempts || !isBlobUploadError(error)) throw error
+
+      console.warn(`media: retrying ${filename} after blob upload failure (${attempt}/${maxAttempts})`)
+      await sleep(1500 * attempt)
+      await deleteStoredMediaFiles(filename, existing)
+    }
+  }
+
+  throw new Error(`media: failed to write ${filename}`)
+}
+
+function isBlobUploadError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false
+
+  const cause = error.cause
+
+  return error.message.includes('Vercel Blob') || (cause instanceof Error && isBlobUploadError(cause))
+}
+
+async function sleep(ms: number) {
+  await new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+function getMediaFilenamePattern(filename: string) {
+  const extension = path.extname(filename).toLowerCase()
+  const baseName = getFilenameBase(filename)
+  const extensionPattern =
+    extension === '.jpeg' || extension === '.jpg' ? '\\.jpe?g' : escapeRegExp(extension)
+
+  return new RegExp(
+    `^(?:${escapeRegExp(baseName)}${extensionPattern}|${escapeRegExp(baseName)}-\\d+x\\d+\\.[a-z0-9]+)$`,
+    'i',
+  )
+}
+
+function getFilenameBase(filename: string) {
+  return path.basename(filename, path.extname(filename))
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 async function getImageMetadata(filePath: string) {
