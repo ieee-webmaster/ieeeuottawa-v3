@@ -4,7 +4,6 @@ import path from 'node:path'
 import type { Media } from '@/payload-types'
 import { del, list } from '@vercel/blob'
 import { type Payload } from 'payload'
-import sharp from 'sharp'
 
 export const IMPORT_CONTEXT = { disableRevalidate: true }
 
@@ -85,19 +84,7 @@ export async function upsertMediaFromLocalFile(payload: Payload, filePath: strin
     }
   }
 
-  const storedBlobMediaData = !forceMediaUpload
-    ? await getStoredBlobMediaData(filePath, uploadName, fileStats.size, alt)
-    : undefined
-
-  if (storedBlobMediaData) {
-    console.log(`media: using stored blob ${uploadName}`)
-    const created = (await payload.db.create({
-      collection: 'media',
-      data: storedBlobMediaData,
-    })) as Media
-
-    return created.id
-  }
+  const blobAlreadyStored = !forceMediaUpload && (await isBlobStored(uploadName))
 
   if (forceMediaUpload) {
     await deleteStoredMediaFiles(uploadName, existing)
@@ -109,6 +96,42 @@ export async function upsertMediaFromLocalFile(payload: Payload, filePath: strin
     mimetype: MIME_TYPES[extension as keyof typeof MIME_TYPES] || 'application/octet-stream',
     name: uploadName,
     size: file.byteLength,
+  }
+
+  if (blobAlreadyStored) {
+    // The blob is already in storage. Run Payload's upload pipeline anyway so
+    // the row gets correct filename / sizes / dimensions metadata (sharp runs
+    // locally), then suppress the actual blob write via the cloud-storage
+    // plugin's internal `skipCloudStorage` context flag.
+    //
+    // HACK: skipCloudStorage is the flag @payloadcms/plugin-cloud-storage
+    // sets on its own afterChange hook to break recursion when it self-updates
+    // a doc with upload metadata. We piggyback on it to skip the upload while
+    // keeping metadata generation intact. If the plugin renames/removes the
+    // flag in a future version, this fast path silently regresses to spending
+    // blob writes again — same cost as a full re-upload, no correctness loss.
+    const skipUploadContext = { ...createImportContext(), skipCloudStorage: true }
+    if (existing) {
+      const updated = await payload.update({
+        collection: 'media',
+        context: skipUploadContext,
+        data: { alt },
+        file: uploadFile,
+        id: existing.id,
+        overwriteExistingFiles: true,
+      })
+      console.log(`media: rehydrated metadata for ${uploadName} (blob reused)`)
+      return updated.id
+    }
+    const created = await payload.create({
+      collection: 'media',
+      context: skipUploadContext,
+      data: { alt },
+      file: uploadFile,
+      overwriteExistingFiles: true,
+    })
+    console.log(`media: rehydrated ${uploadName} from existing blob`)
+    return created.id
   }
 
   if (existing) {
@@ -231,26 +254,10 @@ async function findMissingMediaFiles(media: Media) {
   return missing
 }
 
-async function getStoredBlobMediaData(
-  filePath: string,
-  filename: string,
-  filesize: number,
-  alt: string,
-) {
+async function isBlobStored(filename: string) {
   const baseUrl = getBlobBaseUrl()
-  if (!baseUrl || !(await blobFileExists(baseUrl, filename))) return undefined
-
-  const { height, width } = await getImageMetadata(filePath)
-  const extension = path.extname(filename).toLowerCase()
-
-  return {
-    alt,
-    filename,
-    filesize,
-    height,
-    mimeType: MIME_TYPES[extension as keyof typeof MIME_TYPES] || 'application/octet-stream',
-    width,
-  }
+  if (!baseUrl) return false
+  return blobFileExists(baseUrl, filename)
 }
 
 async function deleteStoredMediaFiles(filename: string, existing?: Media) {
@@ -332,19 +339,6 @@ function getFilenameBase(filename: string) {
 
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-}
-
-async function getImageMetadata(filePath: string) {
-  try {
-    const metadata = await sharp(filePath).metadata()
-
-    return {
-      height: metadata.height,
-      width: metadata.width,
-    }
-  } catch {
-    return {}
-  }
 }
 
 function getMediaFilenames(media: Media) {
