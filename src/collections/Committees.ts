@@ -33,9 +33,6 @@ export const Committees: CollectionConfig = {
       label: 'Teams',
       admin: {
         initCollapsed: true,
-        components: {
-          RowLabel: '@/collections/Committees/RowLabel#CommitteeTeamRowLabel',
-        },
       },
       fields: [
         {
@@ -51,9 +48,6 @@ export const Committees: CollectionConfig = {
           label: 'Members',
           admin: {
             initCollapsed: true,
-            components: {
-              RowLabel: '@/collections/Committees/RowLabel#CommitteeMemberRowLabel',
-            },
           },
           fields: [
             {

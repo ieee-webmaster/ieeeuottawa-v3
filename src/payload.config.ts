@@ -21,6 +21,8 @@ import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import { Committees } from './collections/Committees'
 import { Teams } from './collections/Teams'
 import { Docs } from './collections/Docs'
+import { rbacPlugin } from './plugins/payload-rbac'
+import { autoArrayRowLabelsPlugin } from './plugins/payload-row-labels'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -96,6 +98,38 @@ export default buildConfig({
       },
       token: process.env.BLOB_READ_WRITE_TOKEN || '',
     }),
+    rbacPlugin({
+      collections: [
+        Pages.slug,
+        Posts.slug,
+        Media.slug,
+        Categories.slug,
+        Events.slug,
+        People.slug,
+        Teams.slug,
+        Committees.slug,
+        Docs.slug,
+        SocialLinks.slug,
+        'redirects',
+        'forms',
+        'form-submissions',
+      ],
+      tagAccessCollections: [
+        Pages.slug,
+        Posts.slug,
+        Media.slug,
+        Categories.slug,
+        Events.slug,
+        People.slug,
+        Teams.slug,
+        Committees.slug,
+        Docs.slug,
+        SocialLinks.slug,
+      ],
+      globals: [Header.slug, Footer.slug],
+      userCollectionSlug: Users.slug,
+    }),
+    autoArrayRowLabelsPlugin(),
   ],
   globals: [Header, Footer],
   secret: process.env.PAYLOAD_SECRET,
