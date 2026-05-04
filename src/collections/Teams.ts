@@ -34,9 +34,6 @@ export const Teams: CollectionConfig = {
       type: 'array',
       admin: {
         initCollapsed: true,
-        components: {
-          RowLabel: '@/collections/Teams/RowLabel#TeamPositionRowLabel',
-        },
       },
       fields: [
         {

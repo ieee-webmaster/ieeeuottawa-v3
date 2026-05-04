@@ -82,6 +82,8 @@ export interface Config {
     forms: Form;
     'form-submissions': FormSubmission;
     search: Search;
+    roles: Role;
+    'access-tags': AccessTag;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-folders': FolderInterface;
@@ -110,6 +112,8 @@ export interface Config {
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     search: SearchSelect<false> | SearchSelect<true>;
+    roles: RolesSelect<false> | RolesSelect<true>;
+    'access-tags': AccessTagsSelect<false> | AccessTagsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
@@ -248,6 +252,10 @@ export interface Page {
    */
   generateSlug?: boolean | null;
   slug: string;
+  /**
+   * Tags used to scope create, update, and delete permissions. If empty, only collection permissions apply.
+   */
+  accessTags?: (number | AccessTag)[] | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -298,6 +306,10 @@ export interface Post {
    */
   generateSlug?: boolean | null;
   slug: string;
+  /**
+   * Tags used to scope create, update, and delete permissions. If empty, only collection permissions apply.
+   */
+  accessTags?: (number | AccessTag)[] | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -324,6 +336,10 @@ export interface Media {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Tags used to scope create, update, and delete permissions. If empty, only collection permissions apply.
+   */
+  accessTags?: (number | AccessTag)[] | null;
   folder?: (number | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
@@ -394,6 +410,27 @@ export interface Media {
       filename?: string | null;
     };
   };
+}
+/**
+ * Tags used to scope document mutation access.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "access-tags".
+ */
+export interface AccessTag {
+  id: number;
+  name: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  /**
+   * Optional notes to clarify what this tag is for.
+   */
+  description?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -470,6 +507,10 @@ export interface Event {
    */
   generateSlug?: boolean | null;
   slug: string;
+  /**
+   * Tags used to scope create, update, and delete permissions. If empty, only collection permissions apply.
+   */
+  accessTags?: (number | AccessTag)[] | null;
   folder?: (number | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
@@ -491,6 +532,10 @@ export interface Team {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Tags used to scope create, update, and delete permissions. If empty, only collection permissions apply.
+   */
+  accessTags?: (number | AccessTag)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -503,6 +548,10 @@ export interface Person {
   fullName: string;
   headshot?: (number | null) | Media;
   'Linkedin Profile'?: string | null;
+  /**
+   * Tags used to scope create, update, and delete permissions. If empty, only collection permissions apply.
+   */
+  accessTags?: (number | AccessTag)[] | null;
   folder?: (number | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
@@ -528,6 +577,10 @@ export interface Category {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Tags used to scope create, update, and delete permissions. If empty, only collection permissions apply.
+   */
+  accessTags?: (number | AccessTag)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -538,6 +591,14 @@ export interface Category {
 export interface User {
   id: number;
   name?: string | null;
+  /**
+   * Grants full RBAC access across collections. Base access rules still apply.
+   */
+  superAdmin?: boolean | null;
+  /**
+   * Roles that grant collection and tag permissions.
+   */
+  roles?: (number | Role)[] | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -556,6 +617,54 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "roles".
+ */
+export interface Role {
+  id: number;
+  name: string;
+  description?: string | null;
+  /**
+   * Grant create, update, and delete access per collection. Authenticated users can read by default. Globals appear in the same list — only "update" applies to them; "create" and "delete" are no-ops.
+   */
+  collectionPermissions?:
+    | {
+        collection:
+          | 'pages'
+          | 'posts'
+          | 'media'
+          | 'categories'
+          | 'events'
+          | 'people'
+          | 'teams'
+          | 'committee'
+          | 'docs'
+          | 'socialLinks'
+          | 'redirects'
+          | 'forms'
+          | 'form-submissions'
+          | 'users'
+          | 'header'
+          | 'footer';
+        actions: ('create' | 'update' | 'delete')[];
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Allow or deny create, update, and delete actions for documents tagged with access tags.
+   */
+  tagPermissions?:
+    | {
+        tag: number | AccessTag;
+        effect: 'allow' | 'deny';
+        actions: ('create' | 'update' | 'delete')[];
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1098,6 +1207,10 @@ export interface Committee {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Tags used to scope create, update, and delete permissions. If empty, only collection permissions apply.
+   */
+  accessTags?: (number | AccessTag)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1322,6 +1435,10 @@ export interface Doc {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Tags used to scope create, update, and delete permissions. If empty, only collection permissions apply.
+   */
+  accessTags?: (number | AccessTag)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1346,6 +1463,10 @@ export interface SocialLink {
    * Light icon for dark backgrounds (SVG recommended).
    */
   darkIcon: number | Media;
+  /**
+   * Tags used to scope create, update, and delete permissions. If empty, only collection permissions apply.
+   */
+  accessTags?: (number | AccessTag)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1600,6 +1721,14 @@ export interface PayloadLockedDocument {
         value: number | Search;
       } | null)
     | ({
+        relationTo: 'roles';
+        value: number | Role;
+      } | null)
+    | ({
+        relationTo: 'access-tags';
+        value: number | AccessTag;
+      } | null)
+    | ({
         relationTo: 'payload-folders';
         value: number | FolderInterface;
       } | null);
@@ -1702,6 +1831,7 @@ export interface PagesSelect<T extends boolean = true> {
   publishedAt?: T;
   generateSlug?: T;
   slug?: T;
+  accessTags?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -2036,6 +2166,7 @@ export interface PostsSelect<T extends boolean = true> {
       };
   generateSlug?: T;
   slug?: T;
+  accessTags?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -2047,6 +2178,7 @@ export interface PostsSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
+  accessTags?: T;
   folder?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -2151,6 +2283,7 @@ export interface CategoriesSelect<T extends boolean = true> {
         label?: T;
         id?: T;
       };
+  accessTags?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2160,6 +2293,8 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  superAdmin?: T;
+  roles?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -2199,6 +2334,7 @@ export interface EventsSelect<T extends boolean = true> {
       };
   generateSlug?: T;
   slug?: T;
+  accessTags?: T;
   folder?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -2212,6 +2348,7 @@ export interface PeopleSelect<T extends boolean = true> {
   fullName?: T;
   headshot?: T;
   'Linkedin Profile'?: T;
+  accessTags?: T;
   folder?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -2231,6 +2368,7 @@ export interface TeamsSelect<T extends boolean = true> {
         positionEmail?: T;
         id?: T;
       };
+  accessTags?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2254,6 +2392,7 @@ export interface CommitteeSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  accessTags?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2288,6 +2427,7 @@ export interface DocsSelect<T extends boolean = true> {
         googleDocsUrl?: T;
         id?: T;
       };
+  accessTags?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2300,6 +2440,7 @@ export interface SocialLinksSelect<T extends boolean = true> {
   url?: T;
   lightIcon?: T;
   darkIcon?: T;
+  accessTags?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2492,6 +2633,43 @@ export interface SearchSelect<T extends boolean = true> {
         title?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "roles_select".
+ */
+export interface RolesSelect<T extends boolean = true> {
+  name?: T;
+  description?: T;
+  collectionPermissions?:
+    | T
+    | {
+        collection?: T;
+        actions?: T;
+        id?: T;
+      };
+  tagPermissions?:
+    | T
+    | {
+        tag?: T;
+        effect?: T;
+        actions?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "access-tags_select".
+ */
+export interface AccessTagsSelect<T extends boolean = true> {
+  name?: T;
+  generateSlug?: T;
+  slug?: T;
+  description?: T;
   updatedAt?: T;
   createdAt?: T;
 }
