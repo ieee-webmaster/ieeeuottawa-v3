@@ -23,6 +23,7 @@ import { Teams } from './collections/Teams'
 import { Docs } from './collections/Docs'
 import { rbacPlugin } from './plugins/payload-rbac'
 import { autoArrayRowLabelsPlugin } from './plugins/payload-row-labels'
+import { navigationPlugin } from './plugins/payload-navigation'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -129,7 +130,22 @@ export default buildConfig({
       globals: [Header.slug, Footer.slug],
       userCollectionSlug: Users.slug,
     }),
-    autoArrayRowLabelsPlugin(),
+    navigationPlugin({
+      collections: [
+        Pages.slug,
+        Posts.slug,
+        Events.slug,
+        People.slug,
+        Teams.slug,
+        Committees.slug,
+        Docs.slug,
+        Categories.slug,
+      ],
+      globals: [Header.slug, Footer.slug],
+    }),
+    autoArrayRowLabelsPlugin({
+      excludePaths: ['header.navItems', 'footer.navItems'],
+    }),
   ],
   globals: [Header, Footer],
   secret: process.env.PAYLOAD_SECRET,

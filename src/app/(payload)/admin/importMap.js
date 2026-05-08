@@ -24,8 +24,10 @@ import { CommitteePositionSelect as CommitteePositionSelect_246c74b4fcdbd351657f
 import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { FolderTypeField as FolderTypeField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
-import { RowLabel as RowLabel_ec255a65fa6fa8d1faeb09cf35284224 } from '@/Header/RowLabel'
-import { RowLabel as RowLabel_1f6ff6ff633e3695d348f4f3c58f1466 } from '@/Footer/RowLabel'
+import { AutoFieldSelect as AutoFieldSelect_fa5562ae2978ff683956ff6e65fe8256 } from '@/plugins/payload-navigation/components/AutoFieldSelect'
+import { UrlInferenceDescription as UrlInferenceDescription_708afe9b4e0ebe6a1d02aa398dfd40d1 } from '@/plugins/payload-navigation/components/UrlInferenceHint'
+import { AutoNewTabCheckbox as AutoNewTabCheckbox_fa5562ae2978ff683956ff6e65fe8256 } from '@/plugins/payload-navigation/components/AutoFieldSelect'
+import { NavItemRowLabel as NavItemRowLabel_2f8f38abc0067e767ea1fbbeccca237a } from '@/plugins/payload-navigation/components/NavItemRowLabel'
 import { default as default_8a7ab0eb7ab5c511aba12e68480bfe5e } from '@/components/BeforeLogin'
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
@@ -58,8 +60,10 @@ export const importMap = {
   "@payloadcms/plugin-search/client#LinkToDoc": LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
   "@payloadcms/plugin-search/client#ReindexButton": ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,
   "@payloadcms/next/client#FolderTypeField": FolderTypeField_2b8867833a34864a02ddf429b0728a40,
-  "@/Header/RowLabel#RowLabel": RowLabel_ec255a65fa6fa8d1faeb09cf35284224,
-  "@/Footer/RowLabel#RowLabel": RowLabel_1f6ff6ff633e3695d348f4f3c58f1466,
+  "@/plugins/payload-navigation/components/AutoFieldSelect#AutoFieldSelect": AutoFieldSelect_fa5562ae2978ff683956ff6e65fe8256,
+  "@/plugins/payload-navigation/components/UrlInferenceHint#UrlInferenceDescription": UrlInferenceDescription_708afe9b4e0ebe6a1d02aa398dfd40d1,
+  "@/plugins/payload-navigation/components/AutoFieldSelect#AutoNewTabCheckbox": AutoNewTabCheckbox_fa5562ae2978ff683956ff6e65fe8256,
+  "@/plugins/payload-navigation/components/NavItemRowLabel#NavItemRowLabel": NavItemRowLabel_2f8f38abc0067e767ea1fbbeccca237a,
   "@/components/BeforeLogin#default": default_8a7ab0eb7ab5c511aba12e68480bfe5e,
   "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1

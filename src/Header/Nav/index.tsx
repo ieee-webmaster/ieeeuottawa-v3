@@ -3,20 +3,20 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 
-import type { Header as HeaderType } from '@/payload-types'
+import type { ResolvedNavItem } from '@/plugins/payload-navigation'
 
-import { CMSLink } from '@/components/Link'
 import { cn } from '@/utilities/ui'
+import { DropdownItem } from './DropdownItem'
+import { LinkItem } from './LinkItem'
 
 interface Props {
-  data: HeaderType
+  items: ResolvedNavItem[]
   orientation?: 'horizontal' | 'vertical'
   onNavigate?: () => void
 }
 
-export const HeaderNav: React.FC<Props> = ({ data, orientation = 'horizontal', onNavigate }) => {
+export const HeaderNav: React.FC<Props> = ({ items, orientation = 'horizontal', onNavigate }) => {
   const t = useTranslations('nav')
-  const navItems = data?.navItems || []
 
   return (
     <nav
@@ -28,18 +28,15 @@ export const HeaderNav: React.FC<Props> = ({ data, orientation = 'horizontal', o
       )}
       aria-label={t('primary')}
     >
-      {navItems.map(({ link, id }, i) => (
-        <CMSLink
-          key={id ?? i}
-          {...link}
-          appearance="link"
-          onClick={onNavigate}
-          className={cn(
-            'rounded px-3 py-2 text-sm font-medium text-foreground transition-colors hover:text-primary',
-            orientation === 'vertical' && 'w-full px-0 py-3 text-lg font-medium',
-          )}
-        />
-      ))}
+      {items.map((item, index) => {
+        const key = item.id ?? `${item.kind}-${index}`
+        if (item.kind === 'dropdown') {
+          return (
+            <DropdownItem key={key} item={item} orientation={orientation} onNavigate={onNavigate} />
+          )
+        }
+        return <LinkItem key={key} item={item} orientation={orientation} onNavigate={onNavigate} />
+      })}
     </nav>
   )
 }
