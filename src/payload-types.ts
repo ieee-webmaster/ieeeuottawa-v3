@@ -2764,7 +2764,8 @@ export interface Header {
   id: number;
   navItems?:
     | {
-        link: {
+        kind?: ('link' | 'dropdown') | null;
+        link?: {
           type?: ('reference' | 'custom') | null;
           newTab?: boolean | null;
           reference?:
@@ -2783,6 +2784,54 @@ export interface Header {
           url?: string | null;
           label: string;
         };
+        /**
+         * Label shown for the dropdown trigger.
+         */
+        dropdownLabel?: string | null;
+        dropdownMode?: ('manual' | 'automatic') | null;
+        manualItems?:
+          | {
+              link: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null)
+                  | ({
+                      relationTo: 'events';
+                      value: number | Event;
+                    } | null);
+                url?: string | null;
+                label: string;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        /**
+         * Collection to scan for dropdown values.
+         */
+        collection?: ('pages' | 'posts' | 'events' | 'people' | 'teams' | 'committee' | 'docs' | 'categories') | null;
+        /**
+         * Field whose distinct values become the dropdown entries.
+         */
+        field?: string | null;
+        order?: ('asc' | 'desc') | null;
+        baseUrl?: string | null;
+        specificUrl?: string | null;
+        /**
+         * Include an "All" link as the first dropdown entry.
+         */
+        includeAll?: boolean | null;
+        /**
+         * Label for the "All" link.
+         */
+        allLabel?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -2805,7 +2854,8 @@ export interface Footer {
   id: number;
   navItems?:
     | {
-        link: {
+        kind?: ('link' | 'dropdown') | null;
+        link?: {
           type?: ('reference' | 'custom') | null;
           newTab?: boolean | null;
           reference?:
@@ -2824,6 +2874,54 @@ export interface Footer {
           url?: string | null;
           label: string;
         };
+        /**
+         * Label shown for the dropdown trigger.
+         */
+        dropdownLabel?: string | null;
+        dropdownMode?: ('manual' | 'automatic') | null;
+        manualItems?:
+          | {
+              link: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null)
+                  | ({
+                      relationTo: 'events';
+                      value: number | Event;
+                    } | null);
+                url?: string | null;
+                label: string;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        /**
+         * Collection to scan for dropdown values.
+         */
+        collection?: ('pages' | 'posts' | 'events' | 'people' | 'teams' | 'committee' | 'docs' | 'categories') | null;
+        /**
+         * Field whose distinct values become the dropdown entries.
+         */
+        field?: string | null;
+        order?: ('asc' | 'desc') | null;
+        baseUrl?: string | null;
+        specificUrl?: string | null;
+        /**
+         * Include an "All" link as the first dropdown entry.
+         */
+        includeAll?: boolean | null;
+        /**
+         * Label for the "All" link.
+         */
+        allLabel?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -2850,6 +2948,7 @@ export interface HeaderSelect<T extends boolean = true> {
   navItems?:
     | T
     | {
+        kind?: T;
         link?:
           | T
           | {
@@ -2859,6 +2958,29 @@ export interface HeaderSelect<T extends boolean = true> {
               url?: T;
               label?: T;
             };
+        dropdownLabel?: T;
+        dropdownMode?: T;
+        manualItems?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              id?: T;
+            };
+        collection?: T;
+        field?: T;
+        order?: T;
+        baseUrl?: T;
+        specificUrl?: T;
+        includeAll?: T;
+        allLabel?: T;
         id?: T;
       };
   socialLinks?: T;
@@ -2875,6 +2997,7 @@ export interface FooterSelect<T extends boolean = true> {
   navItems?:
     | T
     | {
+        kind?: T;
         link?:
           | T
           | {
@@ -2884,6 +3007,29 @@ export interface FooterSelect<T extends boolean = true> {
               url?: T;
               label?: T;
             };
+        dropdownLabel?: T;
+        dropdownMode?: T;
+        manualItems?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              id?: T;
+            };
+        collection?: T;
+        field?: T;
+        order?: T;
+        baseUrl?: T;
+        specificUrl?: T;
+        includeAll?: T;
+        allLabel?: T;
         id?: T;
       };
   socialLinks?: T;

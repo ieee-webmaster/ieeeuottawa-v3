@@ -2,18 +2,37 @@ import { getCachedGlobal } from '@/utilities/getGlobals'
 import { resolveLocale } from '@/i18n/routing'
 import { Link } from '@/i18n/navigation'
 import { getLocale } from 'next-intl/server'
+import { getPayload } from 'payload'
+import configPromise from '@payload-config'
 import type { Footer } from '@/payload-types'
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
-import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo/Logo'
 import { SocialIcons } from '@/components/SocialIcons'
+import { resolveNavItems, type RawNavItem } from '@/plugins/payload-navigation'
+import { resolveContentPathFromReference } from '@/routing/resolveContentPath'
+import { FooterNav } from './Nav'
+
 const currentYear = new Date().getFullYear()
 
 export async function Footer() {
   const locale = resolveLocale(await getLocale())
   const footerData: Footer = await getCachedGlobal('footer', 2, locale)()
+  const payload = await getPayload({ config: configPromise })
 
-  const navItems = footerData?.navItems || []
+  const navItems = await resolveNavItems(footerData?.navItems as RawNavItem[] | null, payload, {
+    locale,
+    resolveLinkHref: (link) => {
+      if (link.type === 'reference' && link.reference) {
+        return (
+          resolveContentPathFromReference(link.reference.relationTo, link.reference.value) ??
+          link.url ??
+          null
+        )
+      }
+      return link.url ?? null
+    },
+  })
+
   const socialLinks = footerData?.socialLinks || []
   const contactPhone = footerData?.contactPhone
   const contactLocation = footerData?.contactLocation
@@ -27,11 +46,7 @@ export async function Footer() {
           </Link>
 
           <div className="flex flex-col gap-4 md:items-end">
-            <nav className="flex flex-wrap gap-4 md:justify-end">
-              {navItems.map(({ link }, i) => (
-                <CMSLink key={i} {...link} />
-              ))}
-            </nav>
+            <FooterNav items={navItems} />
 
             {socialLinks.length > 0 && (
               <SocialIcons

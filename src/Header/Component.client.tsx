@@ -5,6 +5,7 @@ import { MenuIcon, SearchIcon, XIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 import type { Header } from '@/payload-types'
+import type { ResolvedNavItem } from '@/plugins/payload-navigation'
 
 import { Link, usePathname } from '@/i18n/navigation'
 import { cn } from '@/utilities/ui'
@@ -15,9 +16,10 @@ import { HeaderNav } from './Nav'
 
 interface HeaderClientProps {
   data: Header
+  navItems: ResolvedNavItem[]
 }
 
-export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
+export const HeaderClient: React.FC<HeaderClientProps> = ({ data, navItems }) => {
   const t = useTranslations('nav')
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -74,7 +76,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
         </Link>
 
         <div className="hidden items-center gap-2 lg:flex lg:justify-self-center">
-          <HeaderNav data={data} />
+          <HeaderNav items={navItems} />
         </div>
 
         <div className="hidden items-center gap-2 lg:flex lg:justify-self-end">
@@ -132,7 +134,11 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
           )}
         >
           <div className="container flex h-full flex-col gap-8 py-6">
-            <HeaderNav data={data} orientation="vertical" onNavigate={() => setMenuOpen(false)} />
+            <HeaderNav
+              items={navItems}
+              orientation="vertical"
+              onNavigate={() => setMenuOpen(false)}
+            />
 
             <div className="mt-auto flex flex-col gap-5 border-t border-border pt-5">
               {socialLinks.length > 0 && (
