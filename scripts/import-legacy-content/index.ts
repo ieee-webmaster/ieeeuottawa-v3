@@ -18,7 +18,7 @@ const shouldResetDatabase = process.argv.includes('--reset') || process.env.IMPO
 
 async function main() {
   console.log('Checking import environment')
-  assertRequiredEnv(['BLOB_READ_WRITE_TOKEN', 'PAYLOAD_SECRET', 'POSTGRES_URL'])
+  assertRequiredEnv(['PAYLOAD_SECRET', 'POSTGRES_URL'])
 
   console.log(`Loading local data from ${DATA_DIR}`)
   const [people, teamsByName, committees] = await Promise.all([
