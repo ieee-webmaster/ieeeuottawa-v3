@@ -4,7 +4,7 @@ import React from 'react'
 
 import type { ResolvedLinkRow } from '@/plugins/payload-navigation'
 
-import { CMSLink } from '@/components/Link'
+import { Link } from '@/i18n/navigation'
 import { cn } from '@/utilities/ui'
 import { itemBaseClass, itemVerticalClass } from './styles'
 
@@ -15,14 +15,14 @@ type LinkItemProps = {
 }
 
 export const LinkItem: React.FC<LinkItemProps> = ({ item, orientation, onNavigate }) => {
-  const link = (item.link ?? {}) as Parameters<typeof CMSLink>[0]
-
   return (
-    <CMSLink
-      {...link}
-      appearance="link"
+    <Link
+      href={item.href}
       onClick={onNavigate}
       className={cn(itemBaseClass, orientation === 'vertical' && itemVerticalClass)}
-    />
+      {...(item.newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {})}
+    >
+      {item.label}
+    </Link>
   )
 }

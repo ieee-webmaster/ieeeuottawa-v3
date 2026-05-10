@@ -5,7 +5,6 @@ import type {
   ResolvedNavItem,
 } from '@/plugins/payload-navigation'
 
-import { CMSLink } from '@/components/Link'
 import { Link } from '@/i18n/navigation'
 
 type FooterNavProps = {
@@ -39,11 +38,15 @@ const FooterDropdown = ({ item }: { item: ResolvedDropdownRow }) => {
   )
 }
 
-const FooterLink = ({ item }: { item: ResolvedLinkRow }) => {
-  const link = (item.link ?? {}) as Parameters<typeof CMSLink>[0]
-
-  return <CMSLink {...link} />
-}
+const FooterLink = ({ item }: { item: ResolvedLinkRow }) => (
+  <Link
+    href={item.href}
+    className="text-sm text-primary-foreground/85 hover:text-primary-foreground"
+    {...(item.newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {})}
+  >
+    {item.label}
+  </Link>
+)
 
 export const FooterNav = ({ items }: FooterNavProps) => (
   <nav className="flex flex-wrap gap-x-8 gap-y-4 md:justify-end" aria-label="Footer navigation">
