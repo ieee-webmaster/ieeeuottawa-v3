@@ -100,6 +100,11 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({ item, orientation, o
       className="relative"
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
+      onBlur={(event) => {
+        if (!containerRef.current?.contains(event.relatedTarget as Node | null)) {
+          setOpen(false)
+        }
+      }}
     >
       <button
         type="button"

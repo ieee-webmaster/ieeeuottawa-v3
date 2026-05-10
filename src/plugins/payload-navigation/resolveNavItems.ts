@@ -195,10 +195,18 @@ export const resolveNavItems = async (
       continue
     }
 
+    const link = row.link
+    if (!link) continue
+    const href = options.resolveLinkHref(link)
+    const label = pickLocalized(link.label, options.locale)
+    if (!href || !label) continue
+
     resolved.push({
       id: row.id ?? null,
       kind: 'link',
-      link: row.link ?? null,
+      href,
+      label,
+      newTab: link.newTab ?? undefined,
     })
   }
 

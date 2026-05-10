@@ -8,10 +8,9 @@ export type ResolvedLeafLink = {
   newTab?: boolean
 }
 
-export type ResolvedLinkRow = {
+export type ResolvedLinkRow = ResolvedLeafLink & {
   id?: string | null
   kind: 'link'
-  link: unknown
 }
 
 export type ResolvedDropdownRow = {
