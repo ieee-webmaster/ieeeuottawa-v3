@@ -9,7 +9,7 @@ export const sectionShellClasses: Record<BlockTheme, string> = {
   default: 'bg-transparent text-foreground',
   muted: 'bg-muted/40 text-foreground',
   accent:
-    'text-foreground bg-[radial-gradient(120%_120%_at_0%_0%,hsl(var(--secondary)/0.10),transparent_55%),linear-gradient(180deg,hsl(var(--primary)/0.06),hsl(var(--primary)/0.02))]',
+    'text-foreground bg-[radial-gradient(120%_120%_at_0%_0%,hsl(var(--secondary)/0.18),transparent_55%),linear-gradient(180deg,hsl(var(--primary)/0.14),hsl(var(--primary)/0.06))]',
   dark: 'bg-background text-white [--rule:theme(colors.white/15)] [--mute:theme(colors.white/65)]',
 }
 

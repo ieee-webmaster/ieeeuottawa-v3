@@ -28,15 +28,14 @@ const placeholderBlur =
 /**
  * ImageMedia
  *
- * This component passes a **relative** `src` (e.g. `/media/...`) to Next.js Image.
- * The `getMediaUrl` utility constructs the full URL by prepending the base URL from env vars
- * (NEXT_PUBLIC_SERVER_URL). Next.js then optimizes this using `remotePatterns` configured
- * in next.config.js — no custom `loader` needed.
+ * This component passes local Payload media as root-relative URLs and external
+ * media as absolute URLs. Relative URLs avoid needing localhost in Next Image's
+ * `remotePatterns` while still allowing configured remote storage hosts.
  *
  * Flow:
- *   1. Resource URL from Payload: `/media/image-123.jpg`
- *   2. getMediaUrl() adds base URL: `https://yourdomain.com/media/image-123.jpg`
- *   3. Next.js Image optimizes via remotePatterns: `/_next/image?url=...&w=1200&q=75`
+ *   1. Resource URL from Payload: `/api/media/file/image-123.jpg`
+ *   2. getMediaUrl() keeps it root-relative for same-origin optimization
+ *   3. Next.js Image optimizes via `/_next/image?url=...&w=1200&q=75`
  *
  * If your storage/plugin returns **external CDN URLs** (e.g. `https://cdn.example.com/...`),
  * choose ONE of the following:
@@ -49,8 +48,8 @@ const placeholderBlur =
  *   C) Skip optimization:
  *      <Image unoptimized src="https://cdn.example.com/hero.jpg" width={1200} height={600} alt="" />
  *
- * TL;DR: Template uses relative URLs + getMediaUrl() to construct full URLs, then relies on
- * remotePatterns for optimization. Only add `loader` if using external CDNs with custom transforms.
+ * TL;DR: local Payload media should stay relative; only external media relies on
+ * `remotePatterns`. Add a `loader` only for external CDNs with custom transforms.
  */
 
 export const ImageMedia: React.FC<MediaProps> = (props) => {

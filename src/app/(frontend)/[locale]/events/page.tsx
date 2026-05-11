@@ -2,6 +2,7 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { getTranslations } from 'next-intl/server'
 import type { Event, Config } from '@/payload-types'
+import { Eyebrow, SectionShell } from '@/blocks/_shared'
 import { EventCard } from './_components/EventCard'
 
 type Args = {
@@ -37,60 +38,94 @@ export default async function EventsPage({ params: paramsPromise }: Args) {
     }
   }
 
-  // sort upcoming events soonest-first
   upcoming.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-
-  // sort past events newest-first
   past.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <header className="mb-8">
-        <h1 className="text-5xl font-extrabold tracking-tight text-center">{t('title')}</h1>
-        <p className="mt-2 text-center text-muted-foreground">{t('description')}</p>
-      </header>
-
-      <section className="mb-12">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-semibold">{t('upcoming')}</h2>
-          <div className="text-sm text-gray-500">
-            {t('eventCount', { count: upcoming.length })}
+    <>
+      <SectionShell theme="default" padding="pt-24 pb-12 md:pt-36 md:pb-16">
+        <div className="grid gap-10 lg:grid-cols-12 lg:items-end">
+          <div className="space-y-6 lg:col-span-9">
+            <Eyebrow theme="default">{t('title')}</Eyebrow>
+            <h1 className="text-balance text-5xl font-medium leading-[1] tracking-tight sm:text-6xl md:text-7xl">
+              {t('title')}
+            </h1>
+            <p className="max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
+              {t('description')}
+            </p>
           </div>
         </div>
+      </SectionShell>
+
+      <SectionShell theme="default" padding="py-12 md:py-16">
+        <header className="mb-8 grid gap-4 md:grid-cols-12 md:items-end">
+          <div className="md:col-span-7">
+            <Eyebrow theme="default">{t('upcoming')}</Eyebrow>
+            <h2 className="mt-4 text-3xl font-medium leading-[1.1] tracking-tight md:text-4xl">
+              {t('upcoming')}
+            </h2>
+          </div>
+          <div className="md:col-span-5 md:text-right">
+            <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-foreground/55">
+              {t('eventCount', { count: upcoming.length })}
+            </span>
+          </div>
+        </header>
+
+        <div className="h-px w-full bg-foreground/15" />
 
         {upcoming.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-gray-200 p-8 text-center text-gray-600">
+          <p className="pt-10 text-base leading-relaxed text-muted-foreground">
             {t('noUpcoming')}
-          </div>
+          </p>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {upcoming.map((event) => (
-              <EventCard key={event.id} event={event} locale={locale} />
+          <div className="grid gap-x-8 gap-y-14 pt-10 md:grid-cols-2 lg:grid-cols-3 md:pt-14">
+            {upcoming.map((event, index) => (
+              <EventCard
+                key={event.id}
+                event={event}
+                locale={locale}
+                index={index}
+                total={upcoming.length}
+              />
             ))}
           </div>
         )}
-      </section>
+      </SectionShell>
 
-      <section>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-semibold">{t('past')}</h2>
-          <div className="text-sm text-gray-500">
-            {t('eventCount', { count: past.length })}
+      <SectionShell theme="muted" padding="py-12 md:py-20">
+        <header className="mb-8 grid gap-4 md:grid-cols-12 md:items-end">
+          <div className="md:col-span-7">
+            <Eyebrow theme="muted">{t('past')}</Eyebrow>
+            <h2 className="mt-4 text-3xl font-medium leading-[1.1] tracking-tight md:text-4xl">
+              {t('past')}
+            </h2>
           </div>
-        </div>
+          <div className="md:col-span-5 md:text-right">
+            <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-foreground/55">
+              {t('eventCount', { count: past.length })}
+            </span>
+          </div>
+        </header>
+
+        <div className="h-px w-full bg-foreground/15" />
 
         {past.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-gray-200 p-8 text-center text-gray-600">
-            {t('noPast')}
-          </div>
+          <p className="pt-10 text-base leading-relaxed text-muted-foreground">{t('noPast')}</p>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {past.map((event) => (
-              <EventCard key={event.id} event={event} locale={locale} />
+          <div className="grid gap-x-8 gap-y-14 pt-10 md:grid-cols-2 lg:grid-cols-3 md:pt-14">
+            {past.map((event, index) => (
+              <EventCard
+                key={event.id}
+                event={event}
+                locale={locale}
+                index={index}
+                total={past.length}
+              />
             ))}
           </div>
         )}
-      </section>
-    </main>
+      </SectionShell>
+    </>
   )
 }

@@ -13,12 +13,13 @@ export const getMediaUrl = (url: string | null | undefined, cacheTag?: string | 
     cacheTag = encodeURIComponent(cacheTag)
   }
 
-  // Check if URL already has http/https protocol
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    return cacheTag ? `${url}?${cacheTag}` : url
+  const separator = url.includes('?') ? '&' : '?'
+
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/')) {
+    return cacheTag ? `${url}${separator}${cacheTag}` : url
   }
 
-  // Otherwise prepend the same server-side base URL on both server and client renders.
   const baseUrl = getServerSideURL()
-  return cacheTag ? `${baseUrl}${url}?${cacheTag}` : `${baseUrl}${url}`
+  const src = `${baseUrl}/${url.replace(/^\/+/, '')}`
+  return cacheTag ? `${src}${separator}${cacheTag}` : src
 }

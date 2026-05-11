@@ -3,13 +3,16 @@ import Image from 'next/image'
 import type { Event } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import type { Locale } from '@/i18n/routing'
+import { cn } from '@/utilities/ui'
 
 type Props = {
   event: Event
   locale: Locale
+  index?: number
+  total?: number
 }
 
-export const EventCard = ({ event, locale }: Props) => {
+export const EventCard = ({ event, locale, index, total }: Props) => {
   const heroMedia = event.heroImage && typeof event.heroImage === 'object' ? event.heroImage : null
   const heroSrc = heroMedia?.url ? getMediaUrl(heroMedia.url, heroMedia.updatedAt) : null
   const eventDate = new Date(event.date)
@@ -22,36 +25,71 @@ export const EventCard = ({ event, locale }: Props) => {
   const day = validDate
     ? new Intl.DateTimeFormat(locale, { day: 'numeric', timeZone: 'UTC' }).format(eventDate)
     : ''
+  const year = validDate
+    ? new Intl.DateTimeFormat(locale, { year: 'numeric', timeZone: 'UTC' }).format(eventDate)
+    : ''
+
+  const indexLabel =
+    typeof index === 'number' && typeof total === 'number'
+      ? `${String(index + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`
+      : null
 
   return (
-    <article className="overflow-hidden rounded-lg border border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow">
-      <Link href={`/events/${encodeURIComponent(event.slug)}`} className="block h-full">
-        {heroSrc ? (
-          <Image
-            src={heroSrc}
-            alt={heroMedia?.alt || event.title || 'Event image'}
-            width={1200}
-            height={630}
-            className="w-full h-56 object-cover"
-          />
-        ) : (
-          <div className="h-56 w-full bg-muted" />
-        )}
-
-        <div className="px-4 py-3 flex items-start justify-between">
-          <div className="flex-1 pr-4">
-            <h3 className="text-lg font-semibold leading-tight hover:text-primary transition-colors">
-              {event.title}
-            </h3>
-            <div className="mt-1 text-sm text-muted-foreground">{event.location}</div>
-          </div>
-
-          {validDate && (
-            <div className="flex flex-col items-end text-right">
-              <div className="text-xs text-muted-foreground">{month}</div>
-              <div className="text-2xl font-bold leading-none">{day}</div>
+    <article className="group flex h-full flex-col gap-5">
+      <Link
+        href={`/events/${encodeURIComponent(event.slug)}`}
+        className="flex h-full flex-col gap-5"
+      >
+        <div className="relative overflow-hidden">
+          {heroSrc ? (
+            <Image
+              src={heroSrc}
+              alt={heroMedia?.alt || event.title || 'Event image'}
+              width={1200}
+              height={900}
+              className={cn(
+                'aspect-[4/3] w-full bg-foreground/5 object-cover',
+                'transition-transform duration-700 ease-out group-hover:scale-[1.04]',
+              )}
+            />
+          ) : (
+            <div className="flex aspect-[4/3] w-full items-center justify-center bg-foreground/[0.04]">
+              <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-foreground/40">
+                No image
+              </span>
             </div>
           )}
+
+          {indexLabel ? (
+            <span className="absolute left-3 top-3 rounded-sm bg-black/55 px-2 py-1 font-mono text-[0.7rem] tracking-[0.2em] text-white backdrop-blur-sm">
+              {indexLabel}
+            </span>
+          ) : null}
+
+          {validDate ? (
+            <div className="absolute bottom-3 right-3 flex items-end gap-2 rounded-sm bg-white/85 px-2.5 py-1.5 backdrop-blur-sm">
+              <span className="font-mono text-[0.65rem] uppercase tracking-[0.22em] text-foreground/65">
+                {month}
+              </span>
+              <span className="text-2xl font-medium leading-none tracking-tight text-foreground">
+                {day}
+              </span>
+              <span className="font-mono text-[0.65rem] uppercase tracking-[0.18em] text-foreground/55">
+                {year}
+              </span>
+            </div>
+          ) : null}
+        </div>
+
+        <div className="flex flex-1 flex-col gap-2">
+          {event.location ? (
+            <p className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-primary">
+              {event.location}
+            </p>
+          ) : null}
+          <h3 className="text-balance text-xl font-medium leading-tight tracking-tight transition-colors duration-300 group-hover:text-primary md:text-2xl">
+            {event.title}
+          </h3>
         </div>
       </Link>
     </article>

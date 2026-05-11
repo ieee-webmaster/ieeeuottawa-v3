@@ -21,6 +21,13 @@ const gridColumnClasses: Record<NonNullable<CardGridBlockProps['columns']>, stri
   '4': 'md:grid-cols-2 lg:grid-cols-4',
 }
 
+type CardData = NonNullable<CardGridBlockProps['cards']>[number]
+
+const isSvgMedia = (media: CardData['media']) => {
+  if (!media || typeof media !== 'object') return false
+  return media.mimeType === 'image/svg+xml' || (media.filename ?? '').toLowerCase().endsWith('.svg')
+}
+
 export const CardGridBlock: React.FC<CardGridBlockProps> = ({
   cards,
   columns = '3',
@@ -31,12 +38,36 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = ({
 }) => {
   const t = (theme ?? 'default') as BlockTheme
   const total = cards?.length ?? 0
+  // Detect homogeneity so we can pick a layout that fits the content type:
+  //   - all photo cards          → original aspect-[4/3] hero treatment
+  //   - all SVG / icon cards     → small square chip + text (icons get lost in 4:3)
+  //   - all text-only cards      → editorial list with mono index rail
+  const hasAnyMedia = (cards ?? []).some((c) => c.media && typeof c.media === 'object')
+  const allSvgMedia = hasAnyMedia && (cards ?? []).every((c) => isSvgMedia(c.media))
+  const variant: 'photo' | 'icon' | 'text' = !hasAnyMedia
+    ? 'text'
+    : allSvgMedia
+      ? 'icon'
+      : 'photo'
+
   const mediaSize =
     columns === '2'
       ? '(max-width: 768px) 100vw, 50vw'
       : columns === '4'
         ? '(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw'
         : '(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw'
+
+  const indexLabel = (i: number) => (
+    <span
+      className={cn(
+        'font-mono text-[0.7rem] uppercase tracking-[0.22em]',
+        t === 'dark' ? 'text-white/55' : 'text-foreground/45',
+      )}
+    >
+      {String(i + 1).padStart(2, '0')}
+      <span className="opacity-60">{` / ${String(total).padStart(2, '0')}`}</span>
+    </span>
+  )
 
   return (
     <SectionShell theme={t}>
@@ -57,10 +88,28 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = ({
       <div className={cn('h-px w-full', themeRule[t])} />
 
       {cards && cards.length > 0 ? (
-        <div className={cn('grid gap-x-8 gap-y-14 pt-10 md:pt-14', gridColumnClasses[columns])}>
+        <div
+          className={cn(
+            'grid pt-10 md:pt-14',
+            variant === 'text'
+              ? 'gap-x-10 gap-y-12 md:grid-cols-2 lg:grid-cols-3'
+              : cn('gap-x-8 gap-y-14', gridColumnClasses[columns]),
+          )}
+        >
           {cards.map((card, index) => (
-            <article key={card.id ?? index} className="group flex h-full flex-col gap-5">
-              {card.media && typeof card.media === 'object' ? (
+            <article
+              key={card.id ?? index}
+              className={cn(
+                'group flex h-full flex-col',
+                variant === 'text'
+                  ? cn(
+                      'gap-4 border-l pl-6 pt-1',
+                      t === 'dark' ? 'border-white/15' : 'border-foreground/15',
+                    )
+                  : 'gap-5',
+              )}
+            >
+              {variant === 'photo' && card.media && typeof card.media === 'object' ? (
                 <div className="relative overflow-hidden">
                   <Media
                     fill
@@ -79,6 +128,28 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = ({
                   </span>
                 </div>
               ) : null}
+
+              {variant === 'icon' && card.media && typeof card.media === 'object' ? (
+                <div className="flex items-center justify-between gap-4">
+                  <div
+                    className={cn(
+                      'relative flex h-14 w-14 items-center justify-center rounded-sm border',
+                      t === 'dark' ? 'border-white/15 bg-white/5' : 'border-foreground/15 bg-foreground/[0.03]',
+                    )}
+                  >
+                    <Media
+                      className="h-8 w-8"
+                      imgClassName="h-8 w-8 object-contain"
+                      pictureClassName="relative block h-8 w-8"
+                      resource={card.media}
+                      size="56px"
+                    />
+                  </div>
+                  {indexLabel(index)}
+                </div>
+              ) : null}
+
+              {variant === 'text' ? <div className="-ml-px">{indexLabel(index)}</div> : null}
 
               <div className="flex flex-1 flex-col gap-3">
                 {card.kicker ? (

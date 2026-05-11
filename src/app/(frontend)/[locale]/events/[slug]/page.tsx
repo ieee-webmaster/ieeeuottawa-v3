@@ -165,12 +165,13 @@ export default async function EventPage({ params: paramsPromise }: Args) {
           </div>
         </div>
 
-        <div className="min-h-[80vh] select-none">
+        <div className="relative min-h-[80vh] select-none">
           {event.heroImage && typeof event.heroImage !== 'string' && (
             <PayloadMedia
               fill
               priority
               imgClassName="-z-10 object-cover"
+              pictureClassName="absolute inset-0"
               resource={event.heroImage}
             />
           )}

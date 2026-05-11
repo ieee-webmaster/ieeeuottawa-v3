@@ -51,7 +51,6 @@ export const SplitSection: Block = {
       name: 'media',
       type: 'upload',
       relationTo: 'media',
-      required: true,
     },
     {
       type: 'row',

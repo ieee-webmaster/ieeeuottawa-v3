@@ -8,6 +8,7 @@
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",
     "ci": "payload migrate && pnpm build",
+    "create:pages": "cross-env NODE_OPTIONS=--no-deprecation tsx -r tsconfig-paths/register scripts/create-pages/index.ts",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
     "dev:prod": "cross-env NODE_OPTIONS=--no-deprecation rm -rf .next && pnpm build && pnpm start",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
