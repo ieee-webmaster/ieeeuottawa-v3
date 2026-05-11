@@ -27,7 +27,47 @@ export const SplitSectionBlock: React.FC<SplitSectionBlockProps> = ({
 }) => {
   const t = (theme ?? 'default') as BlockTheme
   const mediaLeft = mediaPosition === 'left'
-  const caption = media && typeof media === 'object' ? media.caption : null
+  const hasMedia = media && typeof media === 'object'
+  const caption = hasMedia ? media.caption : null
+
+  // Image-less variant: editorial 5+7 split. Title sits in a tight left
+  // column with an eyebrow rail; body fills the right. Keeps the section
+  // anchored even without media.
+  if (!hasMedia) {
+    return (
+      <SectionShell theme={t}>
+        <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
+          <div className="space-y-5 lg:col-span-5">
+            {eyebrow ? <Eyebrow theme={t}>{eyebrow}</Eyebrow> : null}
+            <h2 className="text-balance text-3xl font-medium leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
+              {title}
+            </h2>
+            <div className={cn('h-px w-12', themeRule[t])} />
+          </div>
+
+          <div className="space-y-6 lg:col-span-7 lg:pl-2">
+            <RichText
+              className={cn(
+                'max-w-prose [&_p]:text-base [&_p]:leading-relaxed md:[&_p]:text-lg',
+                t === 'dark' && '[&_p]:text-white/80 [&_li]:text-white/80',
+                t !== 'dark' && '[&_p]:text-muted-foreground [&_li]:text-muted-foreground',
+              )}
+              data={content}
+              enableGutter={false}
+            />
+
+            {links && links.length > 0 ? (
+              <div className="flex flex-wrap gap-3">
+                {links.map(({ id, link }, index) => (
+                  <CMSLink key={id ?? index} size="lg" {...link} />
+                ))}
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </SectionShell>
+    )
+  }
 
   return (
     <SectionShell theme={t}>
@@ -70,27 +110,25 @@ export const SplitSectionBlock: React.FC<SplitSectionBlockProps> = ({
 
         {/* Media column */}
         <div className={cn('min-w-0 lg:col-span-7', mediaLeft ? 'lg:order-1' : 'lg:order-2')}>
-          {media && typeof media === 'object' ? (
-            <figure className="relative">
-              <Media
-                fill
-                className={cn(
-                  'relative overflow-hidden bg-foreground/5',
-                  mediaAspectClasses[mediaAspect],
-                  t === 'dark' && 'bg-white/5',
-                )}
-                imgClassName="object-cover"
-                pictureClassName="relative block h-full w-full"
-                resource={media}
-                size="(max-width: 1024px) 100vw, 58vw"
-              />
-              {caption ? (
-                <figcaption className={cn('mt-4', themeMutedText[t])}>
-                  <RichText data={caption} enableGutter={false} />
-                </figcaption>
-              ) : null}
-            </figure>
-          ) : null}
+          <figure className="relative">
+            <Media
+              fill
+              className={cn(
+                'relative overflow-hidden bg-foreground/5',
+                mediaAspectClasses[mediaAspect],
+                t === 'dark' && 'bg-white/5',
+              )}
+              imgClassName="object-cover"
+              pictureClassName="relative block h-full w-full"
+              resource={media}
+              size="(max-width: 1024px) 100vw, 58vw"
+            />
+            {caption ? (
+              <figcaption className={cn('mt-4', themeMutedText[t])}>
+                <RichText data={caption} enableGutter={false} />
+              </figcaption>
+            ) : null}
+          </figure>
         </div>
       </div>
     </SectionShell>

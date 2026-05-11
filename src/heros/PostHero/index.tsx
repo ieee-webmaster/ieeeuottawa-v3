@@ -66,9 +66,15 @@ export const PostHero: React.FC<{
           </div>
         </div>
       </div>
-      <div className="min-h-[80vh] select-none">
+      <div className="relative min-h-[80vh] select-none">
         {heroImage && typeof heroImage !== 'string' && (
-          <Media fill priority imgClassName="-z-10 object-cover" resource={heroImage} />
+          <Media
+            fill
+            priority
+            imgClassName="-z-10 object-cover"
+            pictureClassName="absolute inset-0"
+            resource={heroImage}
+          />
         )}
         <div className="absolute pointer-events-none left-0 bottom-0 w-full h-1/2 bg-gradient-to-t from-black to-transparent" />
       </div>

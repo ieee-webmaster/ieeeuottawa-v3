@@ -1123,7 +1123,7 @@ export interface SplitSectionBlock {
         id?: string | null;
       }[]
     | null;
-  media: number | Media;
+  media?: (number | null) | Media;
   mediaPosition: 'left' | 'right';
   mediaAspect: 'portrait' | 'square' | 'landscape' | 'wide';
   theme: 'default' | 'muted' | 'accent' | 'dark';
