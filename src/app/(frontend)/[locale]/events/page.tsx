@@ -75,9 +75,7 @@ export default async function EventsPage({ params: paramsPromise }: Args) {
         <div className="h-px w-full bg-foreground/15" />
 
         {upcoming.length === 0 ? (
-          <p className="pt-10 text-base leading-relaxed text-muted-foreground">
-            {t('noUpcoming')}
-          </p>
+          <p className="pt-10 text-base leading-relaxed text-muted-foreground">{t('noUpcoming')}</p>
         ) : (
           <div className="grid gap-x-8 gap-y-14 pt-10 md:grid-cols-2 lg:grid-cols-3 md:pt-14">
             {upcoming.map((event, index) => (

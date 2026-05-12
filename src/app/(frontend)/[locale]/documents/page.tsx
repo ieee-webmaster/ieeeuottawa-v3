@@ -57,9 +57,7 @@ export default async function DocumentsPage({ params: paramsPromise }: Args) {
       <div className={cn('h-px w-full', themeRule[theme])} />
 
       {docs.length === 0 ? (
-        <div className={cn('py-20 text-center text-sm', themeMutedText[theme])}>
-          {t('noYears')}
-        </div>
+        <div className={cn('py-20 text-center text-sm', themeMutedText[theme])}>{t('noYears')}</div>
       ) : (
         <ul role="list" className="divide-y divide-foreground/20">
           {docs.map((doc, index) => (

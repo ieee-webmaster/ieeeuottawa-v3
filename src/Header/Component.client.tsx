@@ -68,11 +68,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, navItems }) =>
           aria-label={t('home')}
           onClick={() => setMenuOpen(false)}
         >
-          <Logo
-            loading="eager"
-            priority
-            className="w-[7.5rem] sm:w-[8rem] md:w-[9.375rem]"
-          />
+          <Logo loading="eager" priority className="w-[7.5rem] sm:w-[8rem] md:w-[9.375rem]" />
         </Link>
 
         <div className="hidden items-center gap-2 lg:flex lg:justify-self-center">

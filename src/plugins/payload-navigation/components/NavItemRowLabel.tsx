@@ -44,5 +44,9 @@ export const NavItemRowLabel: React.FC = () => {
   }
 
   const linkLabel = stringifyLocalized(data?.link?.label)
-  return <div>Item {index}: {linkLabel ?? 'Link'}</div>
+  return (
+    <div>
+      Item {index}: {linkLabel ?? 'Link'}
+    </div>
+  )
 }

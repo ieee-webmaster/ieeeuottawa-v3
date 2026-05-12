@@ -7,7 +7,7 @@ import type { SelectFieldClientComponent } from 'payload'
 export const CommitteePositionSelect: SelectFieldClientComponent = (props) => {
   const { path, field } = props
   const { value, setValue } = useField({ path })
-  
+
   const [options, setOptions] = useState<{ label: string; value: string }[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -34,7 +34,7 @@ export const CommitteePositionSelect: SelectFieldClientComponent = (props) => {
       setLoading(true)
       try {
         const response = await fetch(`/api/teams/${teamId}?depth=0`)
-        
+
         if (!response.ok) {
           throw new Error('Failed to fetch team')
         }

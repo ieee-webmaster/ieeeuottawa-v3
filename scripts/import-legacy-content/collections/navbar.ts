@@ -75,10 +75,7 @@ export async function importNavbar(payload: Payload, dataDir: string) {
     data: {
       socialLinks: socialLinkIds,
       showSocialLinkLabels: false,
-      navItems: [
-        { link: { type: 'custom', label: 'Posts', url: '/posts' } },
-        contactNavItem,
-      ],
+      navItems: [{ link: { type: 'custom', label: 'Posts', url: '/posts' } }, contactNavItem],
     },
   })
 

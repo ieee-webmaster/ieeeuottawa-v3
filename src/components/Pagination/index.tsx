@@ -26,7 +26,8 @@ export const Pagination: React.FC<{
 
   const hasExtraPrevPages = page - 1 > 1
   const hasExtraNextPages = page + 1 < totalPages
-  const getPagePath = (pageNumber: number) => (pageNumber <= 1 ? basePath : `${basePath}/page/${pageNumber}`)
+  const getPagePath = (pageNumber: number) =>
+    pageNumber <= 1 ? basePath : `${basePath}/page/${pageNumber}`
 
   return (
     <div className={cn('my-12', className)}>

@@ -205,11 +205,13 @@ describe('AutoArrayRowLabel render', () => {
     rowLabelHookState.fields = {
       'committees.0.teams.0.members.0.person': { value: 42 },
     }
-    vi.stubGlobal('fetch', vi.fn(() => new Promise(() => {})))
-
-    const { AutoArrayRowLabel } = await import(
-      '../../src/plugins/payload-row-labels/AutoArrayRowLabel'
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => new Promise(() => {})),
     )
+
+    const { AutoArrayRowLabel } =
+      await import('../../src/plugins/payload-row-labels/AutoArrayRowLabel')
 
     const { container } = render(
       createElement(AutoArrayRowLabel, {
@@ -234,9 +236,8 @@ describe('AutoArrayRowLabel render', () => {
     rowLabelHookState.fields = {}
     vi.stubGlobal('fetch', vi.fn())
 
-    const { AutoArrayRowLabel } = await import(
-      '../../src/plugins/payload-row-labels/AutoArrayRowLabel'
-    )
+    const { AutoArrayRowLabel } =
+      await import('../../src/plugins/payload-row-labels/AutoArrayRowLabel')
 
     const { container } = render(
       createElement(AutoArrayRowLabel, {
@@ -268,9 +269,8 @@ describe('AutoArrayRowLabel render', () => {
       })),
     )
 
-    const { AutoArrayRowLabel } = await import(
-      '../../src/plugins/payload-row-labels/AutoArrayRowLabel'
-    )
+    const { AutoArrayRowLabel } =
+      await import('../../src/plugins/payload-row-labels/AutoArrayRowLabel')
 
     const { container } = render(
       createElement(AutoArrayRowLabel, {

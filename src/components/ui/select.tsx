@@ -108,10 +108,4 @@ const SelectItem: React.FC<
   </SelectPrimitive.Item>
 )
 
-export {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-}
+export { Select, SelectContent, SelectItem, SelectTrigger, SelectValue }

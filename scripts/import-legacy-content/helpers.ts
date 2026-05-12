@@ -233,7 +233,9 @@ async function writeMediaWithRetry(
     } catch (error) {
       if (attempt === maxAttempts || !isBlobUploadError(error)) throw error
 
-      console.warn(`media: retrying ${filename} after blob upload failure (${attempt}/${maxAttempts})`)
+      console.warn(
+        `media: retrying ${filename} after blob upload failure (${attempt}/${maxAttempts})`,
+      )
       await sleep(1500 * attempt)
       await deleteStoredMediaFiles(filename, existing)
     }
@@ -247,7 +249,9 @@ function isBlobUploadError(error: unknown): boolean {
 
   const cause = error.cause
 
-  return error.message.includes('Vercel Blob') || (cause instanceof Error && isBlobUploadError(cause))
+  return (
+    error.message.includes('Vercel Blob') || (cause instanceof Error && isBlobUploadError(cause))
+  )
 }
 
 async function sleep(ms: number) {

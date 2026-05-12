@@ -1,8 +1,8 @@
-import Link from "next/link";
+import Link from 'next/link'
 
 type Args = {
-  href: string,
-  innerText: string,
+  href: string
+  innerText: string
 }
 
 export const LinkButton = ({ href, innerText }: Args) => {
@@ -15,5 +15,5 @@ export const LinkButton = ({ href, innerText }: Args) => {
     >
       {innerText}
     </Link>
-  );
-};
+  )
+}
