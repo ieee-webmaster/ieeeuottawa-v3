@@ -59,12 +59,7 @@ const DocumentSection = ({ label, items, theme, locale }: DocumentSectionProps) 
               <span className="sr-only">{item.name}</span>
             </a>
             <div className="grid grid-cols-[auto_1fr_auto] items-baseline gap-x-6 gap-y-2 py-7 transition-all duration-300 group-hover:bg-foreground/[0.025] group-hover:pl-3">
-              <IndexNumber
-                value={index + 1}
-                total={total}
-                theme={theme}
-                className="self-center"
-              />
+              <IndexNumber value={index + 1} total={total} theme={theme} className="self-center" />
               <div className="space-y-1.5">
                 <h3 className="text-balance text-xl font-medium leading-snug tracking-tight transition-colors group-hover:text-primary md:text-2xl">
                   {item.name}

@@ -10,10 +10,7 @@ import type {
 
 import { buildCollectionFieldsEndpoint } from './endpoints'
 import { buildNavItemsField } from './fields'
-import {
-  buildAfterChangeRevalidate,
-  buildAfterDeleteRevalidate,
-} from './revalidateHooks'
+import { buildAfterChangeRevalidate, buildAfterDeleteRevalidate } from './revalidateHooks'
 import type { NavigationPluginOptions } from './types'
 
 const NAV_ITEMS_FIELD_NAME = 'navItems'
@@ -32,17 +29,12 @@ const replaceNavItemsField = (fields: Field[] | undefined, replacement: Field): 
   return next
 }
 
-const applyToGlobal = (
-  global: GlobalConfig,
-  navItemsField: Field,
-): GlobalConfig => ({
+const applyToGlobal = (global: GlobalConfig, navItemsField: Field): GlobalConfig => ({
   ...global,
   fields: replaceNavItemsField(global.fields, navItemsField),
 })
 
-const attachRevalidationHooks = (
-  collection: CollectionConfig,
-): CollectionConfig => {
+const attachRevalidationHooks = (collection: CollectionConfig): CollectionConfig => {
   const slug = collection.slug
   const revalidateOptions = {
     draftsEnabled: Boolean(typeof collection.versions === 'object' && collection.versions?.drafts),
@@ -85,7 +77,10 @@ export const navigationPlugin = (options: NavigationPluginOptions): Plugin => {
       allowedSet.has(collection.slug) ? attachRevalidationHooks(collection) : collection,
     )
 
-    const endpoints = [...(config.endpoints ?? []), buildCollectionFieldsEndpoint(allowedCollections)]
+    const endpoints = [
+      ...(config.endpoints ?? []),
+      buildCollectionFieldsEndpoint(allowedCollections),
+    ]
 
     return {
       ...config,
@@ -98,9 +93,7 @@ export const navigationPlugin = (options: NavigationPluginOptions): Plugin => {
 
 export type { NavigationPluginOptions } from './types'
 export { resolveNavItems } from './resolveNavItems'
-export type {
-  RawNavItem,
-} from './resolveNavItems'
+export type { RawNavItem } from './resolveNavItems'
 export type {
   ResolvedDropdownRow,
   ResolvedLeafLink,

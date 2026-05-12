@@ -55,8 +55,10 @@ export const QuickLinksBlock: React.FC<QuickLinksBlockProps> = ({
                   // Use theme bg as tile bg so the gap-px reads as hairlines
                   t === 'dark' && 'bg-[#03164f] hover:bg-[#04205f] focus-within:ring-white/80',
                   t === 'accent' && 'bg-background hover:bg-primary/5 focus-within:ring-primary',
-                  t === 'muted' && 'bg-background hover:bg-foreground/[0.03] focus-within:ring-primary',
-                  t === 'default' && 'bg-background hover:bg-foreground/[0.03] focus-within:ring-primary',
+                  t === 'muted' &&
+                    'bg-background hover:bg-foreground/[0.03] focus-within:ring-primary',
+                  t === 'default' &&
+                    'bg-background hover:bg-foreground/[0.03] focus-within:ring-primary',
                 )}
               >
                 <div className="flex items-start justify-between gap-4">

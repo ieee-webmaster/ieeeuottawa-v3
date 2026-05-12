@@ -16,7 +16,9 @@ export const PostHero: React.FC<{
   const t = await getTranslations({ locale, namespace: 'posts' })
 
   const hasAuthors =
-    populatedAuthors && populatedAuthors.length > 0 && formatAuthors(populatedAuthors, locale) !== ''
+    populatedAuthors &&
+    populatedAuthors.length > 0 &&
+    formatAuthors(populatedAuthors, locale) !== ''
 
   return (
     <div className="relative -mt-[10.4rem] flex items-end">

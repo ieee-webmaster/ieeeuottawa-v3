@@ -44,11 +44,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = ({
   //   - all text-only cards      → editorial list with mono index rail
   const hasAnyMedia = (cards ?? []).some((c) => c.media && typeof c.media === 'object')
   const allSvgMedia = hasAnyMedia && (cards ?? []).every((c) => isSvgMedia(c.media))
-  const variant: 'photo' | 'icon' | 'text' = !hasAnyMedia
-    ? 'text'
-    : allSvgMedia
-      ? 'icon'
-      : 'photo'
+  const variant: 'photo' | 'icon' | 'text' = !hasAnyMedia ? 'text' : allSvgMedia ? 'icon' : 'photo'
 
   const mediaSize =
     columns === '2'
@@ -134,7 +130,9 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = ({
                   <div
                     className={cn(
                       'relative flex h-14 w-14 items-center justify-center rounded-sm border',
-                      t === 'dark' ? 'border-white/15 bg-white/5' : 'border-foreground/15 bg-foreground/[0.03]',
+                      t === 'dark'
+                        ? 'border-white/15 bg-white/5'
+                        : 'border-foreground/15 bg-foreground/[0.03]',
                     )}
                   >
                     <Media

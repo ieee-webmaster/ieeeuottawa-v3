@@ -38,7 +38,9 @@ async function fetchOldPage(route: string): Promise<OldPage> {
   if (!response.ok) throw new Error(`Unable to fetch ${route}: ${response.status}`)
 
   const html = await response.text()
-  const match = html.match(/<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/)
+  const match = html.match(
+    /<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/,
+  )
   if (!match) throw new Error(`Unable to find Next.js page data for ${route}`)
 
   return JSON.parse(match[1]).props.pageProps.page
@@ -47,7 +49,9 @@ async function fetchOldPage(route: string): Promise<OldPage> {
 function docsFromOldData(page: OldPage) {
   const generalDocuments = []
   const years = []
-  let currentYear: { meetingMinutes: unknown[]; otherDocuments: unknown[]; year: string } | undefined
+  let currentYear:
+    | { meetingMinutes: unknown[]; otherDocuments: unknown[]; year: string }
+    | undefined
 
   for (const section of page.sections ?? []) {
     if (section.type !== 'FeaturedItemsSection') continue

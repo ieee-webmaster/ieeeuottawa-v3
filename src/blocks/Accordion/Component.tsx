@@ -83,7 +83,8 @@ export const AccordionBlockComponent: React.FC<AccordionBlockProps> = ({
                         className={cn(
                           'max-w-[58ch] [&_p]:text-[0.95rem] [&_p]:leading-relaxed',
                           t === 'dark' && '[&_p]:text-white/75 [&_li]:text-white/75',
-                          t !== 'dark' && '[&_p]:text-muted-foreground [&_li]:text-muted-foreground',
+                          t !== 'dark' &&
+                            '[&_p]:text-muted-foreground [&_li]:text-muted-foreground',
                         )}
                         data={item.answer}
                         enableGutter={false}

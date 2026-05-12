@@ -4,11 +4,7 @@ import path from 'node:path'
 import type { Person } from '@/payload-types'
 import { type Payload } from 'payload'
 
-import {
-  findLocalAssetsBySlug,
-  createImportContext,
-  upsertMediaFromLocalFile,
-} from '../helpers'
+import { findLocalAssetsBySlug, createImportContext, upsertMediaFromLocalFile } from '../helpers'
 
 export type PersonData = { linkedin?: string | null; name: string; slug: string }
 
