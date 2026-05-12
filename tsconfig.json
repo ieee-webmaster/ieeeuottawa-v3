@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "strict": true,
-    "baseUrl": ".",
     "esModuleInterop": true,
     "target": "ES2022",
     "lib": [
@@ -12,6 +11,8 @@
     "allowJs": true,
     "skipLibCheck": true,
     "noEmit": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
     "incremental": true,
     "jsx": "react-jsx",
     "module": "esnext",

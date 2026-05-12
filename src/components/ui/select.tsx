@@ -7,8 +7,6 @@ import * as React from 'react'
 
 const Select = SelectPrimitive.Root
 
-const SelectGroup = SelectPrimitive.Group
-
 const SelectValue = SelectPrimitive.Value
 
 const SelectTrigger: React.FC<
@@ -87,16 +85,6 @@ const SelectContent: React.FC<
   </SelectPrimitive.Portal>
 )
 
-const SelectLabel: React.FC<
-  { ref?: React.Ref<HTMLDivElement> } & React.ComponentProps<typeof SelectPrimitive.Label>
-> = ({ className, ref, ...props }) => (
-  <SelectPrimitive.Label
-    className={cn('py-1.5 pl-8 pr-2 text-sm font-semibold', className)}
-    ref={ref}
-    {...props}
-  />
-)
-
 const SelectItem: React.FC<
   { ref?: React.Ref<HTMLDivElement>; value: string } & React.ComponentProps<
     typeof SelectPrimitive.Item
@@ -120,25 +108,10 @@ const SelectItem: React.FC<
   </SelectPrimitive.Item>
 )
 
-const SelectSeparator: React.FC<
-  { ref?: React.Ref<HTMLDivElement> } & React.ComponentProps<typeof SelectPrimitive.Separator>
-> = ({ className, ref, ...props }) => (
-  <SelectPrimitive.Separator
-    className={cn('-mx-1 my-1 h-px bg-muted', className)}
-    ref={ref}
-    {...props}
-  />
-)
-
 export {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
-  SelectScrollDownButton,
-  SelectScrollUpButton,
-  SelectSeparator,
   SelectTrigger,
   SelectValue,
 }

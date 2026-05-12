@@ -3,7 +3,7 @@ import type { RbacId } from './types'
 export const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
 
-export const isRbacId = (value: unknown): value is RbacId =>
+const isRbacId = (value: unknown): value is RbacId =>
   typeof value === 'string' || typeof value === 'number'
 
 export const idKey = (id: RbacId): string => String(id)

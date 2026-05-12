@@ -6,8 +6,6 @@ export type TagAction = PermissionAction
 
 export type RbacId = string | number
 
-export type TagEffect = 'allow' | 'deny'
-
 export type RolePermission = {
   collectionPermissions?:
     | {
@@ -19,7 +17,7 @@ export type RolePermission = {
     | {
         tag?: RbacId | { id?: RbacId | null } | null
         actions?: TagAction[] | null
-        effect?: TagEffect | null
+        effect?: 'allow' | 'deny' | null
       }[]
     | null
 }

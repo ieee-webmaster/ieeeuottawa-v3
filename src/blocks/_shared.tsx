@@ -5,7 +5,7 @@ import type { BlockTheme } from '@/blocks/theme'
 
 export type { BlockTheme } from '@/blocks/theme'
 
-export const sectionShellClasses: Record<BlockTheme, string> = {
+const sectionShellClasses: Record<BlockTheme, string> = {
   default: 'bg-transparent text-foreground',
   muted: 'bg-muted/40 text-foreground',
   accent:

@@ -1,5 +1,3 @@
-export type NavItemKind = 'link' | 'dropdown'
-export type DropdownMode = 'manual' | 'automatic'
 export type AutoOrder = 'asc' | 'desc'
 
 export type ResolvedLeafLink = {

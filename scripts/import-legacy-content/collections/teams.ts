@@ -6,8 +6,8 @@ import { type Payload } from 'payload'
 
 import { createImportContext } from '../helpers'
 
-export type RoleValue = 'commish' | 'coord' | 'exec'
-export type TeamPosition = {
+type RoleValue = 'commish' | 'coord' | 'exec'
+type TeamPosition = {
   positionEmail?: string
   role: RoleValue
   title: { en: string; fr: string }
