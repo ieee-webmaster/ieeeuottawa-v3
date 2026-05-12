@@ -1,6 +1,6 @@
 import type { Field } from 'payload'
 
-export const blockThemeOptions = [
+const blockThemeOptions = [
   { label: 'Default', value: 'default' },
   { label: 'Muted', value: 'muted' },
   { label: 'Accent', value: 'accent' },

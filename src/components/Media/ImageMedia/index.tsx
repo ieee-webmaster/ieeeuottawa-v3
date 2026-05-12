@@ -96,7 +96,6 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
   if (svgSrc) {
     return (
       <picture className={cn(pictureClassName)}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           alt={alt || ''}
           className={cn(imgClassName)}

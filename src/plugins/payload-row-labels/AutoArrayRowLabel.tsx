@@ -144,21 +144,22 @@ export const AutoArrayRowLabel: React.FC<AutoArrayRowLabelProps> = ({
   const resolvedLabel = resolveRowLabel(candidates, fieldValues, locale)
   const lookup = resolvedLabel && 'lookup' in resolvedLabel ? resolvedLabel.lookup : null
   const directLabel = resolvedLabel && 'label' in resolvedLabel ? resolvedLabel.label : null
-  const [remoteLabel, setRemoteLabel] = useState<string | null>(null)
+  const [remote, setRemote] = useState<{ key: string; label: string | null } | null>(null)
   const apiRoute = config.routes.api.replace(/\/$/, '')
   const lookupId = lookup?.id
   const lookupLabelField = lookup?.labelField
   const lookupRelationTo = lookup?.relationTo
 
+  const lookupKey =
+    lookupId && lookupRelationTo
+      ? `${lookupRelationTo}:${lookupId}:${lookupLabelField ?? ''}:${locale ?? ''}`
+      : null
+
+  const remoteLabel = remote?.key === lookupKey ? remote.label : null
+
   useEffect(() => {
+    if (!lookupKey || !lookupId || !lookupRelationTo) return
     let cancelled = false
-
-    if (!lookupId || !lookupRelationTo) {
-      setRemoteLabel(null)
-      return
-    }
-
-    setRemoteLabel(null)
 
     const loadLabel = async () => {
       try {
@@ -180,11 +181,11 @@ export const AutoArrayRowLabel: React.FC<AutoArrayRowLabelProps> = ({
         const label = getLocalizedLabel(doc[lookupLabelField ?? 'id'], locale)
 
         if (!cancelled) {
-          setRemoteLabel(label)
+          setRemote({ key: lookupKey, label })
         }
       } catch {
         if (!cancelled) {
-          setRemoteLabel(null)
+          setRemote({ key: lookupKey, label: null })
         }
       }
     }
@@ -194,7 +195,7 @@ export const AutoArrayRowLabel: React.FC<AutoArrayRowLabelProps> = ({
     return () => {
       cancelled = true
     }
-  }, [apiRoute, locale, lookupId, lookupLabelField, lookupRelationTo])
+  }, [apiRoute, locale, lookupId, lookupLabelField, lookupRelationTo, lookupKey])
 
   const activePrefix = lookup?.fallbackPrefix ?? fallbackPrefix
   const fallback = `${activePrefix} ${String((rowNumber ?? 0) + 1).padStart(2, '0')}`

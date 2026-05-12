@@ -23,3 +23,4 @@ node_modules/
 
 # TypeScript stuff
 tsconfig.tsbuildinfo
+next-env.d.ts

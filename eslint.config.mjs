@@ -10,10 +10,11 @@ const eslintConfig = [
       '@typescript-eslint/no-empty-object-type': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unused-vars': [
-        'warn',
+        'error',
         {
           vars: 'all',
           args: 'after-used',
+          caughtErrors: 'all',
           ignoreRestSiblings: false,
           argsIgnorePattern: '^_',
           varsIgnorePattern: '^_',
@@ -21,6 +22,12 @@ const eslintConfig = [
           caughtErrorsIgnorePattern: '^(_|ignore)',
         },
       ],
+    },
+  },
+  {
+    files: ['src/migrations/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off',
     },
   },
   {

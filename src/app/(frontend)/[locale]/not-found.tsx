@@ -1,5 +1,4 @@
 import { Link } from '@/i18n/navigation'
-import React from 'react'
 
 import { Button } from '@/components/ui/button'
 

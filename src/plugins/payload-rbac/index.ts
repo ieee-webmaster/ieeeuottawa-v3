@@ -9,7 +9,6 @@ import type {
 } from 'payload'
 
 import {
-  accessTagsFieldName,
   buildAccessTagsField,
   buildCollectionAccess,
   buildGlobalAccess,
@@ -319,4 +318,3 @@ export const rbacPlugin = (options: RbacPluginOptions): Plugin => {
 }
 
 export type { RbacPluginOptions }
-export { accessTagsFieldName }

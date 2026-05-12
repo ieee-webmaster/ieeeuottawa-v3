@@ -1,8 +1,6 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { cleanText, normalizeOldSiteUrl } from './helpers'
-
 const SITE_URL = 'https://ieeeuottawa.ca'
 const DATA_DIR = path.resolve(process.cwd(), 'scripts/import-legacy-content/data')
 
@@ -95,6 +93,22 @@ function parseMeetingDate(value?: string | null) {
   if (iso) return iso[1]
   const slashed = value.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/)
   if (slashed) return `${slashed[3]}-${slashed[1].padStart(2, '0')}-${slashed[2].padStart(2, '0')}`
+}
+
+function cleanText(value?: string | null) {
+  if (!value) return undefined
+  const cleaned = value
+    .replace(/\r\n/g, '\n')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1 ($2)')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+
+  return cleaned || undefined
+}
+
+function normalizeOldSiteUrl(url: string | null | undefined) {
+  if (!url) return undefined
+  return url.startsWith('/') ? `https://ieeeuottawa.ca${url}` : url
 }
 
 async function writeJson(fileName: string, data: unknown) {

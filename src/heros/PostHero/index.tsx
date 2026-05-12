@@ -1,5 +1,5 @@
 import type { Locale } from '@/i18n/routing'
-import { formatDateTime } from 'src/utilities/formatDateTime'
+import { formatDateTime } from '@/utilities/formatDateTime'
 import React from 'react'
 import { getTranslations } from 'next-intl/server'
 
