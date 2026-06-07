@@ -1,0 +1,56 @@
+<svg
+  width="1200"
+  height="630"
+  viewBox="0 0 1200 630"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <defs>
+    <radialGradient
+      id="bg"
+      cx="0"
+      cy="0"
+      r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(880 180) rotate(140) scale(920 600)"
+    >
+      <stop stop-color="#0A5C8F" />
+      <stop offset="0.5" stop-color="#052A63" />
+      <stop offset="1" stop-color="#03154F" />
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect width="1200" height="630" fill="#03154F" opacity="0.28" />
+
+  <image
+    href="./ieeelogo_light.svg"
+    x="84"
+    y="82"
+    width="330"
+    height="124"
+    preserveAspectRatio="xMinYMid meet"
+  />
+
+  <text
+    x="84"
+    y="380"
+    fill="white"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="76"
+    font-weight="700"
+  >
+    Powering Your
+  </text>
+  <text
+    x="84"
+    y="468"
+    fill="#B9E6FF"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="76"
+    font-weight="700"
+  >
+    Student Experience
+  </text>
+  <path d="M86 522H360" stroke="#36B6FF" stroke-width="6" stroke-linecap="round" />
+</svg>

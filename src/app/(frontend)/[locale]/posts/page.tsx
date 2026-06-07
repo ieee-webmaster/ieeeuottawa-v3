@@ -7,6 +7,7 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { getTranslations } from 'next-intl/server'
 import type { Config } from '@/payload-types'
+import { generateStaticMeta } from '@/utilities/generateMeta'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -65,7 +66,10 @@ export default async function Page({ params: paramsPromise }: Args) {
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { locale } = await paramsPromise
   const t = await getTranslations({ locale, namespace: 'posts' })
-  return {
+  return generateStaticMeta({
+    description: t('description'),
+    locale,
+    path: '/posts',
     title: t('title'),
-  }
+  })
 }

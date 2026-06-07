@@ -6,6 +6,8 @@ import { getPayload } from 'payload'
 import { Search } from '@/search/Component'
 import { CardPostData } from '@/components/Card'
 import type { Config } from '@/payload-types'
+import { getTranslations } from 'next-intl/server'
+import { generateStaticMeta } from '@/utilities/generateMeta'
 
 type Args = {
   params: Promise<{ locale: Config['locale'] }>
@@ -86,8 +88,14 @@ export default async function Page({
   )
 }
 
-export function generateMetadata(): Metadata {
-  return {
-    title: `Payload Website Template Search`,
-  }
+export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
+  const { locale } = await paramsPromise
+  const t = await getTranslations({ locale, namespace: 'search' })
+
+  return generateStaticMeta({
+    description: t('description'),
+    locale,
+    path: '/search',
+    title: t('title'),
+  })
 }

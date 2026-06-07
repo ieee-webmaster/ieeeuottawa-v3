@@ -26,8 +26,13 @@
   },
   "posts": {
     "title": "Posts",
+    "description": "Read news, updates, and stories from the IEEE uOttawa Student Branch.",
     "author": "Author",
     "datePublished": "Date Published"
+  },
+  "search": {
+    "title": "Search",
+    "description": "Search IEEE uOttawa posts, events, documents, and resources."
   },
   "docs": {
     "title": "Yearly Documents",

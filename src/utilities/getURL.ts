@@ -1,11 +1,13 @@
 import canUseDOM from './canUseDOM'
 
+const withoutTrailingSlash = (url: string) => url.replace(/\/+$/, '')
+
 export const getServerSideURL = () => {
-  return (
+  return withoutTrailingSlash(
     process.env.NEXT_PUBLIC_SERVER_URL ||
-    (process.env.VERCEL_PROJECT_PRODUCTION_URL
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-      : 'http://localhost:3000')
+      (process.env.VERCEL_PROJECT_PRODUCTION_URL
+        ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+        : 'http://localhost:3000'),
   )
 }
 
@@ -19,8 +21,10 @@ export const getClientSideURL = () => {
   }
 
   if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    return withoutTrailingSlash(`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`)
   }
 
-  return process.env.NEXT_PUBLIC_SERVER_URL || ''
+  return process.env.NEXT_PUBLIC_SERVER_URL
+    ? withoutTrailingSlash(process.env.NEXT_PUBLIC_SERVER_URL)
+    : ''
 }

@@ -1,9 +1,12 @@
+import type { Metadata } from 'next'
+
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { getTranslations } from 'next-intl/server'
 import type { Event, Config } from '@/payload-types'
 import { Eyebrow, SectionShell } from '@/blocks/_shared'
 import { EventCard } from './_components/EventCard'
+import { generateStaticMeta } from '@/utilities/generateMeta'
 
 type Args = {
   params: Promise<{ locale: Config['locale'] }>
@@ -126,4 +129,16 @@ export default async function EventsPage({ params: paramsPromise }: Args) {
       </SectionShell>
     </>
   )
+}
+
+export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
+  const { locale } = await paramsPromise
+  const t = await getTranslations({ locale, namespace: 'events' })
+
+  return generateStaticMeta({
+    description: t('description'),
+    locale,
+    path: '/events',
+    title: t('title'),
+  })
 }

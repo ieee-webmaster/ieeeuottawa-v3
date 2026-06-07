@@ -9,9 +9,9 @@ import { getLocale } from 'next-intl/server'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { resolveLocale } from '@/i18n/routing'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
-
 import './[locale]/globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
+import { getDefaultOpenGraphImage, SITE_DESCRIPTION, SITE_NAME } from '@/utilities/siteMetadata'
 
 type Props = {
   children: React.ReactNode
@@ -37,10 +37,20 @@ export default async function FrontendRootLayout({ children }: Props) {
 }
 
 export const metadata: Metadata = {
+  applicationName: SITE_NAME,
+  description: SITE_DESCRIPTION,
   metadataBase: new URL(getServerSideURL()),
   openGraph: mergeOpenGraph(),
+  title: SITE_NAME,
   twitter: {
     card: 'summary_large_image',
-    creator: '@payloadcms',
+    description: SITE_DESCRIPTION,
+    images: [
+      {
+        alt: getDefaultOpenGraphImage().alt,
+        url: getDefaultOpenGraphImage().url,
+      },
+    ],
+    title: SITE_NAME,
   },
 }
