@@ -1,8 +1,12 @@
+import type { Metadata } from 'next'
+
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import { notFound } from 'next/navigation'
-import { Config } from '@/payload-types'
+import { getTranslations } from 'next-intl/server'
+import type { Config } from '@/payload-types'
 import { YearlyDocument } from '../_components/YearlyDocument'
+import { generateStaticMeta } from '@/utilities/generateMeta'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -53,4 +57,19 @@ export default async function DocsPage({ params: paramsPromise }: Args) {
   }
 
   return await YearlyDocument(doc, locale)
+}
+
+export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
+  const { locale, year = '' } = await paramsPromise
+  const t = await getTranslations({
+    locale: locale ?? 'en',
+    namespace: 'docs',
+  })
+
+  return generateStaticMeta({
+    description: t('description'),
+    locale,
+    path: `/documents/${year}`,
+    title: `${year} ${t('title')}`,
+  })
 }

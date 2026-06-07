@@ -6,7 +6,9 @@ import { Pagination } from '@/components/Pagination'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { notFound } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import type { Config } from '@/payload-types'
+import { generateStaticMeta } from '@/utilities/generateMeta'
 
 export const revalidate = 600
 
@@ -63,10 +65,15 @@ export default async function Page({ params: paramsPromise }: Args) {
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  const { pageNumber } = await paramsPromise
-  return {
-    title: `Payload Website Template Posts Page ${pageNumber || ''}`,
-  }
+  const { locale, pageNumber } = await paramsPromise
+  const t = await getTranslations({ locale, namespace: 'posts' })
+
+  return generateStaticMeta({
+    description: t('description'),
+    locale,
+    path: `/posts/page/${pageNumber}`,
+    title: `${t('title')} - Page ${pageNumber}`,
+  })
 }
 
 export async function generateStaticParams() {

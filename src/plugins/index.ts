@@ -13,9 +13,10 @@ import { resolveContentPathFromDoc } from '@/routing/resolveContentPath'
 
 import { resolveLocale } from '@/i18n/routing'
 import { getAbsoluteUrl, prefixLocale } from '@/utilities/routes'
+import { formatSiteTitle } from '@/utilities/siteMetadata'
 
 const generateTitle: GenerateTitle<{ title?: string | null }> = ({ doc }) => {
-  return doc?.title ? `${doc.title} | Payload Website Template` : 'Payload Website Template'
+  return formatSiteTitle(doc?.title)
 }
 
 const generateURL: GenerateURL<Record<string, unknown>> = ({ collectionConfig, doc, locale }) => {

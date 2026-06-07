@@ -1,8 +1,11 @@
+import type { Metadata } from 'next'
+
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { getTranslations } from 'next-intl/server'
 import type { Config } from '@/payload-types'
 import { CommitteeCard } from './_components/CommitteeCard'
+import { generateStaticMeta } from '@/utilities/generateMeta'
 
 type Args = {
   params: Promise<{ locale: Config['locale'] }>
@@ -49,4 +52,19 @@ export default async function CommitteeLanding({ params }: Args) {
       </section>
     </main>
   )
+}
+
+export async function generateMetadata({ params }: Args): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({
+    locale: locale ?? 'en',
+    namespace: 'committee',
+  })
+
+  return generateStaticMeta({
+    description: t('landingDescription'),
+    locale,
+    path: '/committee',
+    title: t('pageTitle'),
+  })
 }

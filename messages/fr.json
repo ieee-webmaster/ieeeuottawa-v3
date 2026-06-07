@@ -26,8 +26,13 @@
   },
   "posts": {
     "title": "Articles",
+    "description": "Lisez les nouvelles, les mises à jour et les histoires de la branche étudiante IEEE uOttawa.",
     "author": "Auteur",
     "datePublished": "Date de publication"
+  },
+  "search": {
+    "title": "Rechercher",
+    "description": "Recherchez les articles, événements, documents et ressources d'IEEE uOttawa."
   },
 
   "docs": {

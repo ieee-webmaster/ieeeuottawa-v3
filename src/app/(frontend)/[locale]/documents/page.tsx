@@ -1,3 +1,5 @@
+import type { Metadata } from 'next'
+
 import Link from 'next/link'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
@@ -13,6 +15,7 @@ import {
   type BlockTheme,
 } from '@/blocks/_shared'
 import { cn } from '@/utilities/ui'
+import { generateStaticMeta } from '@/utilities/generateMeta'
 
 type Args = {
   params: Promise<{ locale: Config['locale'] }>
@@ -92,4 +95,19 @@ export default async function DocumentsPage({ params: paramsPromise }: Args) {
       )}
     </SectionShell>
   )
+}
+
+export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
+  const { locale } = await paramsPromise
+  const t = await getTranslations({
+    locale: locale ?? 'en',
+    namespace: 'docs',
+  })
+
+  return generateStaticMeta({
+    description: t('description'),
+    locale,
+    path: '/documents',
+    title: t('title'),
+  })
 }

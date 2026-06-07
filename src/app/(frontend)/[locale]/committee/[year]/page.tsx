@@ -1,3 +1,5 @@
+import type { Metadata } from 'next'
+
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { notFound } from 'next/navigation'
@@ -6,6 +8,7 @@ import Image from 'next/image'
 import { ArrowLeft, Mail, Linkedin, User } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import type { Committee, Team, Person, Media, Config } from '@/payload-types'
+import { generateStaticMeta } from '@/utilities/generateMeta'
 
 type Args = {
   params: Promise<{ year: string; locale: Config['locale'] }>
@@ -189,4 +192,19 @@ export default async function CommitteePage({ params }: Args) {
       )}
     </main>
   )
+}
+
+export async function generateMetadata({ params }: Args): Promise<Metadata> {
+  const { year, locale } = await params
+  const t = await getTranslations({
+    locale: locale ?? 'en',
+    namespace: 'committee',
+  })
+
+  return generateStaticMeta({
+    description: t('landingDescription'),
+    locale,
+    path: `/committee/${year}`,
+    title: `${year} ${t('title')}`,
+  })
 }
