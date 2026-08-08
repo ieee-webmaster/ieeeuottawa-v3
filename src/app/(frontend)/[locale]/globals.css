@@ -28,6 +28,7 @@
 
     --secondary: 208 80% 45%;
     --secondary-foreground: 0 0% 100%;
+    --interactive: 208 80% 45%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
@@ -66,6 +67,7 @@
 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
+    --interactive: 208 80% 72%;
 
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
@@ -95,6 +97,7 @@
     --background: 225 93% 16%;
     --card: 225 60% 24%;
     --accent: 225 60% 24%;
+    --interactive: 208 80% 72%;
     --border: 0, 0%, 100%, 0.2;
     --input: 225 60% 24%;
   }

@@ -114,7 +114,7 @@ export async function YearlyDocument(docs: Doc, locale: Config['locale']) {
         <div className="md:col-span-5 md:flex md:justify-end">
           <Link
             href="/documents"
-            className="inline-flex items-center gap-2 font-mono text-[0.72rem] uppercase tracking-[0.22em] text-primary transition-colors hover:text-secondary"
+            className="inline-flex items-center gap-2 font-mono text-[0.72rem] uppercase tracking-[0.22em] text-primary transition-colors hover:text-[hsl(var(--interactive))]"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             {t('allYears')}

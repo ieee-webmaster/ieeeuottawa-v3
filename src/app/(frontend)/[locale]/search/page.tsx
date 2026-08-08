@@ -9,6 +9,7 @@ import type { Config } from '@/payload-types'
 import { getTranslations } from 'next-intl/server'
 import { generateStaticMeta } from '@/utilities/generateMeta'
 import { Eyebrow, SectionShell, themeRule } from '@/blocks/_shared'
+import { SearchXIcon } from 'lucide-react'
 
 type Args = {
   params: Promise<{ locale: Config['locale'] }>
@@ -71,31 +72,36 @@ export default async function Page({
   })
 
   return (
-    <SectionShell theme="default" padding="pt-24 pb-20 md:pt-36 md:pb-28">
-      <header className="mb-12 grid gap-8 md:mb-16 md:grid-cols-12 md:items-end md:gap-10">
-        <div className="space-y-5 md:col-span-7">
+    <SectionShell theme="default" padding="pt-20 pb-20 md:pt-28 md:pb-28">
+      <header className="grid gap-10 lg:grid-cols-12 lg:items-end">
+        <div className="space-y-6 lg:col-span-9">
           <Eyebrow theme="default">{t('eyebrow')}</Eyebrow>
           <h1 className="text-balance text-5xl font-medium leading-[1] tracking-tight sm:text-6xl md:text-7xl">
             {t('title')}
           </h1>
-        </div>
-        <div className="md:col-span-5">
-          <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
+          <p className="max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
             {t('description')}
           </p>
         </div>
       </header>
 
-      <div className={`h-px w-full ${themeRule.default}`} />
+      <div className={`mt-12 h-px w-full md:mt-16 ${themeRule.default}`} />
 
-      <div className="max-w-3xl py-10 md:py-14">
+      <div className="py-8 md:py-10">
         <Search initialValue={query} />
       </div>
 
       {posts.totalDocs > 0 ? (
         <>
-          <div className="mb-10 flex items-end justify-between gap-6 border-t border-foreground/20 pt-10 md:mb-14">
-            <h2 className="text-2xl font-medium tracking-tight md:text-3xl">{t('results')}</h2>
+          <div className="mb-10 flex items-end justify-between gap-6 border-t border-foreground/20 pt-10 md:mb-14 md:pt-12">
+            <div>
+              <Eyebrow theme="default" withRule={false}>
+                {t('results')}
+              </Eyebrow>
+              <h2 className="mt-3 text-2xl font-medium tracking-tight md:text-3xl">
+                {t('resultsFor', { query })}
+              </h2>
+            </div>
             <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-muted-foreground">
               {t('resultCount', { count: posts.totalDocs })}
             </span>
@@ -103,9 +109,21 @@ export default async function Page({
           <CollectionArchive bare posts={posts.docs as CardPostData[]} />
         </>
       ) : (
-        <p className="border-t border-foreground/20 pt-10 text-sm leading-relaxed text-muted-foreground">
-          {query ? t('noResults', { query }) : t('prompt')}
-        </p>
+        <div className="border-y border-foreground/20 py-10 md:py-12">
+          <div className="grid max-w-3xl grid-cols-[auto_1fr] items-start gap-5">
+            <span className="inline-flex h-11 w-11 items-center justify-center border border-[hsl(var(--interactive)/0.25)] bg-[hsl(var(--interactive)/0.08)] text-foreground">
+              <SearchXIcon aria-hidden="true" className="h-5 w-5" />
+            </span>
+            <div className="space-y-2">
+              <span className="font-mono text-[0.68rem] font-medium uppercase tracking-[0.22em] text-foreground">
+                {query ? t('resultCount', { count: 0 }) : t('results')}
+              </span>
+              <p className="text-base leading-relaxed text-muted-foreground">
+                {query ? t('noResults', { query }) : t('prompt')}
+              </p>
+            </div>
+          </div>
+        </div>
       )}
     </SectionShell>
   )

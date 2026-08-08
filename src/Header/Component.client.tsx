@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { MenuIcon, SearchIcon, XIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
@@ -12,6 +12,7 @@ import { cn } from '@/utilities/ui'
 import { Logo } from '@/components/Logo/Logo'
 import { LocaleSwitcher } from '@/components/LocaleSwitcher'
 import { SocialIcons } from '@/components/SocialIcons'
+import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { HeaderNav } from './Nav'
 
 interface HeaderClientProps {
@@ -23,6 +24,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, navItems }) =>
   const t = useTranslations('nav')
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const scrollPositionRef = useRef(0)
   const pathname = usePathname()
 
   useEffect(() => {
@@ -39,12 +41,14 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, navItems }) =>
 
   useEffect(() => {
     if (!menuOpen) return
-    const prev = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    const root = document.documentElement
+    const prev = root.style.overflow
+    root.style.overflow = 'hidden'
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setMenuOpen(false)
     window.addEventListener('keydown', onKey)
     return () => {
-      document.body.style.overflow = prev
+      root.style.overflow = prev
+      window.scrollTo(0, scrollPositionRef.current)
       window.removeEventListener('keydown', onKey)
     }
   }, [menuOpen])
@@ -56,9 +60,11 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, navItems }) =>
     <header
       className={cn(
         'sticky top-0 z-40 w-full border-b transition-colors duration-200',
-        scrolled
-          ? 'border-border bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60'
-          : 'border-transparent bg-background',
+        menuOpen
+          ? 'border-border bg-background'
+          : scrolled
+            ? 'border-border bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60'
+            : 'border-transparent bg-background',
       )}
     >
       <div className="container flex h-20 items-center justify-between gap-4 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-6">
@@ -82,6 +88,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, navItems }) =>
               <span aria-hidden="true" className="mx-1 h-5 w-px bg-border" />
             </>
           )}
+          <ThemeSelector className="h-10 px-2 text-sm font-medium text-primary md:pl-2" />
           <LocaleSwitcher />
           <Link
             href="/search"
@@ -106,7 +113,10 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, navItems }) =>
             aria-label={menuOpen ? t('closeMenu') : t('openMenu')}
             aria-expanded={menuOpen}
             aria-controls="mobile-nav"
-            onClick={() => setMenuOpen((o) => !o)}
+            onClick={() => {
+              if (!menuOpen) scrollPositionRef.current = window.scrollY
+              setMenuOpen((open) => !open)
+            }}
             className="inline-flex h-10 w-10 items-center justify-center rounded-md text-primary transition-colors hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0"
           >
             {menuOpen ? <XIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
@@ -137,6 +147,13 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, navItems }) =>
             />
 
             <div className="mt-auto flex flex-col gap-5 border-t border-border pt-5">
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {t('theme')}
+                </span>
+                <ThemeSelector className="min-w-[6.5rem] border border-border px-3 text-sm md:pl-3" />
+              </div>
+
               {socialLinks.length > 0 && (
                 <div className="flex flex-col gap-3">
                   <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">

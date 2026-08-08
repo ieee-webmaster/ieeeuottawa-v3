@@ -14,7 +14,7 @@ type FooterNavProps = {
 const FooterDropdownLink = ({ entry }: { entry: ResolvedLeafLink }) => (
   <Link
     href={entry.href}
-    className="text-sm text-primary-foreground/85 hover:text-primary-foreground"
+    className="text-sm text-white/80 transition-colors hover:text-white"
     {...(entry.newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {})}
   >
     {entry.label}
@@ -41,7 +41,7 @@ const FooterDropdown = ({ item }: { item: ResolvedDropdownRow }) => {
 const FooterLink = ({ item }: { item: ResolvedLinkRow }) => (
   <Link
     href={item.href}
-    className="text-sm text-primary-foreground/85 hover:text-primary-foreground"
+    className="text-sm text-white/80 transition-colors hover:text-white"
     {...(item.newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {})}
   >
     {item.label}

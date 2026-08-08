@@ -19,7 +19,7 @@ export default function NotFound() {
           <p className="text-base leading-relaxed text-muted-foreground">{t('description')}</p>
           <Link
             href="/"
-            className="group inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-primary transition-colors hover:text-secondary"
+            className="group inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-primary transition-colors hover:text-[hsl(var(--interactive))]"
           >
             <ArrowLeft
               aria-hidden="true"

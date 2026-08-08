@@ -6,7 +6,12 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "followUs": "Follow us",
-    "language": "Language"
+    "language": "Language",
+    "theme": "Theme",
+    "selectTheme": "Select a theme",
+    "themeAuto": "Auto",
+    "themeLight": "Light",
+    "themeDark": "Dark"
   },
   "events": {
     "title": "Events",
@@ -43,7 +48,9 @@
     "eyebrow": "Explore the Site",
     "placeholder": "What are you looking for?",
     "submit": "Submit search",
+    "clear": "Clear search",
     "results": "Results",
+    "resultsFor": "Results for “{query}”",
     "resultCount": "{count, plural, one {# result} other {# results}}",
     "prompt": "Start typing to search the site.",
     "noResults": "No results found for “{query}”."
