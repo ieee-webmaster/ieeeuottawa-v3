@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
+import { Eyebrow, SectionShell, themeRule } from '@/blocks/_shared'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
@@ -13,6 +14,7 @@ import type { Post, Config } from '@/payload-types'
 import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { getTranslations } from 'next-intl/server'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -48,11 +50,12 @@ export default async function Post({ params: paramsPromise }: Args) {
   const decodedSlug = decodeURIComponent(slug)
   const url = `/posts/${encodeURIComponent(decodedSlug)}`
   const post = await queryPostBySlug({ slug: decodedSlug, locale })
+  const t = await getTranslations({ locale, namespace: 'posts' })
 
   if (!post) return <PayloadRedirects url={url} />
 
   return (
-    <article className="pt-16 pb-16">
+    <article>
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
 
@@ -60,17 +63,23 @@ export default async function Post({ params: paramsPromise }: Args) {
 
       <PostHero locale={locale} post={post} />
 
-      <div className="flex flex-col items-center gap-4 pt-8">
-        <div className="container">
-          <RichText className="max-w-[48rem] mx-auto" data={post.content} enableGutter={false} />
-          {post.relatedPosts && post.relatedPosts.length > 0 && (
-            <RelatedPosts
-              className="mt-12 max-w-[52rem] lg:grid lg:grid-cols-subgrid col-start-1 col-span-3 grid-rows-[2fr]"
-              docs={post.relatedPosts.filter((post) => typeof post === 'object')}
-            />
-          )}
-        </div>
-      </div>
+      <SectionShell theme="default" padding="py-12 md:py-20">
+        <RichText className="mx-auto max-w-3xl" data={post.content} enableGutter={false} />
+      </SectionShell>
+
+      {post.relatedPosts && post.relatedPosts.length > 0 ? (
+        <SectionShell theme="muted" padding="py-14 md:py-20">
+          <header className="mb-8">
+            <Eyebrow theme="muted">{t('related')}</Eyebrow>
+            <h2 className="mt-4 text-3xl font-medium tracking-tight md:text-4xl">{t('related')}</h2>
+          </header>
+          <div className={`h-px w-full ${themeRule.muted}`} />
+          <RelatedPosts
+            className="mt-10 md:mt-14"
+            docs={post.relatedPosts.filter((post) => typeof post === 'object')}
+          />
+        </SectionShell>
+      ) : null}
     </article>
   )
 }

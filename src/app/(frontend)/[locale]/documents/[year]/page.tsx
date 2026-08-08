@@ -42,6 +42,7 @@ export default async function DocsPage({ params: paramsPromise }: Args) {
   const result = await payload.find({
     collection: 'docs',
     locale,
+    overrideAccess: false,
     where: {
       year: {
         equals: year,

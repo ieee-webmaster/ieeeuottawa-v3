@@ -27,12 +27,31 @@
   "posts": {
     "title": "Posts",
     "description": "Read news, updates, and stories from the IEEE uOttawa Student Branch.",
+    "eyebrow": "News & Updates",
+    "latest": "Latest Posts",
+    "empty": "No posts have been published yet.",
+    "postCount": "{count, plural, one {# post} other {# posts}}",
+    "page": "Page {page}",
+    "backToPosts": "Back to posts",
+    "related": "Related posts",
     "author": "Author",
     "datePublished": "Date Published"
   },
   "search": {
     "title": "Search",
-    "description": "Search IEEE uOttawa posts, events, documents, and resources."
+    "description": "Search IEEE uOttawa posts, events, documents, and resources.",
+    "eyebrow": "Explore the Site",
+    "placeholder": "What are you looking for?",
+    "submit": "Submit search",
+    "results": "Results",
+    "resultCount": "{count, plural, one {# result} other {# results}}",
+    "prompt": "Start typing to search the site.",
+    "noResults": "No results found for “{query}”."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you were looking for may have moved or no longer exists.",
+    "action": "Return home"
   },
   "docs": {
     "title": "Yearly Documents",
@@ -51,6 +70,7 @@
   },
   "committee": {
     "pageTitle": "Committees",
+    "archiveLabel": "Committee Archive",
     "landingDescription": "Behind every successful student association is a team of committed volunteers who share the common goal of enhancing EECS students' life on campus.",
     "noRecords": "No committee records found.",
     "teamCount": "{count, plural, one {# Team} other {# Teams}}",
@@ -61,6 +81,12 @@
     "members": "Members",
     "teamDataPending": "Team Data Pending",
     "teamNotFinalized": "The team for the {year} academic year hasn't been finalized in the system yet.",
+    "memberCount": "{count, plural, one {# member} other {# members}}",
+    "emailMember": "Email {name}",
+    "linkedinProfile": "{name} on LinkedIn",
+    "executive": "Executive",
+    "commissioner": "Commissioner",
+    "coordinator": "Coordinator",
     "executives": "Executives",
     "commissioners": "Commissioners",
     "coordinators": "Coordinators"

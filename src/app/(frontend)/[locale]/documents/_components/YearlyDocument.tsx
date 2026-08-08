@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { ArrowLeft, ArrowUpRight } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import { Config, Doc } from '@/payload-types'
@@ -12,6 +11,7 @@ import {
   type BlockTheme,
 } from '@/blocks/_shared'
 import { cn } from '@/utilities/ui'
+import { Link } from '@/i18n/navigation'
 
 type DocItem = NonNullable<Doc['meetingMinutes']>[number]
 

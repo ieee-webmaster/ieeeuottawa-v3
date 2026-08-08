@@ -15,11 +15,13 @@ export const Card: React.FC<{
   className?: string
   doc?: CardPostData
   href: string
+  index?: number
   showCategories?: boolean
   title?: string
+  total?: number
 }> = (props) => {
   const { cardRef, linkRef } = useClickableCard({})
-  const { className, doc, href, showCategories, title: titleFromProps } = props
+  const { className, doc, href, index, showCategories, title: titleFromProps, total } = props
 
   const { categories, meta, title } = doc || {}
   const { description, image: metaImage } = meta || {}
@@ -30,19 +32,29 @@ export const Card: React.FC<{
 
   return (
     <article
-      className={cn(
-        'border border-border rounded-lg overflow-hidden bg-card hover:cursor-pointer',
-        className,
-      )}
+      className={cn('group flex flex-col gap-5 hover:cursor-pointer', className)}
       ref={cardRef}
     >
-      <div className="relative w-full ">
-        {!metaImage && <div className="">No image</div>}
-        {metaImage && typeof metaImage !== 'string' && <Media resource={metaImage} size="33vw" />}
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-foreground/[0.04]">
+        {metaImage && typeof metaImage !== 'string' ? (
+          <Media
+            fill
+            imgClassName="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+            pictureClassName="absolute inset-0"
+            resource={metaImage}
+            size="(max-width: 768px) 100vw, 33vw"
+          />
+        ) : null}
+        {typeof index === 'number' && typeof total === 'number' ? (
+          <span className="absolute left-3 top-3 bg-black/55 px-2 py-1 font-mono text-[0.68rem] tracking-[0.18em] text-white backdrop-blur-sm">
+            {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
+          </span>
+        ) : null}
       </div>
-      <div className="p-4">
+
+      <div className="flex flex-1 flex-col gap-3">
         {showCategories && hasCategories && (
-          <div className="uppercase text-sm mb-4">
+          <div className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-primary">
             {showCategories && hasCategories && (
               <div>
                 {categories?.map((category, index) => {
@@ -68,15 +80,15 @@ export const Card: React.FC<{
           </div>
         )}
         {titleToUse && (
-          <div className="prose">
-            <h3>
-              <Link className="not-prose" href={href} ref={linkRef}>
-                {titleToUse}
-              </Link>
-            </h3>
-          </div>
+          <h3 className="text-balance text-xl font-medium leading-tight tracking-tight transition-colors group-hover:text-primary md:text-2xl">
+            <Link href={href} ref={linkRef}>
+              {titleToUse}
+            </Link>
+          </h3>
         )}
-        {description && <div className="mt-2">{description && <p>{sanitizedDescription}</p>}</div>}
+        {description ? (
+          <p className="text-sm leading-relaxed text-muted-foreground">{sanitizedDescription}</p>
+        ) : null}
       </div>
     </article>
   )

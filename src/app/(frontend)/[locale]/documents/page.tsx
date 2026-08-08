@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 
-import Link from 'next/link'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { ArrowUpRight } from 'lucide-react'
@@ -16,6 +15,7 @@ import {
 } from '@/blocks/_shared'
 import { cn } from '@/utilities/ui'
 import { generateStaticMeta } from '@/utilities/generateMeta'
+import { Link } from '@/i18n/navigation'
 
 type Args = {
   params: Promise<{ locale: Config['locale'] }>
@@ -28,6 +28,8 @@ export default async function DocumentsPage({ params: paramsPromise }: Args) {
   const { docs } = await payload.find({
     collection: 'docs',
     depth: 0,
+    locale,
+    overrideAccess: false,
     sort: '-year',
     limit: 100,
   })
