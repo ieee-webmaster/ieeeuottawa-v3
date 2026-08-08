@@ -2,9 +2,12 @@ import type { Locale } from '@/i18n/routing'
 import { formatDateTime } from '@/utilities/formatDateTime'
 import React from 'react'
 import { getTranslations } from 'next-intl/server'
+import { ArrowLeft } from 'lucide-react'
 
 import type { Post } from '@/payload-types'
 
+import { Eyebrow, SectionShell, themeRule } from '@/blocks/_shared'
+import { Link } from '@/i18n/navigation'
 import { Media } from '@/components/Media'
 import { formatAuthors } from '@/utilities/formatAuthors'
 
@@ -19,67 +22,73 @@ export const PostHero: React.FC<{
     populatedAuthors &&
     populatedAuthors.length > 0 &&
     formatAuthors(populatedAuthors, locale) !== ''
+  const categoryLabel = categories
+    ?.filter(
+      (category): category is NonNullable<(typeof categories)[number]> & { title: string } =>
+        typeof category === 'object' &&
+        category !== null &&
+        'title' in category &&
+        typeof category.title === 'string',
+    )
+    .map((category) => category.title)
+    .join(', ')
 
   return (
-    <div className="relative -mt-[10.4rem] flex items-end">
-      <div className="container z-10 relative lg:grid lg:grid-cols-[1fr_48rem_1fr] text-white pb-8">
-        <div className="col-start-1 col-span-1 md:col-start-2 md:col-span-2">
-          <div className="uppercase text-sm mb-6">
-            {categories?.map((category, index) => {
-              if (typeof category === 'object' && category !== null) {
-                const { title: categoryTitle } = category
+    <SectionShell theme="default" padding="pt-20 pb-12 md:pt-28 md:pb-16" as="div">
+      <Link
+        href="/posts"
+        className="group mb-10 inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-primary transition-colors hover:text-secondary md:mb-14"
+      >
+        <ArrowLeft
+          aria-hidden="true"
+          className="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
+        />
+        {t('backToPosts')}
+      </Link>
 
-                const titleToUse = categoryTitle || 'Untitled category'
-
-                const isLast = index === categories.length - 1
-
-                return (
-                  <React.Fragment key={index}>
-                    {titleToUse}
-                    {!isLast && <React.Fragment>, &nbsp;</React.Fragment>}
-                  </React.Fragment>
-                )
-              }
-              return null
-            })}
-          </div>
-
-          <div className="">
-            <h1 className="mb-6 text-3xl md:text-5xl lg:text-6xl">{title}</h1>
-          </div>
-
-          <div className="flex flex-col md:flex-row gap-4 md:gap-16">
-            {hasAuthors && (
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-1">
-                  <p className="text-sm">{t('author')}</p>
-
-                  <p>{formatAuthors(populatedAuthors, locale)}</p>
-                </div>
-              </div>
-            )}
-            {publishedAt && (
-              <div className="flex flex-col gap-1">
-                <p className="text-sm">{t('datePublished')}</p>
-
-                <time dateTime={publishedAt}>{formatDateTime(publishedAt, locale)}</time>
-              </div>
-            )}
-          </div>
+      <header className="grid gap-8 md:grid-cols-12 md:items-end md:gap-10">
+        <div className="space-y-5 md:col-span-10">
+          <Eyebrow theme="default">{categoryLabel || t('eyebrow')}</Eyebrow>
+          <h1 className="max-w-5xl text-balance text-4xl font-medium leading-[1.02] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+            {title}
+          </h1>
         </div>
+      </header>
+
+      <div className={`my-10 h-px w-full md:my-14 ${themeRule.default}`} />
+
+      <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
+        {hasAuthors ? (
+          <div className="space-y-2">
+            <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
+              {t('author')}
+            </p>
+            <p className="text-base leading-relaxed">{formatAuthors(populatedAuthors, locale)}</p>
+          </div>
+        ) : null}
+        {publishedAt ? (
+          <div className="space-y-2">
+            <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
+              {t('datePublished')}
+            </p>
+            <time className="block text-base leading-relaxed" dateTime={publishedAt}>
+              {formatDateTime(publishedAt, locale)}
+            </time>
+          </div>
+        ) : null}
       </div>
-      <div className="relative min-h-[80vh] select-none">
-        {heroImage && typeof heroImage !== 'string' && (
+
+      {heroImage && typeof heroImage !== 'string' ? (
+        <div className="relative mt-12 aspect-[4/3] overflow-hidden bg-foreground/[0.04] sm:aspect-video md:mt-16 lg:aspect-[21/9]">
           <Media
             fill
             priority
-            imgClassName="-z-10 object-cover"
+            imgClassName="object-cover"
             pictureClassName="absolute inset-0"
             resource={heroImage}
           />
-        )}
-        <div className="absolute pointer-events-none left-0 bottom-0 w-full h-1/2 bg-gradient-to-t from-black to-transparent" />
-      </div>
-    </div>
+        </div>
+      ) : null}
+    </SectionShell>
   )
 }

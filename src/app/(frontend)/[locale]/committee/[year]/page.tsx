@@ -3,12 +3,14 @@ import type { Metadata } from 'next'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, Mail, Linkedin, User } from 'lucide-react'
+import { ArrowLeft, Mail, Linkedin, UserRound } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import type { Committee, Team, Person, Media, Config } from '@/payload-types'
 import { generateStaticMeta } from '@/utilities/generateMeta'
+import { Link } from '@/i18n/navigation'
+import { Eyebrow, SectionShell, themeRule } from '@/blocks/_shared'
+import { getMediaUrl } from '@/utilities/getMediaUrl'
 
 type Args = {
   params: Promise<{ year: string; locale: Config['locale'] }>
@@ -27,6 +29,8 @@ export default async function CommitteePage({ params }: Args) {
     where: { Year: { equals: year } },
     depth: 2,
     limit: 1,
+    locale,
+    overrideAccess: false,
   })
 
   const committee = result.docs[0] as Committee
@@ -34,9 +38,9 @@ export default async function CommitteePage({ params }: Args) {
 
   const coverImage = committee.coverImage as Media | undefined
   const rankLabels: Record<string, string> = {
-    exec: 'Executive',
-    commish: 'Commissioner',
-    coord: 'Coordinator',
+    exec: t('executive'),
+    commish: t('commissioner'),
+    coord: t('coordinator'),
   }
 
   const sections = (committee.teams ?? [])
@@ -59,138 +63,150 @@ export default async function CommitteePage({ params }: Args) {
     .filter((section) => section.data.length > 0)
 
   const hasNoData = sections.length === 0
+  const coverImageSrc = coverImage?.url
+    ? getMediaUrl(coverImage.url, coverImage.updatedAt)
+    : undefined
 
   return (
-    <main className="max-w-[1400px] m-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 transition-colors duration-300">
-      <div className="mb-12 md:mb-20">
-        <Link
-          href="/committee"
-          className="inline-flex items-center text-[10px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary mb-6 transition-colors group"
-        >
-          <ArrowLeft className="mr-2 h-3 w-3 transition-transform group-hover:-translate-x-1" />
-          {t('backToCommittees')}
-        </Link>
-
-        <header className="mb-8 md:mb-12">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter text-foreground">
+    <SectionShell theme="default" padding="pt-20 pb-20 md:pt-28 md:pb-28">
+      <header className="mb-10 grid gap-8 md:mb-14 md:grid-cols-12 md:items-end md:gap-10">
+        <div className="space-y-5 md:col-span-8">
+          <Eyebrow theme="default">{t('archiveLabel')}</Eyebrow>
+          <h1 className="text-balance text-4xl font-medium leading-[1.02] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
             {committee.Year} {t('title')}
           </h1>
-        </header>
+        </div>
+        <div className="md:col-span-4 md:flex md:justify-end">
+          <Link
+            href="/committee"
+            className="group inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-primary transition-colors hover:text-secondary"
+          >
+            <ArrowLeft
+              aria-hidden="true"
+              className="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
+            />
+            {t('backToCommittees')}
+          </Link>
+        </div>
+      </header>
 
-        {coverImage?.url && (
-          <div className="max-w-6xl mx-auto">
-            <div className="overflow-hidden rounded-2xl md:rounded-[2.5rem] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100 dark:bg-zinc-950 shadow-lg shadow-zinc-200/20 dark:shadow-none">
-              <div className="relative w-full aspect-[4/3] sm:aspect-video md:aspect-[21/9] lg:max-h-[550px]">
-                <Image
-                  src={coverImage.url}
-                  alt={`${committee.Year} Committee Banner`}
-                  fill
-                  priority
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 1152px"
-                />
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+      {coverImageSrc ? (
+        <div className="relative mb-16 aspect-[4/3] overflow-hidden bg-foreground/[0.04] sm:aspect-video md:mb-24 lg:aspect-[21/9]">
+          <Image
+            src={coverImageSrc}
+            alt={coverImage?.alt || `${committee.Year} ${t('title')}`}
+            fill
+            priority
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 1360px"
+          />
+        </div>
+      ) : (
+        <div className={`mb-16 h-px w-full md:mb-24 ${themeRule.default}`} />
+      )}
 
       {hasNoData ? (
-        <div className="flex flex-col items-center justify-center py-20 md:py-32 text-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-[2rem] bg-zinc-50/50 dark:bg-zinc-900/10 px-6">
-          <div className="p-4 bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 mb-6">
-            <User className="h-8 w-8 md:h-10 md:w-10 text-primary opacity-20" />
-          </div>
-          <h3 className="text-xl md:text-2xl font-black tracking-tight text-foreground">
+        <div className="border-y border-foreground/20 py-20 text-center md:py-28">
+          <UserRound className="mx-auto mb-6 h-9 w-9 text-primary" aria-hidden="true" />
+          <h2 className="text-2xl font-medium tracking-tight md:text-3xl">
             {t('teamDataPending')}
-          </h3>
-          <p className="text-muted-foreground mt-2 max-w-sm mx-auto text-sm leading-relaxed">
+          </h2>
+          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
             {t('teamNotFinalized', { year: committee.Year })}
           </p>
         </div>
       ) : (
-        <div className="space-y-16 md:space-y-24 max-w-6xl mx-auto">
-          {sections.map(
-            (section) =>
-              section.data.length > 0 && (
-                <section key={section.title}>
-                  <div className="flex items-center gap-4 mb-8 md:mb-14">
-                    <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
-                    <h2 className="text-lg md:text-xl font-black uppercase tracking-[0.2em] text-foreground/50 whitespace-nowrap">
-                      {section.title}
-                    </h2>
-                    <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
-                  </div>
+        <div className="space-y-20 md:space-y-28">
+          {sections.map((section) => (
+            <section key={section.title}>
+              <header className="mb-8 grid gap-4 md:grid-cols-12 md:items-end">
+                <div className="md:col-span-8">
+                  <Eyebrow theme="default">{section.title}</Eyebrow>
+                  <h2 className="mt-4 text-3xl font-medium leading-[1.05] tracking-tight md:text-5xl">
+                    {section.title}
+                  </h2>
+                </div>
+                <div className="md:col-span-4 md:text-right">
+                  <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-muted-foreground">
+                    {t('memberCount', { count: section.data.length })}
+                  </span>
+                </div>
+              </header>
 
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-y-12 gap-x-4 md:gap-x-10">
-                    {section.data.map((member) => {
-                      const person = member.person as Person
-                      const headshot = person.headshot as Media | undefined
+              <div className={`mb-10 h-px w-full md:mb-14 ${themeRule.default}`} />
 
-                      return (
-                        <div
-                          key={member.id}
-                          className="group flex flex-col items-center text-center"
-                        >
-                          <div className="relative w-32 h-32 md:w-40 md:h-40 mb-4 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 transition-all">
-                            {headshot?.url ? (
-                              <Image
-                                src={headshot.url}
-                                alt={person.fullName}
-                                fill
-                                className="object-cover transition-transform duration-500"
-                                sizes="(max-width: 768px) 128px, 160px"
-                              />
-                            ) : (
-                              <div className="flex h-full w-full items-center justify-center">
-                                <User className="h-10 w-10 md:h-12 md:w-12 text-zinc-300 dark:text-zinc-700" />
-                              </div>
-                            )}
+              <div className="grid grid-cols-2 gap-x-4 gap-y-12 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
+                {section.data.map((member) => {
+                  const person = member.person as Person
+                  const headshot = person.headshot as Media | undefined
+                  const headshotSrc = headshot?.url
+                    ? getMediaUrl(headshot.url, headshot.updatedAt)
+                    : undefined
+
+                  return (
+                    <article key={member.id} className="group min-w-0">
+                      <div className="relative aspect-[4/5] overflow-hidden bg-foreground/[0.04]">
+                        {headshotSrc ? (
+                          <Image
+                            src={headshotSrc}
+                            alt={person.fullName}
+                            fill
+                            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
+                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center">
+                            <UserRound
+                              className="h-10 w-10 text-foreground/25 md:h-12 md:w-12"
+                              aria-hidden="true"
+                            />
                           </div>
+                        )}
+                      </div>
 
-                          <div className="flex flex-col gap-0.5 px-2">
-                            <span className="text-[8px] md:text-[9px] font-black uppercase tracking-wider text-primary">
-                              {member.role}
-                            </span>
-                            <h3 className="text-base md:text-lg font-bold text-foreground leading-tight group-hover:text-primary transition-colors line-clamp-2">
-                              {person.fullName}
-                            </h3>
-                            {member.rank && (
-                              <p className="text-[10px] md:text-[11px] text-muted-foreground font-medium opacity-80 line-clamp-1">
-                                {member.rank}
-                              </p>
-                            )}
-                          </div>
+                      <div className="mt-4 space-y-1.5">
+                        <p className="font-mono text-[0.62rem] uppercase leading-relaxed tracking-[0.18em] text-primary md:text-[0.68rem]">
+                          {member.role}
+                        </p>
+                        <h3 className="text-base font-medium leading-tight tracking-tight transition-colors group-hover:text-primary md:text-xl">
+                          {person.fullName}
+                        </h3>
+                        {member.rank && (
+                          <p className="text-xs text-muted-foreground md:text-sm">{member.rank}</p>
+                        )}
+                      </div>
 
-                          <div className="flex gap-1 mt-3">
-                            {member.positionEmail && (
-                              <a
-                                href={`mailto:${member.positionEmail}`}
-                                className="p-2 rounded-full text-zinc-400 hover:text-primary hover:bg-primary/5 transition-all"
-                              >
-                                <Mail className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                              </a>
-                            )}
-                            {person['Linkedin Profile'] && (
-                              <a
-                                href={person['Linkedin Profile']}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="p-2 rounded-full text-zinc-400 hover:text-primary hover:bg-primary/5 transition-all"
-                              >
-                                <Linkedin className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                              </a>
-                            )}
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </section>
-              ),
-          )}
+                      <div className="mt-3 flex items-center gap-3 text-muted-foreground">
+                        {member.positionEmail && (
+                          <a
+                            href={`mailto:${member.positionEmail}`}
+                            aria-label={t('emailMember', { name: person.fullName })}
+                            className="transition-colors hover:text-primary"
+                          >
+                            <Mail className="h-4 w-4" aria-hidden="true" />
+                          </a>
+                        )}
+                        {person['Linkedin Profile'] && (
+                          <a
+                            href={person['Linkedin Profile']}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={t('linkedinProfile', { name: person.fullName })}
+                            className="transition-colors hover:text-primary"
+                          >
+                            <Linkedin className="h-4 w-4" aria-hidden="true" />
+                          </a>
+                        )}
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+            </section>
+          ))}
         </div>
       )}
-    </main>
+    </SectionShell>
   )
 }
 

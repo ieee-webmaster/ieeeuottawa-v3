@@ -27,12 +27,31 @@
   "posts": {
     "title": "Articles",
     "description": "Lisez les nouvelles, les mises à jour et les histoires de la branche étudiante IEEE uOttawa.",
+    "eyebrow": "Nouvelles et mises à jour",
+    "latest": "Derniers articles",
+    "empty": "Aucun article n'a encore été publié.",
+    "postCount": "{count, plural, one {# article} other {# articles}}",
+    "page": "Page {page}",
+    "backToPosts": "Retour aux articles",
+    "related": "Articles connexes",
     "author": "Auteur",
     "datePublished": "Date de publication"
   },
   "search": {
     "title": "Rechercher",
-    "description": "Recherchez les articles, événements, documents et ressources d'IEEE uOttawa."
+    "description": "Recherchez les articles, événements, documents et ressources d'IEEE uOttawa.",
+    "eyebrow": "Explorer le site",
+    "placeholder": "Que recherchez-vous?",
+    "submit": "Lancer la recherche",
+    "results": "Résultats",
+    "resultCount": "{count, plural, one {# résultat} other {# résultats}}",
+    "prompt": "Commencez à taper pour rechercher sur le site.",
+    "noResults": "Aucun résultat trouvé pour « {query} »."
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "description": "La page que vous recherchez a peut-être été déplacée ou n'existe plus.",
+    "action": "Retour à l'accueil"
   },
 
   "docs": {
@@ -52,6 +71,7 @@
   },
   "committee": {
     "pageTitle": "Comités",
+    "archiveLabel": "Archives des comités",
     "landingDescription": "Derrière chaque association étudiante prospère se trouve une équipe de bénévoles dévoués qui partagent l'objectif commun d'améliorer la vie des étudiants du programme EECS sur le campus.",
     "noRecords": "Aucun enregistrement de comité trouvé.",
     "teamCount": "{count, plural, one {# Équipe} other {# Équipes}}",
@@ -62,6 +82,12 @@
     "members": "Membres",
     "teamDataPending": "Données d'équipe en attente",
     "teamNotFinalized": "L'équipe de l'année scolaire {year} n'a pas encore été finalisée dans le système.",
+    "memberCount": "{count, plural, one {# membre} other {# membres}}",
+    "emailMember": "Envoyer un courriel à {name}",
+    "linkedinProfile": "{name} sur LinkedIn",
+    "executive": "Membre de l'exécutif",
+    "commissioner": "Commissaire",
+    "coordinator": "Coordonnateur ou coordonnatrice",
     "executives": "Cadres",
     "commissioners": "Commissaires",
     "coordinators": "Coordinateurs"

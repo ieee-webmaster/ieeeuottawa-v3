@@ -6,6 +6,7 @@ import { getTranslations } from 'next-intl/server'
 import type { Config } from '@/payload-types'
 import { CommitteeCard } from './_components/CommitteeCard'
 import { generateStaticMeta } from '@/utilities/generateMeta'
+import { Eyebrow, SectionShell, themeRule } from '@/blocks/_shared'
 
 type Args = {
   params: Promise<{ locale: Config['locale'] }>
@@ -23,34 +24,44 @@ export default async function CommitteeLanding({ params }: Args) {
     collection: 'committee',
     depth: 1,
     limit: 100,
+    locale,
+    overrideAccess: false,
     sort: '-Year',
   })
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <header className="mb-12">
-        <h1 className="text-5xl font-extrabold tracking-tight text-center">{t('pageTitle')}</h1>
-        <p className="mt-4 text-center text-xl text-muted-foreground max-w-[800px]">
-          {t('landingDescription')}
-        </p>
+    <SectionShell theme="default" padding="pt-24 pb-20 md:pt-36 md:pb-28">
+      <header className="mb-12 grid gap-8 md:mb-16 md:grid-cols-12 md:items-end md:gap-10">
+        <div className="space-y-5 md:col-span-7">
+          <Eyebrow theme="default">{t('archiveLabel')}</Eyebrow>
+          <h1 className="text-balance text-5xl font-medium leading-[1] tracking-tight sm:text-6xl md:text-7xl">
+            {t('pageTitle')}
+          </h1>
+        </div>
+        <div className="md:col-span-5">
+          <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
+            {t('landingDescription')}
+          </p>
+        </div>
       </header>
 
-      <section>
-        <div className="flex items-center justify-between mb-8 border-b pb-4"></div>
+      <div className={`h-px w-full ${themeRule.default}`} />
 
-        {committees.length === 0 ? (
-          <div className="rounded-xl border-2 border-dashed border-muted p-12 text-center">
-            <p className="text-lg text-muted-foreground">{t('noRecords')}</p>
-          </div>
-        ) : (
-          <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {committees.map((committee) => (
-              <CommitteeCard key={committee.id} committee={committee} />
-            ))}
-          </div>
-        )}
-      </section>
-    </main>
+      {committees.length === 0 ? (
+        <p className="py-20 text-sm text-muted-foreground">{t('noRecords')}</p>
+      ) : (
+        <ul role="list" className="divide-y divide-foreground/20">
+          {committees.map((committee, index) => (
+            <CommitteeCard
+              key={committee.id}
+              committee={committee}
+              index={index}
+              total={committees.length}
+            />
+          ))}
+        </ul>
+      )}
+    </SectionShell>
   )
 }
 
