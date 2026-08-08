@@ -5,7 +5,8 @@ node_modules
 .env
 .next
 .vercel
-
+.env*
+!.env.local
 # Payload default media upload directory
 public/media/
 
@@ -24,4 +25,3 @@ node_modules/
 # TypeScript stuff
 tsconfig.tsbuildinfo
 next-env.d.ts
-.env*
