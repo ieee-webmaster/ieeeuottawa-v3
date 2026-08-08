@@ -1,7 +1,14 @@
-const SITE_URL =
+const normalizeSiteUrl = (value) => {
+  const url = /^https?:\/\//i.test(value) ? value : `https://${value}`
+
+  return new URL(url).origin
+}
+
+const SITE_URL = normalizeSiteUrl(
   process.env.NEXT_PUBLIC_SERVER_URL ||
-  process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-  'https://example.com'
+    process.env.VERCEL_PROJECT_PRODUCTION_URL ||
+    'https://example.com',
+)
 
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
