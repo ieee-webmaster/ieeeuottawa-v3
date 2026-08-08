@@ -131,10 +131,8 @@ export const LogoGridBlock: React.FC<LogoGridBlockProps> = ({
                         {...item.link}
                         appearance="inline"
                         className={cn(
-                          'inline-flex items-center gap-2 font-mono text-[0.72rem] uppercase tracking-[0.22em] transition-all duration-300 group-hover:translate-x-1',
-                          t === 'dark'
-                            ? 'text-white hover:text-[hsl(208,80%,72%)]'
-                            : 'text-primary hover:text-secondary',
+                          'inline-flex items-center gap-2 font-mono text-[0.72rem] uppercase tracking-[0.22em] transition-all duration-300 hover:text-[hsl(var(--interactive))] group-hover:translate-x-1',
+                          t === 'dark' ? 'text-white' : 'text-primary',
                         )}
                       >
                         <ArrowUpRight aria-hidden="true" className="h-4 w-4" />

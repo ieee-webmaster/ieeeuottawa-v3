@@ -38,11 +38,11 @@ export async function Footer() {
   const contactLocation = footerData?.contactLocation
 
   return (
-    <footer className="mt-auto border-t border-primary bg-primary text-primary-foreground">
+    <footer className="mt-auto border-t border-white/10 bg-[#03164f] text-white">
       <div className="container py-8 flex flex-col gap-6">
         <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 w-full">
           <Link className="flex items-center" href="/">
-            <Logo invert />
+            <Logo tone="light" />
           </Link>
 
           <div className="flex flex-col gap-4 md:items-end">
@@ -51,14 +51,14 @@ export async function Footer() {
             {socialLinks.length > 0 && (
               <SocialIcons
                 links={socialLinks}
-                invert
+                tone="light"
                 className="flex-wrap gap-2"
-                linkClassName="text-primary-foreground/90 hover:text-primary-foreground"
+                linkClassName="text-white/90 hover:text-white"
               />
             )}
 
             {(contactPhone || contactLocation) && (
-              <div className="flex flex-col gap-1 text-sm text-primary-foreground/80 md:items-end">
+              <div className="flex flex-col gap-1 text-sm text-white/75 md:items-end">
                 {contactPhone && <p>{contactPhone}</p>}
                 {contactLocation && <p>{contactLocation}</p>}
               </div>
@@ -71,7 +71,7 @@ export async function Footer() {
             &copy; {currentYear} IEEE UOttawa. All rights reserved.
           </p>
 
-          <ThemeSelector />
+          <ThemeSelector className="text-white focus-visible:ring-white" />
         </div>
       </div>
     </footer>

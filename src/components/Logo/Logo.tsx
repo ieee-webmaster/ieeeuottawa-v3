@@ -6,9 +6,33 @@ interface Props {
   priority?: boolean
   loading?: 'lazy' | 'eager'
   invert?: boolean
+  tone?: 'adaptive' | 'dark' | 'light'
 }
 
-export const Logo = ({ className, priority = false, loading, invert = false }: Props) => {
+export const Logo = ({
+  className,
+  priority = false,
+  loading,
+  invert = false,
+  tone = 'adaptive',
+}: Props) => {
+  const darkLogoClass =
+    tone === 'dark'
+      ? 'block'
+      : tone === 'light'
+        ? 'hidden'
+        : invert
+          ? 'hidden dark:block'
+          : 'block dark:hidden'
+  const lightLogoClass =
+    tone === 'light'
+      ? 'block'
+      : tone === 'dark'
+        ? 'hidden'
+        : invert
+          ? 'block dark:hidden'
+          : 'hidden dark:block'
+
   return (
     <div className={clsx('relative w-[9.375rem] shrink-0', className)}>
       <Image
@@ -18,7 +42,7 @@ export const Logo = ({ className, priority = false, loading, invert = false }: P
         height={34 * 1.5}
         priority={priority}
         loading={loading}
-        className={clsx('h-auto w-full', invert ? 'hidden dark:block' : 'block dark:hidden')}
+        className={clsx('h-auto w-full', darkLogoClass)}
       />
 
       <Image
@@ -28,7 +52,7 @@ export const Logo = ({ className, priority = false, loading, invert = false }: P
         height={34 * 1.5}
         priority={priority}
         loading={loading}
-        className={clsx('h-auto w-full', invert ? 'block dark:hidden' : 'hidden dark:block')}
+        className={clsx('h-auto w-full', lightLogoClass)}
       />
     </div>
   )

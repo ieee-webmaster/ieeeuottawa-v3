@@ -2,17 +2,18 @@
 
 // Source: Payload CMS `with-vercel-website` template.
 // https://github.com/payloadcms/payload/tree/main/templates/with-vercel-website/src/providers/Theme
-// Local changes: added `react-hooks/set-state-in-effect` lint exceptions only.
+// Local changes: keep the resolved theme and the user's preference available in context.
 
 import React, { createContext, useCallback, use, useEffect, useState } from 'react'
 
-import type { Theme, ThemeContextType } from './types'
+import type { Theme, ThemeContextType, ThemePreference } from './types'
 
 import canUseDOM from '@/utilities/canUseDOM'
 import { defaultTheme, getImplicitPreference, themeLocalStorageKey } from './shared'
 import { themeIsValid } from './types'
 
 const initialContext: ThemeContextType = {
+  preference: undefined,
   setTheme: () => null,
   theme: undefined,
 }
@@ -23,6 +24,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [theme, setThemeState] = useState<Theme | undefined>(
     canUseDOM ? (document.documentElement.getAttribute('data-theme') as Theme) : undefined,
   )
+  const [preference, setPreference] = useState<ThemePreference | undefined>(undefined)
 
   const setTheme = useCallback((themeToSet: Theme | null) => {
     if (themeToSet === null) {
@@ -30,8 +32,10 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
       const implicitPreference = getImplicitPreference()
       document.documentElement.setAttribute('data-theme', implicitPreference || '')
       if (implicitPreference) setThemeState(implicitPreference)
+      setPreference('auto')
     } else {
       setThemeState(themeToSet)
+      setPreference(themeToSet)
       window.localStorage.setItem(themeLocalStorageKey, themeToSet)
       document.documentElement.setAttribute('data-theme', themeToSet)
     }
@@ -39,12 +43,15 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     let themeToSet: Theme = defaultTheme
-    const preference = window.localStorage.getItem(themeLocalStorageKey)
+    const storedPreference = window.localStorage.getItem(themeLocalStorageKey)
 
-    if (themeIsValid(preference)) {
-      themeToSet = preference
+    if (themeIsValid(storedPreference)) {
+      themeToSet = storedPreference
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Local storage is client-only, so this must synchronize after hydration.
+      setPreference(storedPreference)
     } else {
       const implicitPreference = getImplicitPreference()
+      setPreference('auto')
 
       if (implicitPreference) {
         themeToSet = implicitPreference
@@ -52,11 +59,10 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     document.documentElement.setAttribute('data-theme', themeToSet)
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setThemeState(themeToSet)
   }, [])
 
-  return <ThemeContext value={{ setTheme, theme }}>{children}</ThemeContext>
+  return <ThemeContext value={{ preference, setTheme, theme }}>{children}</ThemeContext>
 }
 
 export const useTheme = (): ThemeContextType => use(ThemeContext)

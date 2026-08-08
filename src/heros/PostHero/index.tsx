@@ -37,7 +37,7 @@ export const PostHero: React.FC<{
     <SectionShell theme="default" padding="pt-20 pb-12 md:pt-28 md:pb-16" as="div">
       <Link
         href="/posts"
-        className="group mb-10 inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-primary transition-colors hover:text-secondary md:mb-14"
+        className="group mb-10 inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-primary transition-colors hover:text-[hsl(var(--interactive))] md:mb-14"
       >
         <ArrowLeft
           aria-hidden="true"

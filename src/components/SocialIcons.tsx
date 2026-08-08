@@ -9,6 +9,7 @@ interface Props {
   linkClassName?: string
   showLabels?: boolean
   invert?: boolean
+  tone?: 'adaptive' | 'dark' | 'light'
 }
 
 export const SocialIcons: React.FC<Props> = ({
@@ -18,6 +19,7 @@ export const SocialIcons: React.FC<Props> = ({
   linkClassName,
   showLabels = false,
   invert = false,
+  tone = 'adaptive',
 }) => {
   const resolvedLinks =
     links?.filter((entry): entry is SocialLink => typeof entry === 'object') ?? []
@@ -54,7 +56,13 @@ export const SocialIcons: React.FC<Props> = ({
                 aria-hidden="true"
                 className={cn(
                   'h-5 w-5 object-contain',
-                  invert ? 'hidden dark:block' : 'block dark:hidden',
+                  tone === 'dark'
+                    ? 'block'
+                    : tone === 'light'
+                      ? 'hidden'
+                      : invert
+                        ? 'hidden dark:block'
+                        : 'block dark:hidden',
                   iconClassName,
                 )}
               />
@@ -65,7 +73,13 @@ export const SocialIcons: React.FC<Props> = ({
                 aria-hidden="true"
                 className={cn(
                   'h-5 w-5 object-contain',
-                  invert ? 'block dark:hidden' : 'hidden dark:block',
+                  tone === 'light'
+                    ? 'block'
+                    : tone === 'dark'
+                      ? 'hidden'
+                      : invert
+                        ? 'block dark:hidden'
+                        : 'hidden dark:block',
                   iconClassName,
                 )}
               />

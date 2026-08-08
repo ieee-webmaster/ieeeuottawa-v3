@@ -6,7 +6,12 @@
     "openMenu": "Ouvrir le menu",
     "closeMenu": "Fermer le menu",
     "followUs": "Suivez-nous",
-    "language": "Langue"
+    "language": "Langue",
+    "theme": "Thème",
+    "selectTheme": "Choisir un thème",
+    "themeAuto": "Auto",
+    "themeLight": "Clair",
+    "themeDark": "Sombre"
   },
   "events": {
     "title": "Événements",
@@ -43,7 +48,9 @@
     "eyebrow": "Explorer le site",
     "placeholder": "Que recherchez-vous?",
     "submit": "Lancer la recherche",
+    "clear": "Effacer la recherche",
     "results": "Résultats",
+    "resultsFor": "Résultats pour « {query} »",
     "resultCount": "{count, plural, one {# résultat} other {# résultats}}",
     "prompt": "Commencez à taper pour rechercher sur le site.",
     "noResults": "Aucun résultat trouvé pour « {query} »."

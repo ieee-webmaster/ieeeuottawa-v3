@@ -79,7 +79,7 @@ export default async function CommitteePage({ params }: Args) {
         <div className="md:col-span-4 md:flex md:justify-end">
           <Link
             href="/committee"
-            className="group inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-primary transition-colors hover:text-secondary"
+            className="group inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-primary transition-colors hover:text-[hsl(var(--interactive))]"
           >
             <ArrowLeft
               aria-hidden="true"

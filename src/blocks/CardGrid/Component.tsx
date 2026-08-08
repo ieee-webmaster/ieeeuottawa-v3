@@ -177,10 +177,8 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = ({
                       {...card.link}
                       appearance="inline"
                       className={cn(
-                        'inline-flex items-center gap-2 font-mono text-[0.72rem] uppercase tracking-[0.22em] transition-colors',
-                        t === 'dark'
-                          ? 'text-white hover:text-[hsl(208,80%,72%)]'
-                          : 'text-primary hover:text-secondary',
+                        'inline-flex items-center gap-2 font-mono text-[0.72rem] uppercase tracking-[0.22em] transition-colors hover:text-[hsl(var(--interactive))]',
+                        t === 'dark' ? 'text-white' : 'text-primary',
                       )}
                     >
                       <ArrowUpRight
