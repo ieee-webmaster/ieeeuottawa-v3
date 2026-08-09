@@ -67,7 +67,7 @@ export const EventCard = ({ event, locale, index, total }: Props) => {
           ) : null}
 
           {validDate ? (
-            <div className="absolute bottom-3 right-3 flex items-end gap-2 rounded-sm bg-white/85 px-2.5 py-1.5 backdrop-blur-sm">
+            <div className="absolute bottom-3 right-3 flex items-end gap-2 rounded-sm bg-background/85 px-2.5 py-1.5 backdrop-blur-sm">
               <span className="font-mono text-[0.65rem] uppercase tracking-[0.22em] text-foreground/65">
                 {month}
               </span>
