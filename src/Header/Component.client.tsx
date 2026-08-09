@@ -88,7 +88,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, navItems }) =>
               <span aria-hidden="true" className="mx-1 h-5 w-px bg-border" />
             </>
           )}
-          <ThemeSelector className="h-10 px-2 text-sm font-medium text-primary md:pl-2" />
+          <ThemeSelector className="h-10 px-2 text-sm font-medium text-foreground md:pl-2" />
           <LocaleSwitcher />
           <Link
             href="/search"

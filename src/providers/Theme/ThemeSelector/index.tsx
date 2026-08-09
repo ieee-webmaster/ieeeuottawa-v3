@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/select'
 import { cn } from '@/utilities/ui'
 import { useTranslations } from 'next-intl'
-import React from 'react'
+import React, { useRef } from 'react'
 
 import type { ThemePreference } from '../types'
 
@@ -24,6 +24,7 @@ type Props = {
 export const ThemeSelector: React.FC<Props> = ({ className }) => {
   const t = useTranslations('nav')
   const { preference, setTheme } = useTheme()
+  const pointerInteractionRef = useRef(false)
 
   const onThemeChange = (themeToSet: ThemePreference) => {
     if (themeToSet === 'auto') {
@@ -41,10 +42,27 @@ export const ThemeSelector: React.FC<Props> = ({ className }) => {
           'w-auto gap-2 border-none bg-transparent pl-0 focus:ring-0 focus:ring-offset-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 md:pl-3',
           className,
         )}
+        onKeyDown={() => {
+          pointerInteractionRef.current = false
+        }}
+        onPointerDown={() => {
+          pointerInteractionRef.current = true
+        }}
       >
         <SelectValue placeholder={t('theme')} />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent
+        data-theme-selector-content
+        onCloseAutoFocus={(event) => {
+          if (pointerInteractionRef.current) event.preventDefault()
+        }}
+        onKeyDown={() => {
+          pointerInteractionRef.current = false
+        }}
+        onPointerDown={() => {
+          pointerInteractionRef.current = true
+        }}
+      >
         <SelectItem value="auto">{t('themeAuto')}</SelectItem>
         <SelectItem value="light">{t('themeLight')}</SelectItem>
         <SelectItem value="dark">{t('themeDark')}</SelectItem>

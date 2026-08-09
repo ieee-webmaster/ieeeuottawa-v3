@@ -112,6 +112,11 @@
   }
 }
 
+body[data-scroll-locked]:has([data-theme-selector-content][data-state='open']) {
+  margin-right: 0 !important;
+  overflow: auto !important;
+}
+
 html {
   opacity: 0;
 }
