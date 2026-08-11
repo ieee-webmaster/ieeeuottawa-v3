@@ -3,14 +3,13 @@ import type { Metadata } from 'next'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { notFound } from 'next/navigation'
-import Image from 'next/image'
 import { ArrowLeft, Mail, Linkedin, UserRound } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import type { Committee, Team, Person, Media, Config } from '@/payload-types'
 import { generateStaticMeta } from '@/utilities/generateMeta'
 import { Link } from '@/i18n/navigation'
 import { Eyebrow, SectionShell, themeRule } from '@/blocks/_shared'
-import { getMediaUrl } from '@/utilities/getMediaUrl'
+import { Media as MediaComponent } from '@/components/Media'
 
 type Args = {
   params: Promise<{ year: string; locale: Config['locale'] }>
@@ -63,10 +62,6 @@ export default async function CommitteePage({ params }: Args) {
     .filter((section) => section.data.length > 0)
 
   const hasNoData = sections.length === 0
-  const coverImageSrc = coverImage?.url
-    ? getMediaUrl(coverImage.url, coverImage.updatedAt)
-    : undefined
-
   return (
     <SectionShell theme="default" padding="pt-20 pb-20 md:pt-28 md:pb-28">
       <header className="mb-10 grid gap-8 md:mb-14 md:grid-cols-12 md:items-end md:gap-10">
@@ -90,15 +85,17 @@ export default async function CommitteePage({ params }: Args) {
         </div>
       </header>
 
-      {coverImageSrc ? (
+      {coverImage ? (
         <div className="relative mb-16 aspect-[4/3] overflow-hidden bg-foreground/[0.04] sm:aspect-video md:mb-24 lg:aspect-[21/9]">
-          <Image
-            src={coverImageSrc}
-            alt={coverImage?.alt || `${committee.Year} ${t('title')}`}
+          <MediaComponent
             fill
+            htmlElement={null}
+            resource={coverImage}
+            alt={coverImage?.alt || `${committee.Year} ${t('title')}`}
             priority
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 1360px"
+            imgClassName="object-cover"
+            pictureClassName="absolute inset-0"
+            sizesPreset="content"
           />
         </div>
       ) : (
@@ -138,21 +135,23 @@ export default async function CommitteePage({ params }: Args) {
               <div className="grid grid-cols-2 gap-x-4 gap-y-12 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
                 {section.data.map((member) => {
                   const person = member.person as Person
-                  const headshot = person.headshot as Media | undefined
-                  const headshotSrc = headshot?.url
-                    ? getMediaUrl(headshot.url, headshot.updatedAt)
-                    : undefined
+                  const headshot =
+                    person.headshot && typeof person.headshot === 'object'
+                      ? person.headshot
+                      : undefined
 
                   return (
                     <article key={member.id} className="group min-w-0">
                       <div className="relative aspect-[4/5] overflow-hidden bg-foreground/[0.04]">
-                        {headshotSrc ? (
-                          <Image
-                            src={headshotSrc}
-                            alt={person.fullName}
+                        {headshot ? (
+                          <MediaComponent
                             fill
-                            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
-                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                            htmlElement={null}
+                            resource={headshot}
+                            alt={person.fullName}
+                            imgClassName="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
+                            pictureClassName="absolute inset-0"
+                            sizesPreset="portraitGrid"
                           />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center">

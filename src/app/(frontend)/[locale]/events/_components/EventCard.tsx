@@ -1,9 +1,8 @@
 import { Link } from '@/i18n/navigation'
-import Image from 'next/image'
 import type { Event } from '@/payload-types'
-import { getMediaUrl } from '@/utilities/getMediaUrl'
 import type { Locale } from '@/i18n/routing'
 import { cn } from '@/utilities/ui'
+import { Media } from '@/components/Media'
 
 type Props = {
   event: Event
@@ -14,7 +13,6 @@ type Props = {
 
 export const EventCard = ({ event, locale, index, total }: Props) => {
   const heroMedia = event.heroImage && typeof event.heroImage === 'object' ? event.heroImage : null
-  const heroSrc = heroMedia?.url ? getMediaUrl(heroMedia.url, heroMedia.updatedAt) : null
   const eventDate = new Date(event.date)
   const validDate = !Number.isNaN(eventDate.valueOf())
   const month = validDate
@@ -40,20 +38,22 @@ export const EventCard = ({ event, locale, index, total }: Props) => {
         href={`/events/${encodeURIComponent(event.slug)}`}
         className="flex h-full flex-col gap-5"
       >
-        <div className="relative overflow-hidden">
-          {heroSrc ? (
-            <Image
-              src={heroSrc}
+        <div className="relative aspect-[4/3] overflow-hidden bg-foreground/5">
+          {heroMedia ? (
+            <Media
+              fill
+              htmlElement={null}
+              resource={heroMedia}
               alt={heroMedia?.alt || event.title || 'Event image'}
-              width={1200}
-              height={900}
-              className={cn(
-                'aspect-[4/3] w-full bg-foreground/5 object-cover',
+              imgClassName={cn(
+                'object-cover',
                 'transition-transform duration-700 ease-out group-hover:scale-[1.04]',
               )}
+              pictureClassName="absolute inset-0"
+              sizesPreset="third"
             />
           ) : (
-            <div className="flex aspect-[4/3] w-full items-center justify-center bg-foreground/[0.04]">
+            <div className="flex h-full w-full items-center justify-center bg-foreground/[0.04]">
               <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-foreground/40">
                 No image
               </span>

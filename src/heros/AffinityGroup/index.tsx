@@ -14,7 +14,11 @@ export const AffinityGroupHero: React.FC<Page['hero']> = ({ links, media, richTe
         <div className="flex flex-col items-start gap-4 md:gap-6">
           {logo && typeof logo === 'object' && (
             <div className="mb-2">
-              <Media resource={logo} imgClassName="w-16 h-16 md:w-20 md:h-20 object-contain" />
+              <Media
+                resource={logo}
+                imgClassName="w-16 h-16 md:w-20 md:h-20 object-contain"
+                sizesPreset="icon"
+              />
             </div>
           )}
 
@@ -46,6 +50,7 @@ export const AffinityGroupHero: React.FC<Page['hero']> = ({ links, media, richTe
               resource={media}
               className="w-full max-w-2xl overflow-hidden rounded-2xl border border-border bg-background"
               imgClassName="w-full max-h-[28rem] object-contain"
+              sizesPreset="affinity"
             />
           </div>
         )}

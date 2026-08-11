@@ -50,12 +50,8 @@ export const GalleryBlockComponent: React.FC<GalleryBlockProps> = ({
             const featureSpan =
               layout === 'featureMix' && index === 0 ? 'md:col-span-2 md:row-span-2' : undefined
             const revealOnInteraction = Boolean(item.enableLink)
-            const mediaSize =
-              layout === 'grid'
-                ? '(max-width: 768px) 50vw, 33vw'
-                : featureSpan
-                  ? '(max-width: 768px) 50vw, 50vw'
-                  : '(max-width: 768px) 50vw, 25vw'
+            const mediaSizesPreset =
+              layout === 'grid' ? 'galleryThird' : featureSpan ? 'galleryHalf' : 'galleryQuarter'
 
             return (
               <figure
@@ -73,7 +69,7 @@ export const GalleryBlockComponent: React.FC<GalleryBlockProps> = ({
                     imgClassName="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
                     pictureClassName="relative block h-full w-full"
                     resource={item.media}
-                    size={mediaSize}
+                    sizesPreset={mediaSizesPreset}
                   />
                 ) : null}
 

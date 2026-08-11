@@ -42,7 +42,7 @@ export const Card: React.FC<{
             imgClassName="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
             pictureClassName="absolute inset-0"
             resource={metaImage}
-            size="(max-width: 768px) 100vw, 33vw"
+            sizesPreset="third"
           />
         ) : null}
         {typeof index === 'number' && typeof total === 'number' ? (
