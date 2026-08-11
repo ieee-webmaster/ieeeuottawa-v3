@@ -95,7 +95,11 @@ export default buildConfig({
     ...plugins,
     vercelBlobStorage({
       collections: {
-        media: true,
+        // Media is publicly readable, so serve files directly from Vercel Blob
+        // instead of proxying every request through the Payload function.
+        media: {
+          disablePayloadAccessControl: true,
+        },
       },
 token: process.env.BLOB_READ_WRITE_TOKEN ?? (() => { throw new Error('Missing required env var: BLOB_READ_WRITE_TOKEN') })(),
     }),

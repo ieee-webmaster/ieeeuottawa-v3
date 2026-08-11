@@ -64,6 +64,7 @@ export const LogoGridBlock: React.FC<LogoGridBlockProps> = ({
                         : 'dark:invert dark:opacity-80 dark:group-hover:opacity-100',
                     )}
                     resource={item.logo}
+                    sizesPreset="icon"
                   />
                 ) : null}
                 <span
@@ -110,6 +111,7 @@ export const LogoGridBlock: React.FC<LogoGridBlockProps> = ({
                           t === 'dark' ? 'invert opacity-90' : 'dark:invert dark:opacity-90',
                         )}
                         resource={item.logo}
+                        sizesPreset="icon"
                       />
                     ) : null}
                   </div>

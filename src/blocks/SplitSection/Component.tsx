@@ -121,7 +121,7 @@ export const SplitSectionBlock: React.FC<SplitSectionBlockProps> = ({
               imgClassName="object-cover"
               pictureClassName="relative block h-full w-full"
               resource={media}
-              size="(max-width: 1024px) 100vw, 58vw"
+              sizesPreset="split"
             />
             {caption ? (
               <figcaption className={cn('mt-4', themeMutedText[t])}>

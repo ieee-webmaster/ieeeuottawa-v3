@@ -46,12 +46,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = ({
   const allSvgMedia = hasAnyMedia && (cards ?? []).every((c) => isSvgMedia(c.media))
   const variant: 'photo' | 'icon' | 'text' = !hasAnyMedia ? 'text' : allSvgMedia ? 'icon' : 'photo'
 
-  const mediaSize =
-    columns === '2'
-      ? '(max-width: 768px) 100vw, 50vw'
-      : columns === '4'
-        ? '(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw'
-        : '(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw'
+  const mediaSizesPreset = columns === '2' ? 'half' : columns === '4' ? 'quarter' : 'third'
 
   const indexLabel = (i: number) => (
     <span
@@ -116,7 +111,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = ({
                     imgClassName="object-cover"
                     pictureClassName="relative block h-full w-full"
                     resource={card.media}
-                    size={mediaSize}
+                    sizesPreset={mediaSizesPreset}
                   />
                   <span className="absolute left-3 top-3 rounded-sm bg-black/55 px-2 py-1 font-mono text-[0.7rem] tracking-[0.2em] text-white backdrop-blur-sm">
                     {String(index + 1).padStart(2, '0')}
@@ -140,7 +135,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = ({
                       imgClassName="h-8 w-8 object-contain"
                       pictureClassName="relative block h-8 w-8"
                       resource={card.media}
-                      size="56px"
+                      sizesPreset="icon"
                     />
                   </div>
                   {indexLabel(index)}

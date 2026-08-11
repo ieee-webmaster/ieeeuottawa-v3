@@ -1,6 +1,5 @@
 import configPromise from '@payload-config'
 import { getLocale } from 'next-intl/server'
-import Image from 'next/image'
 import { Linkedin, Mail, User } from 'lucide-react'
 import React from 'react'
 import { getPayload } from 'payload'
@@ -15,6 +14,7 @@ import { resolveLocale } from '@/i18n/routing'
 import { getTranslations } from 'next-intl/server'
 import { cn } from '@/utilities/ui'
 import { SectionShell, Eyebrow, themeMutedText, themeRule, type BlockTheme } from '@/blocks/_shared'
+import { Media } from '@/components/Media'
 
 type TeamMember = NonNullable<NonNullable<Committee['teams']>[number]['members']>[number] & {
   teamName?: string
@@ -180,20 +180,23 @@ export const CommitteeTeamMembersBlock: React.FC<
                   .flatMap((section) => section.data)
                   .map((member) => {
                     const person = member.person as Person
-                    const headshot = person.headshot
-                      ? (person.headshot as { url?: string | null })
-                      : undefined
+                    const headshot =
+                      person.headshot && typeof person.headshot === 'object'
+                        ? person.headshot
+                        : undefined
 
                     return (
                       <div key={member.id} className="group flex flex-col items-center text-center">
                         <div className="relative mb-4 h-32 w-32 overflow-hidden rounded-full border border-foreground/10 bg-background transition-all md:h-40 md:w-40">
-                          {headshot?.url ? (
-                            <Image
-                              src={headshot.url}
-                              alt={person.fullName}
+                          {headshot ? (
+                            <Media
                               fill
-                              className="object-cover transition-transform duration-500"
-                              sizes="(max-width: 768px) 128px, 160px"
+                              htmlElement={null}
+                              resource={headshot}
+                              alt={person.fullName}
+                              imgClassName="object-cover transition-transform duration-500"
+                              pictureClassName="absolute inset-0"
+                              sizesPreset="avatar"
                             />
                           ) : (
                             <div className="flex h-full w-full items-center justify-center">
