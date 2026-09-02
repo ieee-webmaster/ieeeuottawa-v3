@@ -69,6 +69,11 @@ export default buildConfig({
       connectionString: process.env.POSTGRES_URL || '',
     },
   }),
+  defaultDepth: 1,
+  maxDepth: 2,
+  graphQL: {
+    disable: true,
+  },
   collections: [
     Pages,
     Posts,
