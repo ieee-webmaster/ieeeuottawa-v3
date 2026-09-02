@@ -1,4 +1,4 @@
-export const PUBLIC_CACHE_VERSION = 'public-cms-v2'
+export const PUBLIC_CACHE_VERSION = 'public-cms-v3'
 
 export const EVENTS_REVALIDATE_SECONDS = 60 * 60
 export const STATIC_CONTENT_REVALIDATE_SECONDS = 24 * 60 * 60

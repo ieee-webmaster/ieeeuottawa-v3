@@ -85,7 +85,12 @@ export const getCachedPageBySlug = (slug: string, locale: Locale) =>
     [PUBLIC_CACHE_VERSION, 'page', localeKey(locale), slug],
     {
       revalidate: STATIC_CONTENT_REVALIDATE_SECONDS,
-      tags: publicCacheTags(PUBLIC_CACHE_TAGS.pages),
+      tags: publicCacheTags(
+        PUBLIC_CACHE_TAGS.pages,
+        PUBLIC_CACHE_TAGS.posts,
+        PUBLIC_CACHE_TAGS.events,
+        PUBLIC_CACHE_TAGS.media,
+      ),
     },
   )()
 
@@ -145,7 +150,7 @@ export const getCachedPostList = (locale: Locale, page = 1) =>
     [PUBLIC_CACHE_VERSION, 'post-list', localeKey(locale), String(page)],
     {
       revalidate: STATIC_CONTENT_REVALIDATE_SECONDS,
-      tags: publicCacheTags(PUBLIC_CACHE_TAGS.posts),
+      tags: publicCacheTags(PUBLIC_CACHE_TAGS.posts, PUBLIC_CACHE_TAGS.media),
     },
   )()
 
@@ -200,7 +205,7 @@ export const getCachedPostBySlug = (slug: string, locale: Locale) =>
     [PUBLIC_CACHE_VERSION, 'post', localeKey(locale), slug],
     {
       revalidate: STATIC_CONTENT_REVALIDATE_SECONDS,
-      tags: publicCacheTags(PUBLIC_CACHE_TAGS.posts),
+      tags: publicCacheTags(PUBLIC_CACHE_TAGS.posts, PUBLIC_CACHE_TAGS.media),
     },
   )()
 
@@ -254,7 +259,7 @@ export const getCachedArchivePosts = ({ categoryIDs, limit, locale }: ArchivePos
     ],
     {
       revalidate: STATIC_CONTENT_REVALIDATE_SECONDS,
-      tags: publicCacheTags(PUBLIC_CACHE_TAGS.posts),
+      tags: publicCacheTags(PUBLIC_CACHE_TAGS.posts, PUBLIC_CACHE_TAGS.media),
     },
   )()
 
@@ -315,7 +320,7 @@ export const getCachedEventList = (locale: Locale) =>
     [PUBLIC_CACHE_VERSION, 'event-list', localeKey(locale)],
     {
       revalidate: EVENTS_REVALIDATE_SECONDS,
-      tags: publicCacheTags(PUBLIC_CACHE_TAGS.events),
+      tags: publicCacheTags(PUBLIC_CACHE_TAGS.events, PUBLIC_CACHE_TAGS.media),
     },
   )()
 
@@ -353,7 +358,7 @@ export const getCachedEventBySlug = (slug: string, locale: Locale) =>
     [PUBLIC_CACHE_VERSION, 'event', localeKey(locale), slug],
     {
       revalidate: EVENTS_REVALIDATE_SECONDS,
-      tags: publicCacheTags(PUBLIC_CACHE_TAGS.events),
+      tags: publicCacheTags(PUBLIC_CACHE_TAGS.events, PUBLIC_CACHE_TAGS.media),
     },
   )()
 
@@ -436,7 +441,7 @@ export const getCachedCommitteeByYear = (year: string, locale: Locale) =>
     [PUBLIC_CACHE_VERSION, 'committee', localeKey(locale), year],
     {
       revalidate: STATIC_CONTENT_REVALIDATE_SECONDS,
-      tags: publicCacheTags(PUBLIC_CACHE_TAGS.committee),
+      tags: publicCacheTags(PUBLIC_CACHE_TAGS.committee, PUBLIC_CACHE_TAGS.media),
     },
   )()
 
@@ -455,7 +460,7 @@ export const getCachedCommitteeByID = (id: DocID | string, locale: Locale) =>
     [PUBLIC_CACHE_VERSION, 'committee-by-id', localeKey(locale), idKey(id)],
     {
       revalidate: STATIC_CONTENT_REVALIDATE_SECONDS,
-      tags: publicCacheTags(PUBLIC_CACHE_TAGS.committee),
+      tags: publicCacheTags(PUBLIC_CACHE_TAGS.committee, PUBLIC_CACHE_TAGS.media),
     },
   )()
 
@@ -474,7 +479,7 @@ export const getCachedTeamByID = (id: DocID | string, locale: Locale) =>
     [PUBLIC_CACHE_VERSION, 'team-by-id', localeKey(locale), idKey(id)],
     {
       revalidate: STATIC_CONTENT_REVALIDATE_SECONDS,
-      tags: publicCacheTags(PUBLIC_CACHE_TAGS.committee),
+      tags: publicCacheTags(PUBLIC_CACHE_TAGS.committee, PUBLIC_CACHE_TAGS.media),
     },
   )()
 
