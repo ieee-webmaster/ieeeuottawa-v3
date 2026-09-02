@@ -3,8 +3,6 @@ import type { Metadata } from 'next'
 import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
 import { Eyebrow, SectionShell, themeRule } from '@/blocks/_shared'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
 import { cache } from 'react'
 import RichText from '@/components/RichText'
@@ -15,25 +13,17 @@ import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { getTranslations } from 'next-intl/server'
+import {
+  getCachedPostBySlug,
+  getPostBySlug,
+  getPublishedPostSlugs,
+} from '@/utilities/publicCms'
+import { STATIC_CONTENT_REVALIDATE_SECONDS } from '@/utilities/publicCache'
+
+export const revalidate = STATIC_CONTENT_REVALIDATE_SECONDS
 
 export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
-  const posts = await payload.find({
-    collection: 'posts',
-    draft: false,
-    limit: 1000,
-    overrideAccess: false,
-    pagination: false,
-    select: {
-      slug: true,
-    },
-  })
-
-  const params = posts.docs.map(({ slug }) => {
-    return { slug }
-  })
-
-  return params
+  return getPublishedPostSlugs()
 }
 
 type Args = {
@@ -97,22 +87,10 @@ const queryPostBySlug = cache(
   async ({ slug, locale }: { slug: string; locale: Config['locale'] }) => {
     const { isEnabled: draft } = await draftMode()
 
-    const payload = await getPayload({ config: configPromise })
+    if (draft) {
+      return getPostBySlug({ draft, locale, slug })
+    }
 
-    const result = await payload.find({
-      collection: 'posts',
-      draft,
-      limit: 1,
-      locale,
-      overrideAccess: draft,
-      pagination: false,
-      where: {
-        slug: {
-          equals: slug,
-        },
-      },
-    })
-
-    return result.docs?.[0] || null
+    return getCachedPostBySlug(slug, locale)
   },
 )

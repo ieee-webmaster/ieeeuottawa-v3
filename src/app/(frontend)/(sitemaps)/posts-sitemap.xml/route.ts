@@ -4,6 +4,12 @@ import config from '@payload-config'
 import { unstable_cache } from 'next/cache'
 import { routing } from '@/i18n/routing'
 import { getAbsoluteUrl, prefixLocale } from '@/utilities/routes'
+import {
+  PUBLIC_CACHE_TAGS,
+  PUBLIC_CACHE_VERSION,
+  publicCacheTags,
+  STATIC_CONTENT_REVALIDATE_SECONDS,
+} from '@/utilities/publicCache'
 
 const getPostsSitemap = unstable_cache(
   async () => {
@@ -42,9 +48,10 @@ const getPostsSitemap = unstable_cache(
 
     return sitemap
   },
-  ['posts-sitemap'],
+  [PUBLIC_CACHE_VERSION, 'posts-sitemap'],
   {
-    tags: ['posts-sitemap'],
+    revalidate: STATIC_CONTENT_REVALIDATE_SECONDS,
+    tags: publicCacheTags(PUBLIC_CACHE_TAGS.posts, 'posts-sitemap'),
   },
 )
 

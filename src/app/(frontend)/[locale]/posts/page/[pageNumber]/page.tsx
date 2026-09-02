@@ -2,15 +2,16 @@ import type { Metadata } from 'next/types'
 
 import { CollectionArchive } from '@/components/CollectionArchive'
 import { Pagination } from '@/components/Pagination'
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import type { Config } from '@/payload-types'
 import { generateStaticMeta } from '@/utilities/generateMeta'
 import { Eyebrow, SectionShell } from '@/blocks/_shared'
+import { STATIC_CONTENT_REVALIDATE_SECONDS } from '@/utilities/publicCache'
+import { getCachedPostList, getCachedPostTotalPages } from '@/utilities/publicCms'
 
-export const revalidate = 600
+export const dynamic = 'force-static'
+export const revalidate = STATIC_CONTENT_REVALIDATE_SECONDS
 
 type Args = {
   params: Promise<{
@@ -21,21 +22,13 @@ type Args = {
 
 export default async function Page({ params: paramsPromise }: Args) {
   const { locale, pageNumber } = await paramsPromise
-  const payload = await getPayload({ config: configPromise })
   const t = await getTranslations({ locale, namespace: 'posts' })
 
   const sanitizedPageNumber = Number(pageNumber)
 
   if (!Number.isInteger(sanitizedPageNumber)) notFound()
 
-  const posts = await payload.find({
-    collection: 'posts',
-    depth: 1,
-    limit: 12,
-    locale,
-    page: sanitizedPageNumber,
-    overrideAccess: false,
-  })
+  const posts = await getCachedPostList(locale, sanitizedPageNumber)
 
   return (
     <>
@@ -90,13 +83,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 }
 
 export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
-  const { totalDocs } = await payload.count({
-    collection: 'posts',
-    overrideAccess: false,
-  })
-
-  const totalPages = Math.ceil(totalDocs / 12)
+  const totalPages = await getCachedPostTotalPages()
 
   const pages: { pageNumber: string }[] = []
 

@@ -3,10 +3,10 @@ import { useTranslations } from 'next-intl'
 
 import { IndexNumber } from '@/blocks/_shared'
 import { Link } from '@/i18n/navigation'
-import type { Committee } from '@/payload-types'
+import type { CommitteeListItem } from '@/utilities/publicCms'
 
 type Props = {
-  committee: Committee
+  committee: CommitteeListItem
   index: number
   total: number
 }

@@ -1,6 +1,11 @@
 import type { CollectionConfig } from 'payload'
 import { authenticated } from '@/access/authenticated'
 import { anyone } from '@/access/anyone'
+import {
+  buildPublicCacheAfterChange,
+  buildPublicCacheAfterDelete,
+} from '@/hooks/revalidatePublicContent'
+import { PUBLIC_CACHE_TAGS } from '@/utilities/publicCache'
 
 export const Committees: CollectionConfig = {
   slug: 'committee',
@@ -74,4 +79,8 @@ export const Committees: CollectionConfig = {
       ],
     },
   ],
+  hooks: {
+    afterChange: [buildPublicCacheAfterChange(PUBLIC_CACHE_TAGS.committee)],
+    afterDelete: [buildPublicCacheAfterDelete(PUBLIC_CACHE_TAGS.committee)],
+  },
 }

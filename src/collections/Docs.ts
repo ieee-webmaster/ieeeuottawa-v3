@@ -1,6 +1,11 @@
 import { CollectionConfig } from 'payload'
 import { authenticated } from '@/access/authenticated'
 import { anyone } from '@/access/anyone'
+import {
+  buildPublicCacheAfterChange,
+  buildPublicCacheAfterDelete,
+} from '@/hooks/revalidatePublicContent'
+import { PUBLIC_CACHE_TAGS } from '@/utilities/publicCache'
 
 export const Docs: CollectionConfig = {
   slug: 'docs',
@@ -136,4 +141,8 @@ export const Docs: CollectionConfig = {
       ],
     },
   ],
+  hooks: {
+    afterChange: [buildPublicCacheAfterChange(PUBLIC_CACHE_TAGS.docs)],
+    afterDelete: [buildPublicCacheAfterDelete(PUBLIC_CACHE_TAGS.docs)],
+  },
 }

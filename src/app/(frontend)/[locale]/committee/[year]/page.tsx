@@ -1,7 +1,5 @@
 import type { Metadata } from 'next'
 
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Mail, Linkedin, UserRound } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
@@ -10,6 +8,15 @@ import { generateStaticMeta } from '@/utilities/generateMeta'
 import { Link } from '@/i18n/navigation'
 import { Eyebrow, SectionShell, themeRule } from '@/blocks/_shared'
 import { Media as MediaComponent } from '@/components/Media'
+import { STATIC_CONTENT_REVALIDATE_SECONDS } from '@/utilities/publicCache'
+import { getCachedCommitteeByYear, getCommitteeYears } from '@/utilities/publicCms'
+
+export const dynamic = 'force-static'
+export const revalidate = STATIC_CONTENT_REVALIDATE_SECONDS
+
+export async function generateStaticParams() {
+  return getCommitteeYears()
+}
 
 type Args = {
   params: Promise<{ year: string; locale: Config['locale'] }>
@@ -17,22 +24,12 @@ type Args = {
 
 export default async function CommitteePage({ params }: Args) {
   const { year, locale } = await params
-  const payload = await getPayload({ config: configPromise })
   const t = await getTranslations({
     locale: locale ?? 'en',
     namespace: 'committee',
   })
 
-  const result = await payload.find({
-    collection: 'committee',
-    where: { Year: { equals: year } },
-    depth: 2,
-    limit: 1,
-    locale,
-    overrideAccess: false,
-  })
-
-  const committee = result.docs[0] as Committee
+  const committee = (await getCachedCommitteeByYear(year, locale)) as Committee | null
   if (!committee) notFound()
 
   const coverImage = committee.coverImage as Media | undefined

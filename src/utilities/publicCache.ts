@@ -1,0 +1,19 @@
+export const PUBLIC_CACHE_VERSION = 'public-cms-v2'
+
+export const EVENTS_REVALIDATE_SECONDS = 60 * 60
+export const STATIC_CONTENT_REVALIDATE_SECONDS = 24 * 60 * 60
+export const POSTS_PER_PAGE = 12
+
+export const PUBLIC_CACHE_TAGS = {
+  all: 'public-content',
+  committee: 'public-committee',
+  docs: 'public-docs',
+  events: 'public-events',
+  media: 'public-media',
+  pages: 'public-pages',
+  posts: 'public-posts',
+} as const
+
+export const publicCacheTags = (...tags: string[]): string[] => {
+  return Array.from(new Set([PUBLIC_CACHE_TAGS.all, ...tags]))
+}

@@ -1,30 +1,18 @@
 import type { Metadata } from 'next'
 
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import type { Config } from '@/payload-types'
 import { YearlyDocument } from '../_components/YearlyDocument'
 import { generateStaticMeta } from '@/utilities/generateMeta'
+import { STATIC_CONTENT_REVALIDATE_SECONDS } from '@/utilities/publicCache'
+import { getCachedDocByYear, getDocYears } from '@/utilities/publicCms'
+
+export const dynamic = 'force-static'
+export const revalidate = STATIC_CONTENT_REVALIDATE_SECONDS
 
 export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
-  const docs = await payload.find({
-    collection: 'docs',
-    limit: 1000,
-    overrideAccess: false,
-    pagination: false,
-    select: {
-      year: true,
-    },
-  })
-
-  const params = docs.docs.map(({ year }) => {
-    return { year }
-  })
-
-  return params
+  return getDocYears()
 }
 
 type Args = {
@@ -37,21 +25,7 @@ type Args = {
 export default async function DocsPage({ params: paramsPromise }: Args) {
   const { locale, year = '' } = await paramsPromise
 
-  const payload = await getPayload({ config: configPromise })
-
-  const result = await payload.find({
-    collection: 'docs',
-    locale,
-    overrideAccess: false,
-    where: {
-      year: {
-        equals: year,
-      },
-    },
-    limit: 1,
-  })
-
-  const doc = result.docs[0]
+  const doc = await getCachedDocByYear(year, locale)
 
   if (!doc) {
     return notFound()

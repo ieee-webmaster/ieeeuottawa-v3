@@ -1,7 +1,5 @@
 import type { Metadata } from 'next'
 
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
 import { ArrowUpRight } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import type { Config } from '@/payload-types'
@@ -16,6 +14,11 @@ import {
 import { cn } from '@/utilities/ui'
 import { generateStaticMeta } from '@/utilities/generateMeta'
 import { Link } from '@/i18n/navigation'
+import { STATIC_CONTENT_REVALIDATE_SECONDS } from '@/utilities/publicCache'
+import { getCachedDocsList } from '@/utilities/publicCms'
+
+export const dynamic = 'force-static'
+export const revalidate = STATIC_CONTENT_REVALIDATE_SECONDS
 
 type Args = {
   params: Promise<{ locale: Config['locale'] }>
@@ -24,15 +27,7 @@ type Args = {
 export default async function DocumentsPage({ params: paramsPromise }: Args) {
   const { locale } = await paramsPromise
 
-  const payload = await getPayload({ config: configPromise })
-  const { docs } = await payload.find({
-    collection: 'docs',
-    depth: 0,
-    locale,
-    overrideAccess: false,
-    sort: '-year',
-    limit: 100,
-  })
+  const docs = await getCachedDocsList(locale)
 
   const t = await getTranslations({
     locale: locale ?? 'en',

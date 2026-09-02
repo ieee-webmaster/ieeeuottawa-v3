@@ -4,37 +4,27 @@ import { LinkButton } from '../_components/LinkButton'
 
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import { Eyebrow, SectionShell, themeRule } from '@/blocks/_shared'
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
 import { cache } from 'react'
 import { getTranslations } from 'next-intl/server'
 import { generateMeta } from '@/utilities/generateMeta'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
-import type { Config, Event } from '@/payload-types'
+import type { Config } from '@/payload-types'
 import RichText from '@/components/RichText'
 import { Media as PayloadMedia } from '@/components/Media'
 import { formatDateTime } from '@/utilities/formatDateTime'
 import { ArrowLeft } from 'lucide-react'
+import {
+  getCachedEventBySlug,
+  getEventBySlug,
+  getPublishedEventSlugs,
+} from '@/utilities/publicCms'
+import { EVENTS_REVALIDATE_SECONDS } from '@/utilities/publicCache'
+
+export const revalidate = EVENTS_REVALIDATE_SECONDS
 
 export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
-  const events = await payload.find({
-    collection: 'events',
-    draft: false,
-    limit: 1000,
-    overrideAccess: false,
-    pagination: false,
-    select: {
-      slug: true,
-    },
-  })
-
-  const params = events.docs.map(({ slug }) => {
-    return { slug }
-  })
-
-  return params
+  return getPublishedEventSlugs()
 }
 
 type Args = {
@@ -192,23 +182,10 @@ const queryEventBySlug = cache(
   async ({ slug, locale }: { slug: string; locale: Config['locale'] }) => {
     const { isEnabled: draft } = await draftMode()
 
-    const payload = await getPayload({ config: configPromise })
+    if (draft) {
+      return getEventBySlug({ draft, locale, slug })
+    }
 
-    const result = await payload.find({
-      collection: 'events',
-      depth: 2,
-      draft,
-      limit: 1,
-      locale,
-      overrideAccess: draft,
-      pagination: false,
-      where: {
-        slug: {
-          equals: slug,
-        },
-      },
-    })
-
-    return (result.docs?.[0] as Event | undefined) || null
+    return getCachedEventBySlug(slug, locale)
   },
 )

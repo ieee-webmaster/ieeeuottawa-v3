@@ -1,8 +1,6 @@
 import type { Metadata } from 'next'
 
 import { PayloadRedirects } from '@/components/PayloadRedirects'
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
 import { cache } from 'react'
 
@@ -11,29 +9,17 @@ import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import type { Config } from '@/payload-types'
+import {
+  getCachedPageBySlug,
+  getPageBySlug,
+  getPublishedPageSlugs,
+} from '@/utilities/publicCms'
+import { STATIC_CONTENT_REVALIDATE_SECONDS } from '@/utilities/publicCache'
+
+export const revalidate = STATIC_CONTENT_REVALIDATE_SECONDS
 
 export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
-  const pages = await payload.find({
-    collection: 'pages',
-    draft: false,
-    limit: 1000,
-    overrideAccess: false,
-    pagination: false,
-    select: {
-      slug: true,
-    },
-  })
-
-  const params = pages.docs
-    ?.filter((doc) => {
-      return doc.slug !== 'home'
-    })
-    .map(({ slug }) => {
-      return { slug }
-    })
-
-  return params
+  return getPublishedPageSlugs()
 }
 
 type Args = {
@@ -89,22 +75,10 @@ const queryPageBySlug = cache(
   async ({ slug, locale }: { slug: string; locale: Config['locale'] }) => {
     const { isEnabled: draft } = await draftMode()
 
-    const payload = await getPayload({ config: configPromise })
+    if (draft) {
+      return getPageBySlug({ draft, locale, slug })
+    }
 
-    const result = await payload.find({
-      collection: 'pages',
-      draft,
-      limit: 1,
-      locale,
-      pagination: false,
-      overrideAccess: draft,
-      where: {
-        slug: {
-          equals: slug,
-        },
-      },
-    })
-
-    return result.docs?.[0] || null
+    return getCachedPageBySlug(slug, locale)
   },
 )

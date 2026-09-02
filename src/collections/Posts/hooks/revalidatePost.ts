@@ -5,6 +5,8 @@ import { revalidatePath, revalidateTag } from 'next/cache'
 import type { Post } from '@/payload-types'
 import { routing } from '@/i18n/routing'
 import { prefixLocale } from '@/utilities/routes'
+import { PUBLIC_CACHE_TAGS } from '@/utilities/publicCache'
+import { revalidatePublicCacheTags } from '@/hooks/revalidatePublicContent'
 
 const revalidatePostPaths = (slug?: string | null) => {
   if (!slug) {
@@ -17,6 +19,12 @@ const revalidatePostPaths = (slug?: string | null) => {
   }
 }
 
+const revalidatePostIndexPaths = () => {
+  for (const locale of routing.locales) {
+    revalidatePath(prefixLocale('/posts', locale))
+  }
+}
+
 export const revalidatePost: CollectionAfterChangeHook<Post> = ({
   doc,
   previousDoc,
@@ -26,6 +34,8 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
     if (doc._status === 'published') {
       payload.logger.info(`Revalidating post at slug: ${doc.slug}`)
       revalidatePostPaths(doc.slug)
+      revalidatePostIndexPaths()
+      revalidatePublicCacheTags([PUBLIC_CACHE_TAGS.posts], payload.logger)
       revalidateTag('posts-sitemap', { expire: 0 })
     }
 
@@ -33,6 +43,8 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
     if (previousDoc._status === 'published' && doc._status !== 'published') {
       payload.logger.info(`Revalidating old post at slug: ${previousDoc.slug}`)
       revalidatePostPaths(previousDoc.slug)
+      revalidatePostIndexPaths()
+      revalidatePublicCacheTags([PUBLIC_CACHE_TAGS.posts], payload.logger)
       revalidateTag('posts-sitemap', { expire: 0 })
     }
   }
@@ -42,6 +54,8 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
 export const revalidateDelete: CollectionAfterDeleteHook<Post> = ({ doc, req: { context } }) => {
   if (!context.disableRevalidate) {
     revalidatePostPaths(doc?.slug)
+    revalidatePostIndexPaths()
+    revalidatePublicCacheTags([PUBLIC_CACHE_TAGS.posts])
     revalidateTag('posts-sitemap', { expire: 0 })
   }
 

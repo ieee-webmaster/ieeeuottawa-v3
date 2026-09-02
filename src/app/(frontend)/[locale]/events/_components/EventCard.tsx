@@ -1,11 +1,11 @@
 import { Link } from '@/i18n/navigation'
-import type { Event } from '@/payload-types'
 import type { Locale } from '@/i18n/routing'
 import { cn } from '@/utilities/ui'
 import { Media } from '@/components/Media'
+import type { EventListItem } from '@/utilities/publicCms'
 
 type Props = {
-  event: Event
+  event: EventListItem
   locale: Locale
   index?: number
   total?: number
