@@ -55,7 +55,9 @@ export const getResponsiveImageData = (
     .sort((a, b) => a.width - b.width)
 
   const allowedSizeNames = new Set(responsiveSizeNamesByPreset[sizesPreset])
-  const preferredCandidates = allCandidates.filter((candidate) => allowedSizeNames.has(candidate.name))
+  const preferredCandidates = allCandidates.filter((candidate) =>
+    allowedSizeNames.has(candidate.name),
+  )
   const candidates = preferredCandidates.length > 0 ? preferredCandidates : allCandidates.slice(-2)
 
   const largest = candidates.at(-1)

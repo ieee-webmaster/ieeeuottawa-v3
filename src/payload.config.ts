@@ -106,7 +106,11 @@ export default buildConfig({
           disablePayloadAccessControl: true,
         },
       },
-token: process.env.BLOB_READ_WRITE_TOKEN ?? (() => { throw new Error('Missing required env var: BLOB_READ_WRITE_TOKEN') })(),
+      token:
+        process.env.BLOB_READ_WRITE_TOKEN ??
+        (() => {
+          throw new Error('Missing required env var: BLOB_READ_WRITE_TOKEN')
+        })(),
     }),
     rbacPlugin({
       collections: [

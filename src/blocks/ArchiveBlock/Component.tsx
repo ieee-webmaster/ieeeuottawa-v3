@@ -22,10 +22,11 @@ export const ArchiveBlock: React.FC<
   if (populateBy === 'collection') {
     const locale = resolveLocale(await getLocale())
 
-    const flattenedCategories = categories?.map((category) => {
-      if (typeof category === 'object') return category.id
-      else return category
-    }) ?? []
+    const flattenedCategories =
+      categories?.map((category) => {
+        if (typeof category === 'object') return category.id
+        else return category
+      }) ?? []
 
     posts = await getCachedArchivePosts({
       categoryIDs: flattenedCategories,
