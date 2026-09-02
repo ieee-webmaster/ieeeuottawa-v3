@@ -2,14 +2,12 @@ import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'paylo
 
 import { revalidateTag } from 'next/cache'
 
-import { publicCacheTags } from '@/utilities/publicCache'
-
 type Logger = {
   info: (message: string) => void
 }
 
 export const revalidatePublicCacheTags = (tags: string[], logger?: Logger) => {
-  const cacheTags = publicCacheTags(...tags)
+  const cacheTags = Array.from(new Set(tags))
 
   logger?.info(`Revalidating public cache tags: ${cacheTags.join(', ')}`)
 

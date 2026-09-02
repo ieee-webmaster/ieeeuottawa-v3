@@ -4,6 +4,7 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { unstable_cache } from 'next/cache'
 import {
+  PUBLIC_CACHE_TAGS,
   PUBLIC_CACHE_VERSION,
   publicCacheTags,
   STATIC_CONTENT_REVALIDATE_SECONDS,
@@ -33,6 +34,10 @@ export const getCachedGlobal = (slug: Global, depth = 0, locale?: Config['locale
     [PUBLIC_CACHE_VERSION, slug, String(depth), locale ?? 'default'],
     {
       revalidate: STATIC_CONTENT_REVALIDATE_SECONDS,
-      tags: publicCacheTags(`global_${slug}`, `global_${slug}_${locale ?? 'en'}`),
+      tags: publicCacheTags(
+        `global_${slug}`,
+        `global_${slug}_${locale ?? 'en'}`,
+        PUBLIC_CACHE_TAGS.media,
+      ),
     },
   )
