@@ -3,11 +3,12 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Mail, Linkedin, UserRound } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
-import type { Committee, Team, Person, Media, Config } from '@/payload-types'
+import type { Committee, Team, Person, Config } from '@/payload-types'
 import { generateStaticMeta } from '@/utilities/generateMeta'
 import { Link } from '@/i18n/navigation'
 import { Eyebrow, SectionShell, themeRule } from '@/blocks/_shared'
 import { Media as MediaComponent } from '@/components/Media'
+import { hasRenderableMediaSource } from '@/components/Media/hasRenderableMediaSource'
 import { STATIC_CONTENT_REVALIDATE_SECONDS } from '@/utilities/publicCache'
 import { getCachedCommitteeByYear, getCommitteeYears } from '@/utilities/publicCms'
 
@@ -22,6 +23,15 @@ type Args = {
   params: Promise<{ year: string; locale: Config['locale'] }>
 }
 
+type CommitteeMember = NonNullable<NonNullable<Committee['teams']>[number]['members']>[number]
+type PositionRole = NonNullable<NonNullable<Team['positions']>[number]['role']>
+type ResolvedCommitteeMember = Omit<CommitteeMember, 'person'> & {
+  person: Person
+  positionEmail?: string | null
+  rank?: string
+  teamName: string
+}
+
 export default async function CommitteePage({ params }: Args) {
   const { year, locale } = await params
   const t = await getTranslations({
@@ -29,34 +39,49 @@ export default async function CommitteePage({ params }: Args) {
     namespace: 'committee',
   })
 
-  const committee = (await getCachedCommitteeByYear(year, locale)) as Committee | null
+  const committee = await getCachedCommitteeByYear(year, locale)
   if (!committee) notFound()
 
-  const coverImage = committee.coverImage as Media | undefined
-  const rankLabels: Record<string, string> = {
+  const coverImage =
+    committee.coverImage &&
+    typeof committee.coverImage !== 'number' &&
+    hasRenderableMediaSource(committee.coverImage)
+      ? committee.coverImage
+      : null
+  const rankLabels: { [Role in PositionRole]: string } = {
     exec: t('executive'),
     commish: t('commissioner'),
     coord: t('coordinator'),
   }
 
-  const sections = (committee.teams ?? [])
-    .map((teamEntry) => {
-      const team = teamEntry.team as Team
-      const data = (teamEntry.members ?? []).map((member) => {
-        const positionDef = team.positions?.find((p) => p.positionTitle === member.role)
-        const level = positionDef?.role
+  const sections = (committee.teams ?? []).flatMap((teamEntry) => {
+    if (typeof teamEntry.team === 'number') {
+      return []
+    }
 
-        return {
+    const team = teamEntry.team
+    const data = (teamEntry.members ?? []).flatMap((member): ResolvedCommitteeMember[] => {
+      if (typeof member.person === 'number') {
+        return []
+      }
+
+      const person = member.person
+      const positionDef = team.positions?.find((p) => p.positionTitle === member.role)
+      const level = positionDef?.role
+
+      return [
+        {
           ...member,
+          person,
           teamName: team.name,
           positionEmail: positionDef?.positionEmail,
-          rank: level ? (rankLabels[level] ?? level) : undefined,
-        }
-      })
-
-      return { title: team.name, data }
+          rank: level ? rankLabels[level] : undefined,
+        },
+      ]
     })
-    .filter((section) => section.data.length > 0)
+
+    return data.length > 0 ? [{ title: team.name, data }] : []
+  })
 
   const hasNoData = sections.length === 0
   return (
@@ -131,11 +156,13 @@ export default async function CommitteePage({ params }: Args) {
 
               <div className="grid grid-cols-2 gap-x-4 gap-y-12 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
                 {section.data.map((member) => {
-                  const person = member.person as Person
+                  const { person } = member
                   const headshot =
-                    person.headshot && typeof person.headshot === 'object'
+                    person.headshot &&
+                    typeof person.headshot !== 'number' &&
+                    hasRenderableMediaSource(person.headshot)
                       ? person.headshot
-                      : undefined
+                      : null
 
                   return (
                     <article key={member.id} className="group min-w-0">

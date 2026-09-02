@@ -75,7 +75,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
     )
   }
 
-  if (!resource || typeof resource !== 'object') return null
+  if (!resource || typeof resource === 'string' || typeof resource === 'number') return null
 
   const alt = altFromProps ?? resource.alt ?? ''
   const isSvg = resource.mimeType === 'image/svg+xml' || isSvgPath(resource.url ?? '')

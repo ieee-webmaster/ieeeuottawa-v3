@@ -1,10 +1,8 @@
-import type { PaginatedDocs } from 'payload'
-
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { unstable_cache } from 'next/cache'
 
-import type { Committee, Config, Doc, Event, Post, Team } from '@/payload-types'
+import type { Config } from '@/payload-types'
 import {
   EVENTS_REVALIDATE_SECONDS,
   POSTS_PER_PAGE,
@@ -17,11 +15,6 @@ import {
 type Locale = Config['locale']
 type DocID = Config['db']['defaultIDType']
 
-export type EventListItem = Pick<Event, 'date' | 'heroImage' | 'id' | 'location' | 'slug' | 'title'>
-export type PostCardData = Pick<Post, 'categories' | 'id' | 'meta' | 'slug' | 'title'>
-export type CommitteeListItem = Pick<Committee, 'id' | 'teams' | 'Year'>
-export type DocListItem = Pick<Doc, 'id' | 'year'>
-
 const localeKey = (locale?: Locale) => locale ?? 'default'
 
 const idKey = (id: DocID | string) => String(id)
@@ -32,25 +25,25 @@ const categoryKey = (categoryIDs: Array<DocID | string>) => {
 
 const getPayloadClient = () => getPayload({ config: configPromise })
 
-export const getPublishedPageSlugs = unstable_cache(
-  async () => {
-    const payload = await getPayloadClient()
-    const pages = await payload.find({
-      collection: 'pages',
-      depth: 0,
-      draft: false,
-      limit: 1000,
-      overrideAccess: false,
-      pagination: false,
-      select: {
-        slug: true,
-      },
-    })
+const findPublishedPageSlugs = async () => {
+  const payload = await getPayloadClient()
+  const pages = await payload.find({
+    collection: 'pages',
+    depth: 0,
+    draft: false,
+    limit: 1000,
+    overrideAccess: false,
+    pagination: false,
+    select: {
+      slug: true,
+    },
+  })
 
-    return pages.docs
-      .filter((page) => page.slug && page.slug !== 'home')
-      .map(({ slug }) => ({ slug }))
-  },
+  return pages.docs.filter(({ slug }) => slug !== 'home').map(({ slug }) => ({ slug }))
+}
+
+export const getPublishedPageSlugs = unstable_cache(
+  findPublishedPageSlugs,
   [PUBLIC_CACHE_VERSION, 'page-slugs'],
   {
     revalidate: STATIC_CONTENT_REVALIDATE_SECONDS,
@@ -96,23 +89,25 @@ export const getCachedPageBySlug = (slug: string, locale: Locale) =>
     },
   )()
 
-export const getPublishedPostSlugs = unstable_cache(
-  async () => {
-    const payload = await getPayloadClient()
-    const posts = await payload.find({
-      collection: 'posts',
-      depth: 0,
-      draft: false,
-      limit: 1000,
-      overrideAccess: false,
-      pagination: false,
-      select: {
-        slug: true,
-      },
-    })
+const findPublishedPostSlugs = async () => {
+  const payload = await getPayloadClient()
+  const posts = await payload.find({
+    collection: 'posts',
+    depth: 0,
+    draft: false,
+    limit: 1000,
+    overrideAccess: false,
+    pagination: false,
+    select: {
+      slug: true,
+    },
+  })
 
-    return posts.docs.filter((post) => post.slug).map(({ slug }) => ({ slug }))
-  },
+  return posts.docs.map(({ slug }) => ({ slug }))
+}
+
+export const getPublishedPostSlugs = unstable_cache(
+  findPublishedPostSlugs,
   [PUBLIC_CACHE_VERSION, 'post-slugs'],
   {
     revalidate: STATIC_CONTENT_REVALIDATE_SECONDS,
@@ -120,28 +115,33 @@ export const getPublishedPostSlugs = unstable_cache(
   },
 )
 
+const findPostList = async (locale: Locale, page = 1) => {
+  const payload = await getPayloadClient()
+  return payload.find({
+    collection: 'posts',
+    depth: 1,
+    draft: false,
+    limit: POSTS_PER_PAGE,
+    locale,
+    overrideAccess: false,
+    page,
+    select: {
+      categories: true,
+      meta: {
+        description: true,
+        image: true,
+      },
+      slug: true,
+      title: true,
+    },
+  })
+}
+
+export type PostCardData = Awaited<ReturnType<typeof findPostList>>['docs'][number]
+
 export const getCachedPostList = (locale: Locale, page = 1) =>
   unstable_cache(
-    async () => {
-      const payload = await getPayloadClient()
-      const posts = await payload.find({
-        collection: 'posts',
-        depth: 1,
-        draft: false,
-        limit: POSTS_PER_PAGE,
-        locale,
-        overrideAccess: false,
-        page,
-        select: {
-          categories: true,
-          meta: true,
-          slug: true,
-          title: true,
-        },
-      })
-
-      return posts as unknown as PaginatedDocs<PostCardData>
-    },
+    async () => findPostList(locale, page),
     [PUBLIC_CACHE_VERSION, 'post-list', localeKey(locale), String(page)],
     {
       revalidate: STATIC_CONTENT_REVALIDATE_SECONDS,
@@ -204,44 +204,47 @@ export const getCachedPostBySlug = (slug: string, locale: Locale) =>
     },
   )()
 
-export const getCachedArchivePosts = ({
-  categoryIDs,
-  limit,
-  locale,
-}: {
+type ArchivePostsArgs = {
   categoryIDs: Array<DocID | string>
   limit: number
   locale: Locale
-}) =>
-  unstable_cache(
-    async () => {
-      const payload = await getPayloadClient()
-      const fetchedPosts = await payload.find({
-        collection: 'posts',
-        depth: 1,
-        draft: false,
-        limit,
-        locale,
-        overrideAccess: false,
-        select: {
-          categories: true,
-          meta: true,
-          slug: true,
-          title: true,
-        },
-        ...(categoryIDs.length > 0
-          ? {
-              where: {
-                categories: {
-                  in: categoryIDs,
-                },
-              },
-            }
-          : {}),
-      })
+}
 
-      return fetchedPosts.docs as PostCardData[]
+const findArchivePosts = async ({ categoryIDs, limit, locale }: ArchivePostsArgs) => {
+  const payload = await getPayloadClient()
+  const fetchedPosts = await payload.find({
+    collection: 'posts',
+    depth: 1,
+    draft: false,
+    limit,
+    locale,
+    overrideAccess: false,
+    select: {
+      categories: true,
+      meta: {
+        description: true,
+        image: true,
+      },
+      slug: true,
+      title: true,
     },
+    ...(categoryIDs.length > 0
+      ? {
+          where: {
+            categories: {
+              in: categoryIDs,
+            },
+          },
+        }
+      : {}),
+  })
+
+  return fetchedPosts.docs
+}
+
+export const getCachedArchivePosts = ({ categoryIDs, limit, locale }: ArchivePostsArgs) =>
+  unstable_cache(
+    async () => findArchivePosts({ categoryIDs, limit, locale }),
     [
       PUBLIC_CACHE_VERSION,
       'archive-posts',
@@ -255,23 +258,25 @@ export const getCachedArchivePosts = ({
     },
   )()
 
-export const getPublishedEventSlugs = unstable_cache(
-  async () => {
-    const payload = await getPayloadClient()
-    const events = await payload.find({
-      collection: 'events',
-      depth: 0,
-      draft: false,
-      limit: 1000,
-      overrideAccess: false,
-      pagination: false,
-      select: {
-        slug: true,
-      },
-    })
+const findPublishedEventSlugs = async () => {
+  const payload = await getPayloadClient()
+  const events = await payload.find({
+    collection: 'events',
+    depth: 0,
+    draft: false,
+    limit: 1000,
+    overrideAccess: false,
+    pagination: false,
+    select: {
+      slug: true,
+    },
+  })
 
-    return events.docs.filter((event) => event.slug).map(({ slug }) => ({ slug }))
-  },
+  return events.docs.map(({ slug }) => ({ slug }))
+}
+
+export const getPublishedEventSlugs = unstable_cache(
+  findPublishedEventSlugs,
   [PUBLIC_CACHE_VERSION, 'event-slugs'],
   {
     revalidate: EVENTS_REVALIDATE_SECONDS,
@@ -279,30 +284,34 @@ export const getPublishedEventSlugs = unstable_cache(
   },
 )
 
+const findEventList = async (locale: Locale) => {
+  const payload = await getPayloadClient()
+  const { docs } = await payload.find({
+    collection: 'events',
+    depth: 1,
+    draft: false,
+    limit: 100,
+    locale,
+    overrideAccess: false,
+    pagination: false,
+    select: {
+      date: true,
+      heroImage: true,
+      location: true,
+      slug: true,
+      title: true,
+    },
+    sort: 'date',
+  })
+
+  return docs
+}
+
+export type EventListItem = Awaited<ReturnType<typeof findEventList>>[number]
+
 export const getCachedEventList = (locale: Locale) =>
   unstable_cache(
-    async () => {
-      const payload = await getPayloadClient()
-      const { docs } = await payload.find({
-        collection: 'events',
-        depth: 1,
-        draft: false,
-        limit: 100,
-        locale,
-        overrideAccess: false,
-        pagination: false,
-        select: {
-          date: true,
-          heroImage: true,
-          location: true,
-          slug: true,
-          title: true,
-        },
-        sort: 'date',
-      })
-
-      return docs as EventListItem[]
-    },
+    async () => findEventList(locale),
     [PUBLIC_CACHE_VERSION, 'event-list', localeKey(locale)],
     {
       revalidate: EVENTS_REVALIDATE_SECONDS,
@@ -335,7 +344,7 @@ export const getEventBySlug = async ({
     },
   })
 
-  return (result.docs?.[0] as Event | undefined) || null
+  return result.docs?.[0] || null
 }
 
 export const getCachedEventBySlug = (slug: string, locale: Locale) =>
@@ -348,26 +357,32 @@ export const getCachedEventBySlug = (slug: string, locale: Locale) =>
     },
   )()
 
+const findCommitteeList = async (locale: Locale) => {
+  const payload = await getPayloadClient()
+  const { docs } = await payload.find({
+    collection: 'committee',
+    depth: 0,
+    limit: 100,
+    locale,
+    overrideAccess: false,
+    pagination: false,
+    select: {
+      teams: {
+        id: true,
+      },
+      Year: true,
+    },
+    sort: '-Year',
+  })
+
+  return docs
+}
+
+export type CommitteeListItem = Awaited<ReturnType<typeof findCommitteeList>>[number]
+
 export const getCachedCommitteeList = (locale: Locale) =>
   unstable_cache(
-    async () => {
-      const payload = await getPayloadClient()
-      const { docs } = await payload.find({
-        collection: 'committee',
-        depth: 0,
-        limit: 100,
-        locale,
-        overrideAccess: false,
-        pagination: false,
-        select: {
-          teams: true,
-          Year: true,
-        },
-        sort: '-Year',
-      })
-
-      return docs as CommitteeListItem[]
-    },
+    async () => findCommitteeList(locale),
     [PUBLIC_CACHE_VERSION, 'committee-list', localeKey(locale)],
     {
       revalidate: STATIC_CONTENT_REVALIDATE_SECONDS,
@@ -416,7 +431,7 @@ export const getCachedCommitteeByYear = (year: string, locale: Locale) =>
         },
       })
 
-      return (result.docs?.[0] as Committee | undefined) || null
+      return result.docs?.[0] || null
     },
     [PUBLIC_CACHE_VERSION, 'committee', localeKey(locale), year],
     {
@@ -429,13 +444,13 @@ export const getCachedCommitteeByID = (id: DocID | string, locale: Locale) =>
   unstable_cache(
     async () => {
       const payload = await getPayloadClient()
-      return (await payload.findByID({
+      return payload.findByID({
         collection: 'committee',
         depth: 2,
         id,
         locale,
         overrideAccess: false,
-      })) as Committee
+      })
     },
     [PUBLIC_CACHE_VERSION, 'committee-by-id', localeKey(locale), idKey(id)],
     {
@@ -448,13 +463,13 @@ export const getCachedTeamByID = (id: DocID | string, locale: Locale) =>
   unstable_cache(
     async () => {
       const payload = await getPayloadClient()
-      return (await payload.findByID({
+      return payload.findByID({
         collection: 'teams',
         depth: 1,
         id,
         locale,
         overrideAccess: false,
-      })) as Team
+      })
     },
     [PUBLIC_CACHE_VERSION, 'team-by-id', localeKey(locale), idKey(id)],
     {
@@ -463,25 +478,29 @@ export const getCachedTeamByID = (id: DocID | string, locale: Locale) =>
     },
   )()
 
+const findDocsList = async (locale: Locale) => {
+  const payload = await getPayloadClient()
+  const { docs } = await payload.find({
+    collection: 'docs',
+    depth: 0,
+    limit: 100,
+    locale,
+    overrideAccess: false,
+    pagination: false,
+    select: {
+      year: true,
+    },
+    sort: '-year',
+  })
+
+  return docs
+}
+
+export type DocListItem = Awaited<ReturnType<typeof findDocsList>>[number]
+
 export const getCachedDocsList = (locale: Locale) =>
   unstable_cache(
-    async () => {
-      const payload = await getPayloadClient()
-      const { docs } = await payload.find({
-        collection: 'docs',
-        depth: 0,
-        limit: 100,
-        locale,
-        overrideAccess: false,
-        pagination: false,
-        select: {
-          year: true,
-        },
-        sort: '-year',
-      })
-
-      return docs as DocListItem[]
-    },
+    async () => findDocsList(locale),
     [PUBLIC_CACHE_VERSION, 'docs-list', localeKey(locale)],
     {
       revalidate: STATIC_CONTENT_REVALIDATE_SECONDS,
@@ -530,7 +549,7 @@ export const getCachedDocByYear = (year: string, locale: Locale) =>
         },
       })
 
-      return (result.docs?.[0] as Doc | undefined) || null
+      return result.docs?.[0] || null
     },
     [PUBLIC_CACHE_VERSION, 'doc', localeKey(locale), year],
     {

@@ -60,13 +60,7 @@ export default async function EventPage({ params: paramsPromise }: Args) {
 
   const eventDate = new Date(event.date)
   const isPastEvent = !Number.isNaN(eventDate.valueOf()) && eventDate < new Date()
-  const hostedBy = event['hosted-by'].filter(
-    (item): item is NonNullable<(typeof event)['hosted-by'][number]> & { name: string } => {
-      return (
-        typeof item === 'object' && item !== null && 'name' in item && typeof item.name === 'string'
-      )
-    },
-  )
+  const hostedBy = event['hosted-by'].filter((item) => typeof item !== 'number')
   const hostedByLabel =
     hostedBy.length > 0 ? hostedBy.map((team) => team.name).join(', ') : 'IEEE uOttawa'
   const eventContentLength =

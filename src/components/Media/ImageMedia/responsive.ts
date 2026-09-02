@@ -2,10 +2,19 @@ import type { Media } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import type { MediaSizesPreset } from '../sizes'
 
-const responsiveSizeNames = ['thumbnail', 'small', 'medium', 'large', 'xlarge'] as const
-type ResponsiveSizeName = (typeof responsiveSizeNames)[number]
+type ResponsiveSizeName = 'thumbnail' | 'small' | 'medium' | 'large' | 'xlarge'
 
-const responsiveSizeNamesByPreset = {
+const responsiveSizeNames: ResponsiveSizeName[] = [
+  'thumbnail',
+  'small',
+  'medium',
+  'large',
+  'xlarge',
+]
+
+const responsiveSizeNamesByPreset: {
+  [Preset in MediaSizesPreset]: ResponsiveSizeName[]
+} = {
   affinity: ['medium', 'large'],
   avatar: ['thumbnail', 'small'],
   content: ['large', 'xlarge'],
@@ -19,7 +28,7 @@ const responsiveSizeNamesByPreset = {
   quarter: ['small', 'medium'],
   split: ['medium', 'large'],
   third: ['small', 'medium'],
-} satisfies Record<MediaSizesPreset, readonly ResponsiveSizeName[]>
+}
 
 export type ResponsiveImageData = {
   height?: number

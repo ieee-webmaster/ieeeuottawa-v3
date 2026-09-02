@@ -12,7 +12,7 @@ type Props = {
 }
 
 export const EventCard = ({ event, locale, index, total }: Props) => {
-  const heroMedia = event.heroImage && typeof event.heroImage === 'object' ? event.heroImage : null
+  const heroMedia = event.heroImage && typeof event.heroImage !== 'number' ? event.heroImage : null
   const eventDate = new Date(event.date)
   const validDate = !Number.isNaN(eventDate.valueOf())
   const month = validDate

@@ -62,7 +62,7 @@ export default async function Post({ params: paramsPromise }: Args) {
           <div className={`h-px w-full ${themeRule.muted}`} />
           <RelatedPosts
             className="mt-10 md:mt-14"
-            docs={post.relatedPosts.filter((post) => typeof post === 'object')}
+            docs={post.relatedPosts.filter((post) => typeof post !== 'number')}
           />
         </SectionShell>
       ) : null}
