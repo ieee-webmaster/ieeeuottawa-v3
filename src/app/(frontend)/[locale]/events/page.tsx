@@ -5,11 +5,10 @@ import type { Config } from '@/payload-types'
 import { Eyebrow, SectionShell } from '@/blocks/_shared'
 import { EventCard } from './_components/EventCard'
 import { generateStaticMeta } from '@/utilities/generateMeta'
-import { EVENTS_REVALIDATE_SECONDS } from '@/utilities/publicCache'
 import { getCachedEventList, type EventListItem } from '@/utilities/publicCms'
 
 export const dynamic = 'force-static'
-export const revalidate = EVENTS_REVALIDATE_SECONDS
+export const revalidate = 3600
 
 type Args = {
   params: Promise<{ locale: Config['locale'] }>

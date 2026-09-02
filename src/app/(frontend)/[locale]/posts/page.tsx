@@ -6,11 +6,10 @@ import { getTranslations } from 'next-intl/server'
 import type { Config } from '@/payload-types'
 import { generateStaticMeta } from '@/utilities/generateMeta'
 import { Eyebrow, SectionShell } from '@/blocks/_shared'
-import { STATIC_CONTENT_REVALIDATE_SECONDS } from '@/utilities/publicCache'
 import { getCachedPostList } from '@/utilities/publicCms'
 
 export const dynamic = 'force-static'
-export const revalidate = STATIC_CONTENT_REVALIDATE_SECONDS
+export const revalidate = 86400
 
 type Args = {
   params: Promise<{ locale: Config['locale'] }>

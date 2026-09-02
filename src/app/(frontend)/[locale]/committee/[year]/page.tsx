@@ -9,11 +9,10 @@ import { Link } from '@/i18n/navigation'
 import { Eyebrow, SectionShell, themeRule } from '@/blocks/_shared'
 import { Media as MediaComponent } from '@/components/Media'
 import { hasRenderableMediaSource } from '@/components/Media/hasRenderableMediaSource'
-import { STATIC_CONTENT_REVALIDATE_SECONDS } from '@/utilities/publicCache'
 import { getCachedCommitteeByYear, getCommitteeYears } from '@/utilities/publicCms'
 
 export const dynamic = 'force-static'
-export const revalidate = STATIC_CONTENT_REVALIDATE_SECONDS
+export const revalidate = 86400
 
 export async function generateStaticParams() {
   return getCommitteeYears()

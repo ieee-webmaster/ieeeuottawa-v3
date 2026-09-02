@@ -10,9 +10,8 @@ import { generateMeta } from '@/utilities/generateMeta'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import type { Config } from '@/payload-types'
 import { getCachedPageBySlug, getPageBySlug, getPublishedPageSlugs } from '@/utilities/publicCms'
-import { STATIC_CONTENT_REVALIDATE_SECONDS } from '@/utilities/publicCache'
 
-export const revalidate = STATIC_CONTENT_REVALIDATE_SECONDS
+export const revalidate = 86400
 
 export async function generateStaticParams() {
   return getPublishedPageSlugs()
