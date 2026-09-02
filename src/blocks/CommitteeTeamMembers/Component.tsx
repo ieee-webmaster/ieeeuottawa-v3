@@ -2,40 +2,14 @@ import { getLocale } from 'next-intl/server'
 import { Linkedin, Mail, User } from 'lucide-react'
 import React from 'react'
 
-import type {
-  Committee,
-  CommitteeTeamMembersBlock as CommitteeTeamMembersBlockProps,
-  Person,
-  Team,
-} from '@/payload-types'
+import type { CommitteeTeamMembersBlock as CommitteeTeamMembersBlockProps } from '@/payload-types'
 import { resolveLocale } from '@/i18n/routing'
 import { getTranslations } from 'next-intl/server'
 import { cn } from '@/utilities/ui'
 import { SectionShell, Eyebrow, themeMutedText, themeRule, type BlockTheme } from '@/blocks/_shared'
 import { Media } from '@/components/Media'
+import { hasRenderableMediaSource } from '@/components/Media/hasRenderableMediaSource'
 import { getCachedCommitteeByID, getCachedTeamByID } from '@/utilities/publicCms'
-
-type TeamMember = NonNullable<NonNullable<Committee['teams']>[number]['members']>[number] & {
-  teamName?: string
-  positionEmail?: string | null
-  level?: 'exec' | 'commish' | 'coord' | null
-}
-
-const getRelationId = (value: number | { id?: number | string } | null | undefined) => {
-  if (typeof value === 'object' && value !== null) {
-    return value.id ?? null
-  }
-
-  return value ?? null
-}
-
-const getObjectValue = <T,>(value: number | T | null | undefined): T | null => {
-  if (typeof value === 'object' && value !== null) {
-    return value
-  }
-
-  return null
-}
 
 export const CommitteeTeamMembersBlock: React.FC<
   CommitteeTeamMembersBlockProps & {
@@ -44,63 +18,41 @@ export const CommitteeTeamMembersBlock: React.FC<
 > = async ({ committee, id, team }) => {
   const locale = resolveLocale(await getLocale())
   const t = await getTranslations({ locale, namespace: 'committee' })
-  const theme = 'default' as BlockTheme
+  const theme: BlockTheme = 'default'
 
-  const committeeId = getRelationId(committee)
-  const teamId = getRelationId(team)
+  const committeeId = typeof committee === 'number' ? committee : committee.id
+  const teamId = typeof team === 'number' ? team : team.id
 
-  let committeeDoc = getObjectValue<Committee>(committee)
-  if (!committeeDoc?.teams && committeeId != null) {
-    committeeDoc = await getCachedCommitteeByID(committeeId, locale)
-  }
-
-  let teamDoc = getObjectValue<Team>(team)
-
-  if (!teamDoc && committeeDoc?.teams) {
-    const committeeTeamEntry = committeeDoc.teams.find((entry) => {
-      return getRelationId(entry.team) === teamId
-    })
-
-    teamDoc =
-      committeeTeamEntry?.team && typeof committeeTeamEntry.team === 'object'
-        ? committeeTeamEntry.team
-        : teamDoc
-  }
-
-  if (!teamDoc && teamId != null) {
-    teamDoc = await getCachedTeamByID(teamId, locale)
-  }
-
-  if (!committeeDoc || !teamDoc) {
-    return null
-  }
+  const committeeDoc = await getCachedCommitteeByID(committeeId, locale)
+  const teamDoc = await getCachedTeamByID(teamId, locale)
 
   const committeeTeamEntry = committeeDoc.teams?.find((entry) => {
-    return getRelationId(entry.team) === getRelationId(teamDoc)
+    const entryTeamId = typeof entry.team === 'number' ? entry.team : entry.team.id
+    return entryTeamId === teamDoc.id
   })
 
-  const members = (committeeTeamEntry?.members ?? [])
-    .map((member) => {
-      const person = typeof member.person === 'object' ? member.person : null
-      if (!person) {
-        return null
-      }
+  const members = (committeeTeamEntry?.members ?? []).flatMap((member) => {
+    if (typeof member.person === 'number') {
+      return []
+    }
 
-      const positionDef = teamDoc.positions?.find((position) => {
-        return position.positionTitle === member.role
-      })
+    const person = member.person
+    const positionDef = teamDoc.positions?.find((position) => {
+      return position.positionTitle === member.role
+    })
 
-      const level = positionDef?.role
+    const level = positionDef?.role
 
-      return {
+    return [
+      {
         ...member,
         person,
         teamName: teamDoc.name,
         positionEmail: positionDef?.positionEmail,
         level,
-      } as TeamMember
-    })
-    .filter((member): member is TeamMember => Boolean(member))
+      },
+    ]
+  })
 
   const executives = members.filter((member) => member.level === 'exec')
   const commissioners = members.filter((member) => member.level === 'commish')
@@ -165,11 +117,13 @@ export const CommitteeTeamMembersBlock: React.FC<
                 {sections
                   .flatMap((section) => section.data)
                   .map((member) => {
-                    const person = member.person as Person
+                    const { person } = member
                     const headshot =
-                      person.headshot && typeof person.headshot === 'object'
+                      person.headshot &&
+                      typeof person.headshot !== 'number' &&
+                      hasRenderableMediaSource(person.headshot)
                         ? person.headshot
-                        : undefined
+                        : null
 
                     return (
                       <div key={member.id} className="group flex flex-col items-center text-center">

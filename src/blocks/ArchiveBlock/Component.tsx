@@ -1,4 +1,4 @@
-import type { Post, ArchiveBlock as ArchiveBlockProps } from '@/payload-types'
+import type { ArchiveBlock as ArchiveBlockProps } from '@/payload-types'
 
 import React from 'react'
 import RichText from '@/components/RichText'
@@ -23,10 +23,7 @@ export const ArchiveBlock: React.FC<
     const locale = resolveLocale(await getLocale())
 
     const flattenedCategories =
-      categories?.map((category) => {
-        if (typeof category === 'object') return category.id
-        else return category
-      }) ?? []
+      categories?.map((category) => (typeof category === 'number' ? category : category.id)) ?? []
 
     posts = await getCachedArchivePosts({
       categoryIDs: flattenedCategories,
@@ -35,11 +32,13 @@ export const ArchiveBlock: React.FC<
     })
   } else {
     if (selectedDocs?.length) {
-      const filteredSelectedPosts = selectedDocs
-        .map((post) => post.value)
-        .filter((value): value is Post => typeof value === 'object' && value !== null)
+      posts = selectedDocs.flatMap(({ value }) => {
+        if (typeof value === 'number') {
+          return []
+        }
 
-      posts = filteredSelectedPosts
+        return [value]
+      })
     }
   }
 

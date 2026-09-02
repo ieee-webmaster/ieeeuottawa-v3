@@ -31,7 +31,7 @@ export const Card: React.FC<{
     <article className={cn('group flex h-full flex-col hover:cursor-pointer', className)}>
       <Link href={href} className="flex h-full flex-col gap-5">
         <div className="relative aspect-[4/3] w-full overflow-hidden bg-foreground/[0.04]">
-          {metaImage && typeof metaImage !== 'string' ? (
+          {metaImage && typeof metaImage !== 'number' ? (
             <Media
               fill
               imgClassName="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
@@ -53,22 +53,20 @@ export const Card: React.FC<{
               {showCategories && hasCategories && (
                 <div>
                   {categories?.map((category, index) => {
-                    if (typeof category === 'object') {
-                      const { title: titleFromCategory } = category
-
-                      const categoryTitle = titleFromCategory || 'Untitled category'
-
-                      const isLast = index === categories.length - 1
-
-                      return (
-                        <Fragment key={index}>
-                          {categoryTitle}
-                          {!isLast && <Fragment>, &nbsp;</Fragment>}
-                        </Fragment>
-                      )
+                    if (typeof category === 'number') {
+                      return null
                     }
 
-                    return null
+                    const categoryTitle = category.title || 'Untitled category'
+
+                    const isLast = index === categories.length - 1
+
+                    return (
+                      <Fragment key={index}>
+                        {categoryTitle}
+                        {!isLast && <Fragment>, &nbsp;</Fragment>}
+                      </Fragment>
+                    )
                   })}
                 </div>
               )}
