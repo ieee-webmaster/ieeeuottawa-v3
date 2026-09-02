@@ -73,6 +73,7 @@ export const Events: CollectionConfig<'events'> = {
       name: 'date',
       type: 'date',
       required: true,
+      index: true,
     },
     {
       name: 'location',

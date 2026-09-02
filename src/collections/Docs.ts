@@ -26,6 +26,7 @@ export const Docs: CollectionConfig = {
       type: 'text',
       required: true,
       unique: true,
+      index: true,
       admin: {
         description: 'The academic year for these documents (e.g., 2024-2025)',
       },

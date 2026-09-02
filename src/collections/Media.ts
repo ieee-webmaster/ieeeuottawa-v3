@@ -14,7 +14,7 @@ import {
 } from '@/hooks/revalidatePublicContent'
 import { PUBLIC_CACHE_TAGS } from '@/utilities/publicCache'
 
-export const Media: CollectionConfig = {
+export const Media: CollectionConfig<'media'> = {
   slug: 'media',
   folders: true,
   access: {
@@ -22,6 +22,46 @@ export const Media: CollectionConfig = {
     delete: authenticated,
     read: anyone,
     update: authenticated,
+  },
+  defaultPopulate: {
+    alt: true,
+    height: true,
+    mimeType: true,
+    sizes: {
+      large: {
+        height: true,
+        url: true,
+        width: true,
+      },
+      medium: {
+        height: true,
+        url: true,
+        width: true,
+      },
+      og: {
+        height: true,
+        url: true,
+        width: true,
+      },
+      small: {
+        height: true,
+        url: true,
+        width: true,
+      },
+      thumbnail: {
+        height: true,
+        url: true,
+        width: true,
+      },
+      xlarge: {
+        height: true,
+        url: true,
+        width: true,
+      },
+    },
+    updatedAt: true,
+    url: true,
+    width: true,
   },
   fields: [
     {
@@ -53,33 +93,40 @@ export const Media: CollectionConfig = {
       {
         name: 'thumbnail',
         width: 300,
+        withoutEnlargement: true,
       },
       {
         name: 'square',
         width: 500,
         height: 500,
+        withoutEnlargement: true,
       },
       {
         name: 'small',
         width: 600,
+        withoutEnlargement: true,
       },
       {
         name: 'medium',
         width: 900,
+        withoutEnlargement: true,
       },
       {
         name: 'large',
         width: 1400,
+        withoutEnlargement: true,
       },
       {
         name: 'xlarge',
         width: 1920,
+        withoutEnlargement: true,
       },
       {
         name: 'og',
         width: 1200,
         height: 630,
         crop: 'center',
+        withoutEnlargement: true,
       },
     ],
   },
