@@ -5,6 +5,7 @@
 **/.pnp.*
 **/.svn
 **/.yarn/**
+.backboard/
 **/build
 **/dist/**
 **/node_modules

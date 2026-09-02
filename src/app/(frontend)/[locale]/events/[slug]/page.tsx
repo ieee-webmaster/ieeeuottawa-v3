@@ -14,11 +14,7 @@ import RichText from '@/components/RichText'
 import { Media as PayloadMedia } from '@/components/Media'
 import { formatDateTime } from '@/utilities/formatDateTime'
 import { ArrowLeft } from 'lucide-react'
-import {
-  getCachedEventBySlug,
-  getEventBySlug,
-  getPublishedEventSlugs,
-} from '@/utilities/publicCms'
+import { getCachedEventBySlug, getEventBySlug, getPublishedEventSlugs } from '@/utilities/publicCms'
 import { EVENTS_REVALIDATE_SECONDS } from '@/utilities/publicCache'
 
 export const revalidate = EVENTS_REVALIDATE_SECONDS

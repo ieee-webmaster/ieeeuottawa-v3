@@ -68,7 +68,11 @@ export const Teams: CollectionConfig = {
     },
   ],
   hooks: {
-    afterChange: [buildPublicCacheAfterChange(PUBLIC_CACHE_TAGS.committee, PUBLIC_CACHE_TAGS.events)],
-    afterDelete: [buildPublicCacheAfterDelete(PUBLIC_CACHE_TAGS.committee, PUBLIC_CACHE_TAGS.events)],
+    afterChange: [
+      buildPublicCacheAfterChange(PUBLIC_CACHE_TAGS.committee, PUBLIC_CACHE_TAGS.events),
+    ],
+    afterDelete: [
+      buildPublicCacheAfterDelete(PUBLIC_CACHE_TAGS.committee, PUBLIC_CACHE_TAGS.events),
+    ],
   },
 }

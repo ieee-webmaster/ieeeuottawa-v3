@@ -21,6 +21,7 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 .playwright-mcp/
+.backboard/
 
 # TypeScript stuff
 tsconfig.tsbuildinfo

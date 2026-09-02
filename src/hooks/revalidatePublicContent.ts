@@ -18,9 +18,7 @@ export const revalidatePublicCacheTags = (tags: string[], logger?: Logger) => {
   }
 }
 
-export const buildPublicCacheAfterChange = (
-  ...tags: string[]
-): CollectionAfterChangeHook => {
+export const buildPublicCacheAfterChange = (...tags: string[]): CollectionAfterChangeHook => {
   return ({ doc, req: { context, payload } }) => {
     if (!context.disableRevalidate) {
       revalidatePublicCacheTags(tags, payload.logger)
@@ -30,9 +28,7 @@ export const buildPublicCacheAfterChange = (
   }
 }
 
-export const buildPublicCacheAfterDelete = (
-  ...tags: string[]
-): CollectionAfterDeleteHook => {
+export const buildPublicCacheAfterDelete = (...tags: string[]): CollectionAfterDeleteHook => {
   return ({ doc, req: { context, payload } }) => {
     if (!context.disableRevalidate) {
       revalidatePublicCacheTags(tags, payload.logger)
