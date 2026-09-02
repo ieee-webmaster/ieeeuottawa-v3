@@ -14,11 +14,10 @@ import {
 import { cn } from '@/utilities/ui'
 import { generateStaticMeta } from '@/utilities/generateMeta'
 import { Link } from '@/i18n/navigation'
-import { STATIC_CONTENT_REVALIDATE_SECONDS } from '@/utilities/publicCache'
 import { getCachedDocsList } from '@/utilities/publicCms'
 
 export const dynamic = 'force-static'
-export const revalidate = STATIC_CONTENT_REVALIDATE_SECONDS
+export const revalidate = 86400
 
 type Args = {
   params: Promise<{ locale: Config['locale'] }>

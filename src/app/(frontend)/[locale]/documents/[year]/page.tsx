@@ -5,11 +5,10 @@ import { getTranslations } from 'next-intl/server'
 import type { Config } from '@/payload-types'
 import { YearlyDocument } from '../_components/YearlyDocument'
 import { generateStaticMeta } from '@/utilities/generateMeta'
-import { STATIC_CONTENT_REVALIDATE_SECONDS } from '@/utilities/publicCache'
 import { getCachedDocByYear, getDocYears } from '@/utilities/publicCms'
 
 export const dynamic = 'force-static'
-export const revalidate = STATIC_CONTENT_REVALIDATE_SECONDS
+export const revalidate = 86400
 
 export async function generateStaticParams() {
   return getDocYears()
