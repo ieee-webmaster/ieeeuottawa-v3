@@ -1,5 +1,3 @@
-'use client'
-
 import type { StaticImageData } from 'next/image'
 
 import { cn } from '@/utilities/ui'
@@ -101,7 +99,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
     )
   }
 
-  const image = getResponsiveImageData(resource)
+  const image = getResponsiveImageData(resource, sizesPreset ?? 'full')
   if (!image) return null
 
   return (

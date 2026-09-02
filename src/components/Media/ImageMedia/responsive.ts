@@ -1,7 +1,25 @@
 import type { Media } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
+import type { MediaSizesPreset } from '../sizes'
 
 const responsiveSizeNames = ['thumbnail', 'small', 'medium', 'large', 'xlarge'] as const
+type ResponsiveSizeName = (typeof responsiveSizeNames)[number]
+
+const responsiveSizeNamesByPreset = {
+  affinity: ['medium', 'large'],
+  avatar: ['thumbnail', 'small'],
+  content: ['large', 'xlarge'],
+  full: ['large', 'xlarge'],
+  galleryHalf: ['medium', 'large'],
+  galleryQuarter: ['small', 'medium'],
+  galleryThird: ['small', 'medium'],
+  half: ['medium', 'large'],
+  icon: ['thumbnail'],
+  portraitGrid: ['small', 'medium'],
+  quarter: ['small', 'medium'],
+  split: ['medium', 'large'],
+  third: ['small', 'medium'],
+} satisfies Record<MediaSizesPreset, readonly ResponsiveSizeName[]>
 
 export type ResponsiveImageData = {
   height?: number
@@ -16,15 +34,19 @@ const inferHeight = (media: Media, width: number, height?: number | null) => {
   return Math.round((width * media.height) / media.width)
 }
 
-export const getResponsiveImageData = (media: Media): ResponsiveImageData | null => {
-  const candidates = responsiveSizeNames
+export const getResponsiveImageData = (
+  media: Media,
+  sizesPreset: MediaSizesPreset = 'full',
+): ResponsiveImageData | null => {
+  const allCandidates = responsiveSizeNames
     .map((name) => media.sizes?.[name])
-    .flatMap((size) => {
+    .flatMap((size, index) => {
       if (!size?.url || !size.width || size.width <= 0) return []
 
       return [
         {
           height: inferHeight(media, size.width, size.height),
+          name: responsiveSizeNames[index],
           src: getMediaUrl(size.url, media.updatedAt),
           width: size.width,
         },
@@ -32,12 +54,19 @@ export const getResponsiveImageData = (media: Media): ResponsiveImageData | null
     })
     .sort((a, b) => a.width - b.width)
 
+  const allowedSizeNames = new Set(responsiveSizeNamesByPreset[sizesPreset])
+  const preferredCandidates = allCandidates.filter((candidate) => allowedSizeNames.has(candidate.name))
+  const candidates = preferredCandidates.length > 0 ? preferredCandidates : allCandidates.slice(-2)
+
   const largest = candidates.at(-1)
   if (largest) {
     return {
       height: largest.height,
       src: largest.src,
-      srcSet: candidates.map(({ src, width }) => `${src} ${width}w`).join(', '),
+      srcSet:
+        candidates.length > 1
+          ? candidates.map(({ src, width }) => `${src} ${width}w`).join(', ')
+          : undefined,
       width: largest.width,
     }
   }
