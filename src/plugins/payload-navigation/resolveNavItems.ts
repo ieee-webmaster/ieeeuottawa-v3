@@ -3,6 +3,11 @@ import { unstable_cache } from 'next/cache'
 
 import { fillSpecificUrl, inferUrls } from './inferUrls'
 import type { AutoOrder, ResolvedLeafLink, ResolvedNavItem } from './types'
+import {
+  PUBLIC_CACHE_VERSION,
+  publicCacheTags,
+  STATIC_CONTENT_REVALIDATE_SECONDS,
+} from '@/utilities/publicCache'
 
 type Localized<T> = T | { [locale: string]: T | undefined } | null | undefined
 
@@ -106,9 +111,10 @@ const cachedFetchDistinctValues = (
       if (order === 'desc') values.reverse()
       return values
     },
-    ['payload-navigation', 'auto', collectionSlug, fieldName, order, locale],
+    [PUBLIC_CACHE_VERSION, 'payload-navigation', 'auto', collectionSlug, fieldName, order, locale],
     {
-      tags: [`nav_auto_${collectionSlug}`, `nav_auto_${collectionSlug}_${locale}`],
+      revalidate: STATIC_CONTENT_REVALIDATE_SECONDS,
+      tags: publicCacheTags(`nav_auto_${collectionSlug}`, `nav_auto_${collectionSlug}_${locale}`),
     },
   )
 

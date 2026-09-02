@@ -5,6 +5,8 @@ import { revalidatePath } from 'next/cache'
 import type { Event } from '@/payload-types'
 import { routing } from '@/i18n/routing'
 import { prefixLocale } from '@/utilities/routes'
+import { PUBLIC_CACHE_TAGS } from '@/utilities/publicCache'
+import { revalidatePublicCacheTags } from '@/hooks/revalidatePublicContent'
 
 const revalidateEventPaths = (slug?: string | null) => {
   if (!slug) {
@@ -17,6 +19,12 @@ const revalidateEventPaths = (slug?: string | null) => {
   }
 }
 
+const revalidateEventIndexPaths = () => {
+  for (const locale of routing.locales) {
+    revalidatePath(prefixLocale('/events', locale))
+  }
+}
+
 export const revalidateEvent: CollectionAfterChangeHook<Event> = ({
   doc,
   previousDoc,
@@ -25,11 +33,15 @@ export const revalidateEvent: CollectionAfterChangeHook<Event> = ({
   if (!context.disableRevalidate) {
     if (doc._status === 'published') {
       revalidateEventPaths(doc.slug)
+      revalidateEventIndexPaths()
+      revalidatePublicCacheTags([PUBLIC_CACHE_TAGS.events], payload.logger)
     }
 
     if (previousDoc?._status === 'published' && doc._status !== 'published') {
       payload.logger.info(`Revalidating old event at slug: ${previousDoc.slug}`)
       revalidateEventPaths(previousDoc.slug)
+      revalidateEventIndexPaths()
+      revalidatePublicCacheTags([PUBLIC_CACHE_TAGS.events], payload.logger)
     }
   }
 
@@ -39,6 +51,8 @@ export const revalidateEvent: CollectionAfterChangeHook<Event> = ({
 export const revalidateDelete: CollectionAfterDeleteHook<Event> = ({ doc, req: { context } }) => {
   if (!context.disableRevalidate) {
     revalidateEventPaths(doc?.slug)
+    revalidateEventIndexPaths()
+    revalidatePublicCacheTags([PUBLIC_CACHE_TAGS.events])
   }
 
   return doc

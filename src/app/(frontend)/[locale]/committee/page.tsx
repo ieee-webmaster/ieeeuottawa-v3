@@ -1,12 +1,15 @@
 import type { Metadata } from 'next'
 
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
 import { getTranslations } from 'next-intl/server'
 import type { Config } from '@/payload-types'
 import { CommitteeCard } from './_components/CommitteeCard'
 import { generateStaticMeta } from '@/utilities/generateMeta'
 import { Eyebrow, SectionShell, themeRule } from '@/blocks/_shared'
+import { STATIC_CONTENT_REVALIDATE_SECONDS } from '@/utilities/publicCache'
+import { getCachedCommitteeList } from '@/utilities/publicCms'
+
+export const dynamic = 'force-static'
+export const revalidate = STATIC_CONTENT_REVALIDATE_SECONDS
 
 type Args = {
   params: Promise<{ locale: Config['locale'] }>
@@ -14,20 +17,12 @@ type Args = {
 
 export default async function CommitteeLanding({ params }: Args) {
   const { locale } = await params
-  const payload = await getPayload({ config: configPromise })
   const t = await getTranslations({
     locale: locale ?? 'en',
     namespace: 'committee',
   })
 
-  const { docs: committees } = await payload.find({
-    collection: 'committee',
-    depth: 1,
-    limit: 100,
-    locale,
-    overrideAccess: false,
-    sort: '-Year',
-  })
+  const committees = await getCachedCommitteeList(locale)
 
   return (
     <SectionShell theme="default" padding="pt-24 pb-20 md:pt-36 md:pb-28">

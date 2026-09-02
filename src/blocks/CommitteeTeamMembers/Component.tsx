@@ -1,8 +1,6 @@
-import configPromise from '@payload-config'
 import { getLocale } from 'next-intl/server'
 import { Linkedin, Mail, User } from 'lucide-react'
 import React from 'react'
-import { getPayload } from 'payload'
 
 import type {
   Committee,
@@ -15,6 +13,7 @@ import { getTranslations } from 'next-intl/server'
 import { cn } from '@/utilities/ui'
 import { SectionShell, Eyebrow, themeMutedText, themeRule, type BlockTheme } from '@/blocks/_shared'
 import { Media } from '@/components/Media'
+import { getCachedCommitteeByID, getCachedTeamByID } from '@/utilities/publicCms'
 
 type TeamMember = NonNullable<NonNullable<Committee['teams']>[number]['members']>[number] & {
   teamName?: string
@@ -43,7 +42,6 @@ export const CommitteeTeamMembersBlock: React.FC<
     id?: string
   }
 > = async ({ committee, id, team }) => {
-  const payload = await getPayload({ config: configPromise })
   const locale = resolveLocale(await getLocale())
   const t = await getTranslations({ locale, namespace: 'committee' })
   const theme = 'default' as BlockTheme
@@ -53,13 +51,7 @@ export const CommitteeTeamMembersBlock: React.FC<
 
   let committeeDoc = getObjectValue<Committee>(committee)
   if (!committeeDoc?.teams && committeeId != null) {
-    committeeDoc = (await payload.findByID({
-      collection: 'committee',
-      depth: 2,
-      id: committeeId,
-      locale,
-      overrideAccess: false,
-    })) as Committee
+    committeeDoc = await getCachedCommitteeByID(committeeId, locale)
   }
 
   let teamDoc = getObjectValue<Team>(team)
@@ -76,13 +68,7 @@ export const CommitteeTeamMembersBlock: React.FC<
   }
 
   if (!teamDoc && teamId != null) {
-    teamDoc = (await payload.findByID({
-      collection: 'teams',
-      depth: 1,
-      id: teamId,
-      locale,
-      overrideAccess: false,
-    })) as Team
+    teamDoc = await getCachedTeamByID(teamId, locale)
   }
 
   if (!committeeDoc || !teamDoc) {

@@ -2,15 +2,15 @@ import type { Metadata } from 'next/types'
 
 import { CollectionArchive } from '@/components/CollectionArchive'
 import { Pagination } from '@/components/Pagination'
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
 import { getTranslations } from 'next-intl/server'
 import type { Config } from '@/payload-types'
 import { generateStaticMeta } from '@/utilities/generateMeta'
 import { Eyebrow, SectionShell } from '@/blocks/_shared'
+import { STATIC_CONTENT_REVALIDATE_SECONDS } from '@/utilities/publicCache'
+import { getCachedPostList } from '@/utilities/publicCms'
 
 export const dynamic = 'force-static'
-export const revalidate = 600
+export const revalidate = STATIC_CONTENT_REVALIDATE_SECONDS
 
 type Args = {
   params: Promise<{ locale: Config['locale'] }>
@@ -18,22 +18,8 @@ type Args = {
 
 export default async function Page({ params: paramsPromise }: Args) {
   const { locale } = await paramsPromise
-  const payload = await getPayload({ config: configPromise })
   const t = await getTranslations({ locale, namespace: 'posts' })
-
-  const posts = await payload.find({
-    collection: 'posts',
-    depth: 1,
-    limit: 12,
-    locale,
-    overrideAccess: false,
-    select: {
-      title: true,
-      slug: true,
-      categories: true,
-      meta: true,
-    },
-  })
+  const posts = await getCachedPostList(locale)
 
   return (
     <>

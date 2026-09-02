@@ -3,6 +3,11 @@ import type { Config } from '@/payload-types'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { unstable_cache } from 'next/cache'
+import {
+  PUBLIC_CACHE_VERSION,
+  publicCacheTags,
+  STATIC_CONTENT_REVALIDATE_SECONDS,
+} from '@/utilities/publicCache'
 
 type Collection = keyof Config['collections']
 
@@ -30,8 +35,9 @@ export const getCachedDocumentByID = (
 ) =>
   unstable_cache(
     async () => getDocumentByID(collection, id, 0, locale),
-    [collection, 'id', id, locale ?? ''],
+    [PUBLIC_CACHE_VERSION, collection, 'id', id, locale ?? ''],
     {
-      tags: [`${collection}_${id}_${locale ?? 'en'}`],
+      revalidate: STATIC_CONTENT_REVALIDATE_SECONDS,
+      tags: publicCacheTags(`${collection}_${id}_${locale ?? 'en'}`),
     },
   )

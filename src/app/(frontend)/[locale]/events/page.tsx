@@ -1,12 +1,15 @@
 import type { Metadata } from 'next'
 
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
 import { getTranslations } from 'next-intl/server'
-import type { Event, Config } from '@/payload-types'
+import type { Config } from '@/payload-types'
 import { Eyebrow, SectionShell } from '@/blocks/_shared'
 import { EventCard } from './_components/EventCard'
 import { generateStaticMeta } from '@/utilities/generateMeta'
+import { EVENTS_REVALIDATE_SECONDS } from '@/utilities/publicCache'
+import { getCachedEventList, type EventListItem } from '@/utilities/publicCms'
+
+export const dynamic = 'force-static'
+export const revalidate = EVENTS_REVALIDATE_SECONDS
 
 type Args = {
   params: Promise<{ locale: Config['locale'] }>
@@ -14,22 +17,13 @@ type Args = {
 
 export default async function EventsPage({ params: paramsPromise }: Args) {
   const { locale } = await paramsPromise
-  const payload = await getPayload({ config: configPromise })
   const t = await getTranslations({ locale, namespace: 'events' })
-
-  const { docs } = await payload.find({
-    collection: 'events',
-    depth: 1,
-    limit: 100,
-    locale,
-    overrideAccess: false,
-    sort: 'date',
-  })
+  const docs = await getCachedEventList(locale)
 
   const now = new Date()
 
-  const upcoming: Event[] = []
-  const past: Event[] = []
+  const upcoming: EventListItem[] = []
+  const past: EventListItem[] = []
 
   for (const doc of docs) {
     const eventDate = new Date(doc.date)

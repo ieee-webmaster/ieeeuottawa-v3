@@ -3,9 +3,13 @@ import type { Config } from '@/payload-types'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { unstable_cache } from 'next/cache'
+import {
+  PUBLIC_CACHE_VERSION,
+  publicCacheTags,
+  STATIC_CONTENT_REVALIDATE_SECONDS,
+} from '@/utilities/publicCache'
 
 type Global = keyof Config['globals']
-const mediaDeliveryCacheVersion = 'direct-blob-v1'
 
 async function getGlobal(slug: Global, depth = 0, locale?: Config['locale']) {
   const payload = await getPayload({ config: configPromise })
@@ -26,8 +30,9 @@ async function getGlobal(slug: Global, depth = 0, locale?: Config['locale']) {
 export const getCachedGlobal = (slug: Global, depth = 0, locale?: Config['locale']) =>
   unstable_cache(
     async () => getGlobal(slug, depth, locale),
-    [mediaDeliveryCacheVersion, slug, String(depth), locale ?? 'default'],
+    [PUBLIC_CACHE_VERSION, slug, String(depth), locale ?? 'default'],
     {
-      tags: [`global_${slug}`, `global_${slug}_${locale ?? 'en'}`],
+      revalidate: STATIC_CONTENT_REVALIDATE_SECONDS,
+      tags: publicCacheTags(`global_${slug}`, `global_${slug}_${locale ?? 'en'}`),
     },
   )

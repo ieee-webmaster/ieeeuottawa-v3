@@ -8,6 +8,11 @@ import {
 
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
+import {
+  buildPublicCacheAfterChange,
+  buildPublicCacheAfterDelete,
+} from '@/hooks/revalidatePublicContent'
+import { PUBLIC_CACHE_TAGS } from '@/utilities/publicCache'
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -36,6 +41,10 @@ export const Media: CollectionConfig = {
       }),
     },
   ],
+  hooks: {
+    afterChange: [buildPublicCacheAfterChange(PUBLIC_CACHE_TAGS.media)],
+    afterDelete: [buildPublicCacheAfterDelete(PUBLIC_CACHE_TAGS.media)],
+  },
   upload: {
     disableLocalStorage: true,
     adminThumbnail: 'thumbnail',
