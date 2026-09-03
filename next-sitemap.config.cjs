@@ -14,6 +14,7 @@ const SITE_URL = normalizeSiteUrl(
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
   siteUrl: SITE_URL,
+  output: process.env.STATIC_EXPORT === '1' ? 'export' : undefined,
   generateRobotsTxt: true,
   exclude: ['/posts-sitemap.xml', '/pages-sitemap.xml', '/*', '/posts/*'],
   robotsTxtOptions: {

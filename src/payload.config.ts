@@ -27,6 +27,25 @@ import { navigationPlugin } from './plugins/payload-navigation'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+const storagePlugins =
+  process.env.STATIC_EXPORT === '1'
+    ? []
+    : [
+        vercelBlobStorage({
+          collections: {
+            // Media is publicly readable, so serve files directly from Vercel Blob
+            // instead of proxying every request through the Payload function.
+            media: {
+              disablePayloadAccessControl: true,
+            },
+          },
+          token:
+            process.env.BLOB_READ_WRITE_TOKEN ??
+            (() => {
+              throw new Error('Missing required env var: BLOB_READ_WRITE_TOKEN')
+            })(),
+        }),
+      ]
 
 export default buildConfig({
   admin: {
@@ -98,20 +117,7 @@ export default buildConfig({
   },
   plugins: [
     ...plugins,
-    vercelBlobStorage({
-      collections: {
-        // Media is publicly readable, so serve files directly from Vercel Blob
-        // instead of proxying every request through the Payload function.
-        media: {
-          disablePayloadAccessControl: true,
-        },
-      },
-      token:
-        process.env.BLOB_READ_WRITE_TOKEN ??
-        (() => {
-          throw new Error('Missing required env var: BLOB_READ_WRITE_TOKEN')
-        })(),
-    }),
+    ...storagePlugins,
     rbacPlugin({
       collections: [
         Pages.slug,

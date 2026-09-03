@@ -3,22 +3,19 @@ import type { Metadata } from 'next'
 import { Link } from '@/i18n/navigation'
 import { LinkButton } from '../_components/LinkButton'
 
-import { PayloadRedirects } from '@/components/PayloadRedirects'
 import { SectionShell } from '@/blocks/_shared'
-import { draftMode } from 'next/headers'
-import { cache } from 'react'
+import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
 import { generateMeta } from '@/utilities/generateMeta'
-import { LivePreviewListener } from '@/components/LivePreviewListener'
 import type { Config } from '@/payload-types'
 import RichText from '@/components/RichText'
 import { Media as PayloadMedia } from '@/components/Media'
 import { formatDateTime } from '@/utilities/formatDateTime'
 import { ArrowLeft } from 'lucide-react'
-import { getCachedEventBySlug, getEventBySlug, getPublishedEventSlugs } from '@/utilities/publicCms'
+import { getCachedEventBySlug, getPublishedEventSlugs } from '@/utilities/publicCms'
 
-export const revalidate = 3600
+export const dynamicParams = false
 
 export async function generateStaticParams() {
   return getPublishedEventSlugs()
@@ -32,15 +29,11 @@ type Args = {
 }
 
 export default async function EventPage({ params: paramsPromise }: Args) {
-  const { isEnabled: draft } = await draftMode()
   const { locale, slug = '' } = await paramsPromise
-  const url = `/events/${encodeURIComponent(slug)}`
-  const event = await queryEventBySlug({ slug, locale })
+  const event = await getCachedEventBySlug(slug, locale)
   const t = await getTranslations({ locale, namespace: 'events' })
 
-  if (!event) {
-    return <PayloadRedirects url={url} />
-  }
+  if (!event) notFound()
 
   const eventDate = event.date ? new Date(event.date) : null
   const isPastEvent =
@@ -54,10 +47,6 @@ export default async function EventPage({ params: paramsPromise }: Args) {
 
   return (
     <article>
-      <PayloadRedirects disableNotFound url={url} />
-
-      {draft && <LivePreviewListener />}
-
       <SectionShell theme="default">
         <Link href="/events" className="back-link mb-4">
           <ArrowLeft aria-hidden="true" className="h-4 w-4" />
@@ -128,19 +117,7 @@ export default async function EventPage({ params: paramsPromise }: Args) {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { locale, slug = '' } = await paramsPromise
-  const event = await queryEventBySlug({ slug, locale })
+  const event = await getCachedEventBySlug(slug, locale)
 
   return generateMeta({ collection: 'events', doc: event, locale })
 }
-
-const queryEventBySlug = cache(
-  async ({ slug, locale }: { slug: string; locale: Config['locale'] }) => {
-    const { isEnabled: draft } = await draftMode()
-
-    if (draft) {
-      return getEventBySlug({ draft, locale, slug })
-    }
-
-    return getCachedEventBySlug(slug, locale)
-  },
-)

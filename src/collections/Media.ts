@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, ImageSize } from 'payload'
 
 import {
   FixedToolbarFeature,
@@ -13,6 +13,50 @@ import {
   buildPublicCacheAfterDelete,
 } from '@/hooks/revalidatePublicContent'
 import { PUBLIC_CACHE_TAGS } from '@/utilities/publicCache'
+import { populateStaticMediaURLs } from './Media/populateStaticMediaURLs'
+
+const defineMediaImageSizes = <const Sizes extends ImageSize[]>(sizes: Sizes) => sizes
+
+export const MEDIA_IMAGE_SIZES = defineMediaImageSizes([
+  {
+    name: 'thumbnail',
+    width: 300,
+    withoutEnlargement: true,
+  },
+  {
+    name: 'square',
+    width: 500,
+    height: 500,
+    withoutEnlargement: true,
+  },
+  {
+    name: 'small',
+    width: 600,
+    withoutEnlargement: true,
+  },
+  {
+    name: 'medium',
+    width: 900,
+    withoutEnlargement: true,
+  },
+  {
+    name: 'large',
+    width: 1400,
+    withoutEnlargement: true,
+  },
+  {
+    name: 'xlarge',
+    width: 1920,
+    withoutEnlargement: true,
+  },
+  {
+    name: 'og',
+    width: 1200,
+    height: 630,
+    crop: 'center',
+    withoutEnlargement: true,
+  },
+])
 
 export const Media: CollectionConfig<'media'> = {
   slug: 'media',
@@ -91,50 +135,12 @@ export const Media: CollectionConfig<'media'> = {
   hooks: {
     afterChange: [buildPublicCacheAfterChange(PUBLIC_CACHE_TAGS.media)],
     afterDelete: [buildPublicCacheAfterDelete(PUBLIC_CACHE_TAGS.media)],
+    afterRead: [populateStaticMediaURLs],
   },
   upload: {
     disableLocalStorage: true,
     adminThumbnail: 'thumbnail',
     focalPoint: true,
-    imageSizes: [
-      {
-        name: 'thumbnail',
-        width: 300,
-        withoutEnlargement: true,
-      },
-      {
-        name: 'square',
-        width: 500,
-        height: 500,
-        withoutEnlargement: true,
-      },
-      {
-        name: 'small',
-        width: 600,
-        withoutEnlargement: true,
-      },
-      {
-        name: 'medium',
-        width: 900,
-        withoutEnlargement: true,
-      },
-      {
-        name: 'large',
-        width: 1400,
-        withoutEnlargement: true,
-      },
-      {
-        name: 'xlarge',
-        width: 1920,
-        withoutEnlargement: true,
-      },
-      {
-        name: 'og',
-        width: 1200,
-        height: 630,
-        crop: 'center',
-        withoutEnlargement: true,
-      },
-    ],
+    imageSizes: MEDIA_IMAGE_SIZES,
   },
 }

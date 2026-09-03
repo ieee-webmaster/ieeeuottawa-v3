@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
-import { MenuIcon, SearchIcon, XIcon } from 'lucide-react'
+import { MenuIcon, XIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 import type { Header } from '@/payload-types'
@@ -102,24 +102,10 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, navItems }) =>
           )}
           <ThemeSelector className="h-10 px-2 text-sm font-medium text-foreground md:pl-2" />
           <LocaleSwitcher />
-          <Link
-            href="/search"
-            aria-label={t('search')}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-primary transition-colors hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            <SearchIcon className="h-5 w-5" />
-          </Link>
         </div>
 
         <div className="flex items-center gap-1 xl:hidden">
           <LocaleSwitcher className="inline-flex h-10 items-center justify-center rounded-md px-2.5 text-sm font-medium text-primary transition-colors hover:bg-card hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0" />
-          <Link
-            href="/search"
-            aria-label={t('search')}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-primary transition-colors hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0"
-          >
-            <SearchIcon className="h-[1.125rem] w-[1.125rem]" />
-          </Link>
           <button
             type="button"
             aria-label={menuOpen ? t('closeMenu') : t('openMenu')}

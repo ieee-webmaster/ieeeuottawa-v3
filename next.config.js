@@ -4,6 +4,7 @@ import createNextIntlPlugin from 'next-intl/plugin'
 import redirects from './redirects.js'
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
+const isStaticExport = process.env.STATIC_EXPORT === '1'
 
 const NEXT_PUBLIC_SERVER_URL =
   process.env.NEXT_PUBLIC_SERVER_URL ||
@@ -39,6 +40,7 @@ const remotePatterns = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    unoptimized: isStaticExport,
     localPatterns: [
       {
         pathname: '/api/media/file/**',
@@ -46,8 +48,10 @@ const nextConfig = {
     ],
     remotePatterns,
   },
+  output: isStaticExport ? 'export' : undefined,
   reactStrictMode: true,
-  redirects,
+  redirects: isStaticExport ? undefined : redirects,
+  trailingSlash: isStaticExport,
 }
 
 export default withNextIntl(withPayload(nextConfig, { devBundleServerPackages: false }))

@@ -1,8 +1,13 @@
 {
-  "crons": [
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "pnpm build:static",
+  "outputDirectory": "out",
+  "redirects": [
     {
-      "path": "/api/payload-jobs/run",
-      "schedule": "0 0 * * *"
+      "source": "/",
+      "destination": "/en/",
+      "permanent": false
     }
   ]
 }

@@ -2,23 +2,23 @@ import type { Metadata } from 'next'
 
 import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
 import { SectionShell, themeRule } from '@/blocks/_shared'
-import { PayloadRedirects } from '@/components/PayloadRedirects'
-import { draftMode } from 'next/headers'
-import { cache } from 'react'
+import { notFound } from 'next/navigation'
 import RichText from '@/components/RichText'
 
-import type { Post, Config } from '@/payload-types'
+import type { Config, Post } from '@/payload-types'
 
 import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
-import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { getTranslations } from 'next-intl/server'
-import { getCachedPostBySlug, getPostBySlug, getPublishedPostSlugs } from '@/utilities/publicCms'
+import { getCachedPostBySlug, getPublishedPostSlugs } from '@/utilities/publicCms'
 
-export const revalidate = 86400
+export const dynamicParams = false
 
 export async function generateStaticParams() {
-  return getPublishedPostSlugs()
+  const slugs = await getPublishedPostSlugs()
+
+  // Next static export requires at least one param for a dynamic route.
+  return slugs.length > 0 ? slugs : [{ slug: '__no-published-posts__' }]
 }
 
 type Args = {
@@ -29,21 +29,14 @@ type Args = {
 }
 
 export default async function Post({ params: paramsPromise }: Args) {
-  const { isEnabled: draft } = await draftMode()
   const { locale, slug = '' } = await paramsPromise
-  const url = `/posts/${encodeURIComponent(slug)}`
-  const post = await queryPostBySlug({ slug, locale })
+  const post = await getCachedPostBySlug(slug, locale)
   const t = await getTranslations({ locale, namespace: 'posts' })
 
-  if (!post) return <PayloadRedirects url={url} />
+  if (!post) notFound()
 
   return (
     <article>
-      {/* Allows redirects for valid pages too */}
-      <PayloadRedirects disableNotFound url={url} />
-
-      {draft && <LivePreviewListener />}
-
       <PostHero locale={locale} post={post} />
 
       <SectionShell theme="default" padding="py-12 md:py-20">
@@ -70,19 +63,7 @@ export default async function Post({ params: paramsPromise }: Args) {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { locale, slug = '' } = await paramsPromise
-  const post = await queryPostBySlug({ slug, locale })
+  const post = await getCachedPostBySlug(slug, locale)
 
   return generateMeta({ collection: 'posts', doc: post, locale })
 }
-
-const queryPostBySlug = cache(
-  async ({ slug, locale }: { slug: string; locale: Config['locale'] }) => {
-    const { isEnabled: draft } = await draftMode()
-
-    if (draft) {
-      return getPostBySlug({ draft, locale, slug })
-    }
-
-    return getCachedPostBySlug(slug, locale)
-  },
-)

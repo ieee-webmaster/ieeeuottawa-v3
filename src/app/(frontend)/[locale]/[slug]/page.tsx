@@ -1,17 +1,14 @@
 import type { Metadata } from 'next'
 
-import { PayloadRedirects } from '@/components/PayloadRedirects'
-import { draftMode } from 'next/headers'
-import { cache } from 'react'
+import { notFound } from 'next/navigation'
 
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
-import { generateMeta } from '@/utilities/generateMeta'
-import { LivePreviewListener } from '@/components/LivePreviewListener'
 import type { Config } from '@/payload-types'
-import { getCachedPageBySlug, getPageBySlug, getPublishedPageSlugs } from '@/utilities/publicCms'
+import { generateMeta } from '@/utilities/generateMeta'
+import { getCachedPageBySlug, getPublishedPageSlugs } from '@/utilities/publicCms'
 
-export const revalidate = 86400
+export const dynamicParams = false
 
 export async function generateStaticParams() {
   return getPublishedPageSlugs()
@@ -25,27 +22,15 @@ type Args = {
 }
 
 export default async function Page({ params: paramsPromise }: Args) {
-  const { isEnabled: draft } = await draftMode()
   const { locale, slug = 'home' } = await paramsPromise
-  const url = slug === 'home' ? '/' : `/${encodeURIComponent(slug)}`
-  const page = await queryPageBySlug({
-    slug,
-    locale,
-  })
+  const page = await getCachedPageBySlug(slug, locale)
 
-  if (!page) {
-    return <PayloadRedirects url={url} />
-  }
+  if (!page) notFound()
 
   const { hero, layout } = page
 
   return (
     <article>
-      {/* Allows redirects for valid pages too */}
-      <PayloadRedirects disableNotFound url={url} />
-
-      {draft && <LivePreviewListener />}
-
       {hero && <RenderHero {...hero} isHomePage={slug === 'home'} />}
       {layout && <RenderBlocks blocks={layout} />}
     </article>
@@ -54,22 +39,7 @@ export default async function Page({ params: paramsPromise }: Args) {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { locale, slug = 'home' } = await paramsPromise
-  const page = await queryPageBySlug({
-    slug,
-    locale,
-  })
+  const page = await getCachedPageBySlug(slug, locale)
 
   return generateMeta({ collection: 'pages', doc: page, locale })
 }
-
-const queryPageBySlug = cache(
-  async ({ slug, locale }: { slug: string; locale: Config['locale'] }) => {
-    const { isEnabled: draft } = await draftMode()
-
-    if (draft) {
-      return getPageBySlug({ draft, locale, slug })
-    }
-
-    return getCachedPageBySlug(slug, locale)
-  },
-)

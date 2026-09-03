@@ -11,6 +11,8 @@ import {
   STATIC_CONTENT_REVALIDATE_SECONDS,
 } from '@/utilities/publicCache'
 
+export const dynamic = 'force-static'
+
 const getPagesSitemap = unstable_cache(
   async () => {
     const payload = await getPayload({ config })
@@ -35,16 +37,10 @@ const getPagesSitemap = unstable_cache(
 
     const dateFallback = new Date().toISOString()
 
-    const defaultSitemap = routing.locales.flatMap((locale) => [
-      {
-        loc: getAbsoluteUrl(prefixLocale('/search', locale)),
-        lastmod: dateFallback,
-      },
-      {
-        loc: getAbsoluteUrl(prefixLocale('/posts', locale)),
-        lastmod: dateFallback,
-      },
-    ])
+    const defaultSitemap = routing.locales.map((locale) => ({
+      loc: getAbsoluteUrl(prefixLocale('/posts', locale)),
+      lastmod: dateFallback,
+    }))
 
     const sitemap = results.docs
       ? results.docs

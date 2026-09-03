@@ -10,7 +10,6 @@ import { CommitteeTeamMembersBlock } from '@/blocks/CommitteeTeamMembers/Compone
 import { CTABandBlock } from '@/blocks/CTABand/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { ContentBlock } from '@/blocks/Content/Component'
-import { FormBlock } from '@/blocks/Form/Component'
 import { GalleryBlockComponent } from '@/blocks/Gallery/Component'
 import { LogoGridBlock } from '@/blocks/LogoGrid/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
@@ -36,7 +35,7 @@ const renderBlock = (block: Page['layout'][number]) => {
     case 'cta':
       return <CallToActionBlock {...block} />
     case 'formBlock':
-      return <FormBlock {...block} />
+      return null
     case 'gallery':
       return <GalleryBlockComponent {...block} />
     case 'logoGrid':
@@ -54,7 +53,7 @@ const renderBlock = (block: Page['layout'][number]) => {
   }
 }
 
-const blocksNeedingOuterSpacing = new Set(['cta', 'formBlock', 'mediaBlock'])
+const blocksNeedingOuterSpacing = new Set(['cta', 'mediaBlock'])
 
 export const RenderBlocks = ({ blocks }: { blocks: Page['layout'] }) => (
   <>

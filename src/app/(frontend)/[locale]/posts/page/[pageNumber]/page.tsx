@@ -71,7 +71,8 @@ export async function generateStaticParams() {
 
   const pages: { pageNumber: string }[] = []
 
-  for (let i = 1; i <= totalPages; i++) {
+  // Next static export requires at least one param for a dynamic route.
+  for (let i = 1; i <= Math.max(totalPages, 1); i++) {
     pages.push({ pageNumber: String(i) })
   }
 

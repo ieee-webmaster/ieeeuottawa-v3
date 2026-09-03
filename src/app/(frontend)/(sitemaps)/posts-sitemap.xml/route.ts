@@ -11,6 +11,8 @@ import {
   STATIC_CONTENT_REVALIDATE_SECONDS,
 } from '@/utilities/publicCache'
 
+export const dynamic = 'force-static'
+
 const getPostsSitemap = unstable_cache(
   async () => {
     const payload = await getPayload({ config })
