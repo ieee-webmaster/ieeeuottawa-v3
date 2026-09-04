@@ -3,22 +3,14 @@ import { slugField } from 'payload'
 
 import { authenticated, buildSuperAdminCollectionAccess } from './collectionAccess'
 
-type AccessTagsCollectionOptions = {
-  slug: string
-  superAdminField: string
-}
-
-export const buildAccessTagsCollection = ({
-  slug,
-  superAdminField,
-}: AccessTagsCollectionOptions): CollectionConfig => ({
-  slug,
+export const buildAccessTagsCollection = (): CollectionConfig => ({
+  slug: 'access-tags',
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'slug', 'updatedAt'],
     description: 'Tags used to scope document mutation access.',
   },
-  access: buildSuperAdminCollectionAccess(superAdminField, { read: authenticated }),
+  access: buildSuperAdminCollectionAccess({ read: authenticated }),
   fields: [
     {
       name: 'name',

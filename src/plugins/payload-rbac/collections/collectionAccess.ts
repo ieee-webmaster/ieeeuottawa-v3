@@ -8,12 +8,10 @@ type CollectionAdminAccess = NonNullable<CollectionAccess['admin']>
 export const authenticated: Access = ({ req }) => Boolean(req.user)
 
 export const buildSuperAdminCollectionAccess = (
-  superAdminField: string,
   overrides: Partial<CollectionAccess> = {},
 ): CollectionAccess => {
-  const superAdminAccess: Access = ({ req }) => isSuperAdmin(req.user, superAdminField)
-  const superAdminAdminAccess: CollectionAdminAccess = ({ req }) =>
-    isSuperAdmin(req.user, superAdminField)
+  const superAdminAccess: Access = ({ req }) => isSuperAdmin(req.user)
+  const superAdminAdminAccess: CollectionAdminAccess = ({ req }) => isSuperAdmin(req.user)
 
   return {
     admin: superAdminAdminAccess,

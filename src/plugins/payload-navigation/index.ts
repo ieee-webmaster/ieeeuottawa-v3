@@ -16,7 +16,7 @@ import type { NavigationPluginOptions } from './types'
 const NAV_ITEMS_FIELD_NAME = 'navItems'
 
 const isNamedField = (field: Field): field is Field & { name: string } =>
-  'name' in field && typeof (field as { name?: unknown }).name === 'string'
+  'name' in field && typeof field.name === 'string'
 
 const replaceNavItemsField = (fields: Field[] | undefined, replacement: Field): Field[] => {
   const existing = fields ?? []
@@ -40,11 +40,11 @@ const attachRevalidationHooks = (collection: CollectionConfig): CollectionConfig
     draftsEnabled: Boolean(typeof collection.versions === 'object' && collection.versions?.drafts),
   }
   const afterChange: CollectionAfterChangeHook[] = [
-    ...((collection.hooks?.afterChange as CollectionAfterChangeHook[]) ?? []),
+    ...(collection.hooks?.afterChange ?? []),
     buildAfterChangeRevalidate(slug, revalidateOptions),
   ]
   const afterDelete: CollectionAfterDeleteHook[] = [
-    ...((collection.hooks?.afterDelete as CollectionAfterDeleteHook[]) ?? []),
+    ...(collection.hooks?.afterDelete ?? []),
     buildAfterDeleteRevalidate(slug, revalidateOptions),
   ]
   return {
@@ -93,7 +93,6 @@ export const navigationPlugin = (options: NavigationPluginOptions): Plugin => {
 
 export type { NavigationPluginOptions } from './types'
 export { resolveNavItems } from './resolveNavItems'
-export type { RawNavItem } from './resolveNavItems'
 export type {
   ResolvedDropdownRow,
   ResolvedLeafLink,

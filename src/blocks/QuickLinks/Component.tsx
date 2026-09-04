@@ -12,7 +12,6 @@ import {
   themeKickerText,
   themeMutedText,
   themeRule,
-  type BlockTheme,
 } from '@/blocks/_shared'
 
 export const QuickLinksBlock: React.FC<QuickLinksBlockProps> = ({
@@ -23,7 +22,7 @@ export const QuickLinksBlock: React.FC<QuickLinksBlockProps> = ({
   theme = 'default',
   title,
 }) => {
-  const t = (theme ?? 'default') as BlockTheme
+  const t = theme ?? 'default'
   const total = links?.length ?? 0
 
   return (

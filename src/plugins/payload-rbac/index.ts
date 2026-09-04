@@ -1,9 +1,9 @@
 import type {
   CollectionConfig,
   CollectionBeforeChangeHook,
-  CollectionSlug,
   Config,
   Field,
+  FieldAccess,
   GlobalConfig,
   Plugin,
 } from 'payload'
@@ -13,9 +13,6 @@ import {
   buildCollectionAccess,
   buildGlobalAccess,
   isSuperAdmin,
-  type BaseAccess,
-  type GlobalBaseAccess,
-  type RbacAccessOptions,
 } from './access'
 import { buildAccessTagsCollection } from './collections/accessTags'
 import { buildRolesCollection } from './collections/roles'
@@ -37,21 +34,11 @@ type RbacPluginOptions = {
    * collections; assigning `'create'` or `'delete'` on a global row is a no-op.
    */
   globals?: string[]
-  userCollectionSlug?: string
-  rolesCollectionSlug?: string
-  accessTagsCollectionSlug?: string
-  superAdminField?: string
   requireTagsForWrite?: string[]
 }
 
-type UserCollectionOptions = {
-  userCollectionSlug: string
-  rolesCollectionSlug: string
-  superAdminField: string
-}
-
 const isNamedField = (field: Field): field is Field & { name: string } => {
-  return 'name' in field && typeof (field as { name?: unknown }).name === 'string'
+  return 'name' in field && typeof field.name === 'string'
 }
 
 const ensureField = (fields: Field[] | undefined, field: Field): Field[] => {
@@ -83,49 +70,44 @@ const buildCollectionOptions = (slugs: string[]): { label: string; value: string
   }))
 }
 
-export const ensureFirstUserIsSuperAdmin = (
-  userCollectionSlug: string,
-  superAdminField: string,
-): CollectionBeforeChangeHook => {
-  return async ({ data, req, operation }) => {
-    if (operation !== 'create') {
-      return data
-    }
+export const ensureFirstUserIsSuperAdmin: CollectionBeforeChangeHook = async ({
+  data,
+  req,
+  operation,
+}) => {
+  if (operation !== 'create') {
+    return data
+  }
 
-    const existingUsers = await req.payload.find({
-      collection: userCollectionSlug as CollectionSlug,
-      limit: 1,
-      depth: 0,
-      overrideAccess: true,
-      req,
-    })
+  const existingUsers = await req.payload.find({
+    collection: 'users',
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+    req,
+  })
 
-    if (existingUsers.totalDocs > 0) {
-      return data
-    }
+  if (existingUsers.totalDocs > 0) {
+    return data
+  }
 
-    return {
-      ...data,
-      [superAdminField]: true,
-    }
+  return {
+    ...data,
+    superAdmin: true,
   }
 }
 
-const applyUserFields = (
-  collection: CollectionConfig,
-  { rolesCollectionSlug, superAdminField }: UserCollectionOptions,
-): Field[] => {
+const applyUserFields = (collection: CollectionConfig): Field[] => {
   const fields = collection.fields ?? []
 
-  const restrictToSuperAdmin = ({ req }: { req: { user?: unknown } }) =>
-    isSuperAdmin(req.user, superAdminField)
+  const restrictToSuperAdmin: FieldAccess = ({ req }) => isSuperAdmin(req.user)
   const writeAccess = {
     create: restrictToSuperAdmin,
     update: restrictToSuperAdmin,
   }
 
   const superAdminFieldConfig: Field = {
-    name: superAdminField,
+    name: 'superAdmin',
     type: 'checkbox',
     defaultValue: false,
     saveToJWT: true,
@@ -138,7 +120,7 @@ const applyUserFields = (
   const rolesFieldConfig: Field = {
     name: 'roles',
     type: 'relationship',
-    relationTo: rolesCollectionSlug as CollectionSlug,
+    relationTo: 'roles',
     hasMany: true,
     saveToJWT: true,
     access: writeAccess,
@@ -151,57 +133,47 @@ const applyUserFields = (
   return ensureField(withSuperAdmin, rolesFieldConfig)
 }
 
-const applyUserCollection = (
-  collection: CollectionConfig,
-  options: RbacAccessOptions & UserCollectionOptions,
-): CollectionConfig => {
-  const baseAccess = collection.access as BaseAccess | undefined
+const applyUserCollection = (collection: CollectionConfig): CollectionConfig => {
+  const baseAccess = collection.access
   const rbacAccess = buildCollectionAccess({
-    collection: options.userCollectionSlug,
+    collection: 'users',
     baseAccess,
-    options,
     requireTagsForWrite: false,
     includeTagAccess: false,
-    adminAccess: 'authenticated',
     selfUpdateField: 'id',
   })
 
   return {
     ...collection,
-    fields: applyUserFields(collection, options),
+    fields: applyUserFields(collection),
     access: {
       ...(baseAccess ?? {}),
       ...rbacAccess,
     },
     hooks: {
       ...(collection.hooks ?? {}),
-      beforeChange: [
-        ...((collection.hooks?.beforeChange as CollectionBeforeChangeHook[]) ?? []),
-        ensureFirstUserIsSuperAdmin(options.userCollectionSlug, options.superAdminField),
-      ],
+      beforeChange: [...(collection.hooks?.beforeChange ?? []), ensureFirstUserIsSuperAdmin],
     },
   }
 }
 
 const applyRbacToCollection = (
   collection: CollectionConfig,
-  options: RbacAccessOptions,
   requireTagsForWrite: boolean,
   includeTagAccess: boolean,
 ): CollectionConfig => {
-  const baseAccess = collection.access as BaseAccess | undefined
+  const baseAccess = collection.access
 
   return {
     ...collection,
     fields: includeTagAccess
-      ? ensureField(collection.fields ?? [], buildAccessTagsField(options.accessTagsCollectionSlug))
+      ? ensureField(collection.fields ?? [], buildAccessTagsField())
       : collection.fields,
     access: {
       ...(baseAccess ?? {}),
       ...buildCollectionAccess({
         collection: collection.slug,
         baseAccess,
-        options,
         requireTagsForWrite,
         includeTagAccess,
       }),
@@ -209,8 +181,8 @@ const applyRbacToCollection = (
   }
 }
 
-const applyRbacToGlobal = (global: GlobalConfig, options: RbacAccessOptions): GlobalConfig => {
-  const baseAccess = global.access as GlobalBaseAccess | undefined
+const applyRbacToGlobal = (global: GlobalConfig): GlobalConfig => {
+  const baseAccess = global.access
 
   return {
     ...global,
@@ -219,7 +191,6 @@ const applyRbacToGlobal = (global: GlobalConfig, options: RbacAccessOptions): Gl
       ...buildGlobalAccess({
         globalSlug: global.slug,
         baseAccess,
-        options,
       }),
     },
   }
@@ -227,10 +198,6 @@ const applyRbacToGlobal = (global: GlobalConfig, options: RbacAccessOptions): Gl
 
 export const rbacPlugin = (options: RbacPluginOptions): Plugin => {
   return (config: Config): Config => {
-    const userCollectionSlug = options.userCollectionSlug ?? 'users'
-    const rolesCollectionSlug = options.rolesCollectionSlug ?? 'roles'
-    const accessTagsCollectionSlug = options.accessTagsCollectionSlug ?? 'access-tags'
-    const superAdminField = options.superAdminField ?? 'superAdmin'
     const rawCollectionSlugs = options.collections ?? []
     const requireTagsForWrite = new Set(options.requireTagsForWrite ?? [])
 
@@ -238,7 +205,7 @@ export const rbacPlugin = (options: RbacPluginOptions): Plugin => {
       return config
     }
 
-    const reservedSlugs = new Set([rolesCollectionSlug, accessTagsCollectionSlug])
+    const reservedSlugs = new Set(['roles', 'access-tags'])
     const collectionSlugs = rawCollectionSlugs.filter((slug) => !reservedSlugs.has(slug))
     const tagAccessCollections = new Set(
       options.tagAccessCollections
@@ -247,36 +214,20 @@ export const rbacPlugin = (options: RbacPluginOptions): Plugin => {
     )
     const globalSlugs = options.globals ?? []
 
-    const accessOptions: RbacAccessOptions = {
-      rolesCollectionSlug,
-      accessTagsCollectionSlug,
-      superAdminField,
-    }
-
-    const collectionOptions = buildCollectionOptions([
-      ...collectionSlugs,
-      userCollectionSlug,
-      ...globalSlugs,
-    ])
+    const collectionOptions = buildCollectionOptions([...collectionSlugs, 'users', ...globalSlugs])
 
     const updatedCollections = (config.collections ?? []).map((collection) => {
-      if (collection.slug === rolesCollectionSlug || collection.slug === accessTagsCollectionSlug) {
+      if (collection.slug === 'roles' || collection.slug === 'access-tags') {
         return collection
       }
 
-      if (collection.slug === userCollectionSlug) {
-        return applyUserCollection(collection, {
-          ...accessOptions,
-          userCollectionSlug,
-          rolesCollectionSlug,
-          superAdminField,
-        })
+      if (collection.slug === 'users') {
+        return applyUserCollection(collection)
       }
 
       if (collectionSlugs.includes(collection.slug)) {
         return applyRbacToCollection(
           collection,
-          accessOptions,
           requireTagsForWrite.has(collection.slug),
           tagAccessCollections.has(collection.slug),
         )
@@ -285,28 +236,16 @@ export const rbacPlugin = (options: RbacPluginOptions): Plugin => {
       return collection
     })
 
-    if (!updatedCollections.some((collection) => collection.slug === rolesCollectionSlug)) {
-      updatedCollections.push(
-        buildRolesCollection({
-          slug: rolesCollectionSlug,
-          accessTagsCollectionSlug,
-          collectionOptions,
-          superAdminField,
-        }),
-      )
+    if (!updatedCollections.some((collection) => collection.slug === 'roles')) {
+      updatedCollections.push(buildRolesCollection({ collectionOptions }))
     }
 
-    if (!updatedCollections.some((collection) => collection.slug === accessTagsCollectionSlug)) {
-      updatedCollections.push(
-        buildAccessTagsCollection({
-          slug: accessTagsCollectionSlug,
-          superAdminField,
-        }),
-      )
+    if (!updatedCollections.some((collection) => collection.slug === 'access-tags')) {
+      updatedCollections.push(buildAccessTagsCollection())
     }
 
     const updatedGlobals = (config.globals ?? []).map((global) =>
-      globalSlugs.includes(global.slug) ? applyRbacToGlobal(global, accessOptions) : global,
+      globalSlugs.includes(global.slug) ? applyRbacToGlobal(global) : global,
     )
 
     return {

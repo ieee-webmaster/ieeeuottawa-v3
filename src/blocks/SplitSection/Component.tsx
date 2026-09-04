@@ -6,7 +6,7 @@ import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 import { cn } from '@/utilities/ui'
-import { Eyebrow, SectionShell, themeMutedText, themeRule, type BlockTheme } from '@/blocks/_shared'
+import { Eyebrow, SectionShell, themeMutedText, themeRule } from '@/blocks/_shared'
 
 const mediaAspectClasses: Record<NonNullable<SplitSectionBlockProps['mediaAspect']>, string> = {
   landscape: 'aspect-[16/9]',
@@ -25,7 +25,7 @@ export const SplitSectionBlock: React.FC<SplitSectionBlockProps> = ({
   theme = 'default',
   title,
 }) => {
-  const t = (theme ?? 'default') as BlockTheme
+  const t = theme ?? 'default'
   const mediaLeft = mediaPosition === 'left'
   const hasMedia = media && typeof media === 'object'
   const caption = hasMedia ? media.caption : null

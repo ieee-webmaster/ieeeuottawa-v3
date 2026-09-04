@@ -63,7 +63,8 @@ describe('Payload responsive media', () => {
 
     expect(image?.src).toContain('hero-1920x1280.jpg')
     expect(image?.src).not.toContain('/hero.jpg')
-    expect(image?.srcSet).toMatch(/ 300w,.* 600w,.* 900w,.* 1400w,.* 1920w/)
+    expect(image?.srcSet).toMatch(/ 1400w,.* 1920w/)
+    expect(image?.srcSet).not.toMatch(/ (300|600|900)w/)
     expect(image?.srcSet).not.toContain('hero-500x500.jpg')
     expect(image?.srcSet).not.toContain('hero-1200x630.jpg')
     expect(image?.srcSet).toContain(encodeURIComponent(updatedAt))

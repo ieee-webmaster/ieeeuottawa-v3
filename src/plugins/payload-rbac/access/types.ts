@@ -1,3 +1,5 @@
+import type { Role } from '@/payload-types'
+
 export const permissionActions = ['create', 'update', 'delete'] as const
 
 export type PermissionAction = (typeof permissionActions)[number]
@@ -6,26 +8,6 @@ export type TagAction = PermissionAction
 
 export type RbacId = string | number
 
-export type RolePermission = {
-  collectionPermissions?:
-    | {
-        collection?: string | null
-        actions?: CollectionAction[] | null
-      }[]
-    | null
-  tagPermissions?:
-    | {
-        tag?: RbacId | { id?: RbacId | null } | null
-        actions?: TagAction[] | null
-        effect?: 'allow' | 'deny' | null
-      }[]
-    | null
-}
-
-export type RbacAccessOptions = {
-  rolesCollectionSlug: string
-  accessTagsCollectionSlug: string
-  superAdminField: string
-}
+export type RolePermission = Pick<Role, 'collectionPermissions' | 'tagPermissions'>
 
 export const accessTagsFieldName = 'accessTags'

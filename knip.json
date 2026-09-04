@@ -1,4 +1,9 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "tags": ["-lintignore"]
+  "tags": ["-lintignore"],
+  "entry": [
+    "next-sitemap.config.cjs",
+    "scripts/seed-blocks.ts",
+    "scripts/import-legacy-content/extract-live-site-data.ts"
+  ]
 }

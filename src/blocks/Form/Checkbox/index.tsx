@@ -1,34 +1,35 @@
-import type { CheckboxField } from '@payloadcms/plugin-form-builder/types'
-import type { FieldErrorsImpl, FieldValues, UseFormRegister } from 'react-hook-form'
-
-import { useFormContext } from 'react-hook-form'
-
+import type { FormField, FormValues } from '../types'
+import { Controller, useFormContext } from 'react-hook-form'
 import { Checkbox as CheckboxUi } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import React from 'react'
-
 import { Error } from '../Error'
 import { Width } from '../Width'
 
-export const Checkbox: React.FC<
-  CheckboxField & {
-    errors: Partial<FieldErrorsImpl>
-    register: UseFormRegister<FieldValues>
-  }
-> = ({ name, defaultValue, errors, label, register, required, width }) => {
-  const props = register(name, { required: required })
-  const { setValue } = useFormContext()
-
+export const Checkbox: React.FC<Extract<FormField, { blockType: 'checkbox' }>> = ({
+  name,
+  label,
+  required,
+  width,
+}) => {
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext<FormValues>()
   return (
     <Width width={width}>
       <div className="flex items-center gap-2">
-        <CheckboxUi
-          defaultChecked={defaultValue}
-          id={name}
-          {...props}
-          onCheckedChange={(checked) => {
-            setValue(props.name, checked)
-          }}
+        <Controller
+          name={name}
+          control={control}
+          rules={{ required: Boolean(required) }}
+          render={({ field: { value, onChange, ...field } }) => (
+            <CheckboxUi
+              {...field}
+              id={name}
+              checked={value === true}
+              onCheckedChange={(checked) => onChange(checked === true)}
+            />
+          )}
         />
         <Label htmlFor={name}>
           {required && (

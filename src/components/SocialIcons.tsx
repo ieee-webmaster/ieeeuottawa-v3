@@ -1,4 +1,4 @@
-import type { Media, SocialLink } from '@/payload-types'
+import type { SocialLink } from '@/payload-types'
 
 import { cn } from '@/utilities/ui'
 
@@ -29,8 +29,8 @@ export const SocialIcons: React.FC<Props> = ({
   return (
     <ul className={cn('flex items-center gap-3', className)}>
       {resolvedLinks.map((entry) => {
-        const lightIcon = typeof entry.lightIcon === 'object' ? (entry.lightIcon as Media) : null
-        const darkIcon = typeof entry.darkIcon === 'object' ? (entry.darkIcon as Media) : null
+        const lightIcon = typeof entry.lightIcon === 'object' ? entry.lightIcon : null
+        const darkIcon = typeof entry.darkIcon === 'object' ? entry.darkIcon : null
         const lightIconUrl = lightIcon?.url
         const darkIconUrl = darkIcon?.url
 

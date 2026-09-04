@@ -1,13 +1,10 @@
-import type { CollectionConfig, CollectionSlug, Option } from 'payload'
+import type { CollectionConfig, Option } from 'payload'
 
 import { permissionActions, type PermissionAction } from '../access'
 import { buildSuperAdminCollectionAccess } from './collectionAccess'
 
 type RolesCollectionOptions = {
-  slug: string
-  accessTagsCollectionSlug: string
   collectionOptions: Option[]
-  superAdminField: string
 }
 
 const actionLabels: Record<PermissionAction, string> = {
@@ -22,17 +19,14 @@ const actionOptions: Option[] = permissionActions.map((value) => ({
 }))
 
 export const buildRolesCollection = ({
-  slug,
-  accessTagsCollectionSlug,
   collectionOptions,
-  superAdminField,
 }: RolesCollectionOptions): CollectionConfig => ({
-  slug,
+  slug: 'roles',
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'updatedAt'],
   },
-  access: buildSuperAdminCollectionAccess(superAdminField),
+  access: buildSuperAdminCollectionAccess(),
   fields: [
     {
       name: 'name',
@@ -84,7 +78,7 @@ export const buildRolesCollection = ({
         {
           name: 'tag',
           type: 'relationship',
-          relationTo: accessTagsCollectionSlug as CollectionSlug,
+          relationTo: 'access-tags',
           required: true,
         },
         {
