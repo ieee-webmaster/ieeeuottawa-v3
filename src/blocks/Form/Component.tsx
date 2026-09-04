@@ -1,117 +1,79 @@
 'use client'
-import type { FormFieldBlock, Form as FormType } from '@payloadcms/plugin-form-builder/types'
 
+import type { Form, FormBlock as FormBlockProps, FormSubmission } from '@/payload-types'
+import { useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useRouter } from '@/i18n/navigation'
-import React, { useCallback, useState } from 'react'
-import { useForm, FormProvider } from 'react-hook-form'
 import RichText from '@/components/RichText'
 import { Button } from '@/components/ui/button'
-import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
-
-import { fields } from './fields'
 import { getClientSideURL } from '@/utilities/getURL'
+import { RenderFormField } from './fields'
+import { getFormDefaultValues, type FormValues } from './types'
 
-export type FormBlockType = {
-  blockName?: string
-  blockType?: 'formBlock'
-  enableIntro: boolean
-  form: FormType
-  introContent?: DefaultTypedEditorState
+// The HTTP response is untrusted; only the error message is needed by the UI.
+const submissionErrorMessage = (result: unknown): string => {
+  if (result && typeof result === 'object' && 'errors' in result && Array.isArray(result.errors)) {
+    const first: unknown = result.errors[0]
+    if (
+      first &&
+      typeof first === 'object' &&
+      'message' in first &&
+      typeof first.message === 'string'
+    ) {
+      return first.message
+    }
+  }
+  return 'Internal Server Error'
 }
 
-export const FormBlock: React.FC<
-  {
-    id?: string
-  } & FormBlockType
-> = (props) => {
-  const {
-    enableIntro,
-    form: formFromProps,
-    form: { id: formID, confirmationMessage, confirmationType, redirect, submitButtonLabel } = {},
-    introContent,
-  } = props
+export const FormBlock = (props: FormBlockProps) => {
+  if (typeof props.form === 'number') return null
+  return <PopulatedFormBlock {...props} form={props.form} />
+}
 
-  const formMethods = useForm({
-    defaultValues: formFromProps.fields,
-  })
+const PopulatedFormBlock = ({
+  enableIntro,
+  form,
+  introContent,
+}: Omit<FormBlockProps, 'form'> & { form: Form }) => {
+  const { confirmationMessage, confirmationType, redirect, submitButtonLabel } = form
+  const formMethods = useForm<FormValues>({ defaultValues: getFormDefaultValues(form.fields) })
   const {
-    control,
-    formState: { errors },
     handleSubmit,
-    register,
+    formState: { isSubmitting },
   } = formMethods
-
   const [isLoading, setIsLoading] = useState(false)
-  const [hasSubmitted, setHasSubmitted] = useState<boolean>()
-  const [error, setError] = useState<{ message: string; status?: string } | undefined>()
+  const [hasSubmitted, setHasSubmitted] = useState(false)
+  const [error, setError] = useState<{ message: string; status?: number }>()
   const router = useRouter()
+  const formID = `form-${form.id}`
 
-  const onSubmit = useCallback(
-    (data: FormFieldBlock[]) => {
-      let loadingTimerID: ReturnType<typeof setTimeout>
-      const submitForm = async () => {
-        setError(undefined)
-
-        const dataToSend = Object.entries(data).map(([name, value]) => ({
-          field: name,
-          value,
-        }))
-
-        // delay loading indicator by 1s
-        loadingTimerID = setTimeout(() => {
-          setIsLoading(true)
-        }, 1000)
-
-        try {
-          const req = await fetch(`${getClientSideURL()}/api/form-submissions`, {
-            body: JSON.stringify({
-              form: formID,
-              submissionData: dataToSend,
-            }),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            method: 'POST',
-          })
-
-          const res = await req.json()
-
-          clearTimeout(loadingTimerID)
-
-          if (req.status >= 400) {
-            setIsLoading(false)
-
-            setError({
-              message: res.errors?.[0]?.message || 'Internal Server Error',
-              status: res.status,
-            })
-
-            return
-          }
-
-          setIsLoading(false)
-          setHasSubmitted(true)
-
-          if (confirmationType === 'redirect' && redirect) {
-            const { url } = redirect
-
-            const redirectUrl = url
-
-            if (redirectUrl) router.push(redirectUrl)
-          }
-        } catch (err) {
-          console.warn(err)
-          setIsLoading(false)
-          setError({
-            message: 'Something went wrong.',
-          })
-        }
+  const onSubmit = async (values: FormValues) => {
+    setError(undefined)
+    const loadingTimer = setTimeout(() => setIsLoading(true), 1000)
+    try {
+      const submissionData: FormSubmission['submissionData'] = Object.entries(values).map(
+        ([field, value]) => ({ field, value: String(value) }),
+      )
+      const response = await fetch(`${getClientSideURL()}/api/form-submissions`, {
+        body: JSON.stringify({ form: form.id, submissionData }),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      })
+      if (!response.ok) {
+        const result: unknown = await response.json().catch(() => null)
+        setError({ message: submissionErrorMessage(result), status: response.status })
+        return
       }
-
-      void submitForm()
-    },
-    [router, formID, redirect, confirmationType],
-  )
+      setHasSubmitted(true)
+      if (confirmationType === 'redirect' && redirect?.url) router.push(redirect.url)
+    } catch {
+      setError({ message: 'Something went wrong.' })
+    } finally {
+      clearTimeout(loadingTimer)
+      setIsLoading(false)
+    }
+  }
 
   return (
     <div className="container lg:max-w-[48rem]">
@@ -120,38 +82,21 @@ export const FormBlock: React.FC<
       )}
       <div className="p-4 lg:p-6 border border-border rounded-[0.8rem]">
         <FormProvider {...formMethods}>
-          {!isLoading && hasSubmitted && confirmationType === 'message' && (
+          {!isLoading && hasSubmitted && confirmationType === 'message' && confirmationMessage && (
             <RichText data={confirmationMessage} />
           )}
           {isLoading && !hasSubmitted && <p>Loading, please wait...</p>}
-          {error && <div>{`${error.status || '500'}: ${error.message || ''}`}</div>}
+          {error && <div role="alert">{`${error.status || '500'}: ${error.message}`}</div>}
           {!hasSubmitted && (
             <form id={formID} onSubmit={handleSubmit(onSubmit)}>
               <div className="mb-4 last:mb-0">
-                {formFromProps &&
-                  formFromProps.fields &&
-                  formFromProps.fields?.map((field, index) => {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const Field: React.FC<any> = fields?.[field.blockType as keyof typeof fields]
-                    if (Field) {
-                      return (
-                        <div className="mb-6 last:mb-0" key={index}>
-                          <Field
-                            form={formFromProps}
-                            {...field}
-                            {...formMethods}
-                            control={control}
-                            errors={errors}
-                            register={register}
-                          />
-                        </div>
-                      )
-                    }
-                    return null
-                  })}
+                {form.fields?.map((field, index) => (
+                  <div className="mb-6 last:mb-0" key={field.id ?? index}>
+                    <RenderFormField field={field} />
+                  </div>
+                ))}
               </div>
-
-              <Button form={formID} type="submit" variant="default">
+              <Button form={formID} type="submit" variant="default" disabled={isSubmitting}>
                 {submitButtonLabel}
               </Button>
             </form>

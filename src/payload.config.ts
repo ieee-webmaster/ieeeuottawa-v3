@@ -141,7 +141,6 @@ export default buildConfig({
         SocialLinks.slug,
       ],
       globals: [Header.slug, Footer.slug],
-      userCollectionSlug: Users.slug,
     }),
     navigationPlugin({
       collections: [

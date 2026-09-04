@@ -1,22 +1,11 @@
-import type { CollectionConfig, Config, Field, GlobalConfig, Option, Plugin } from 'payload'
+import type { ArrayField, CollectionConfig, Field, Option, Plugin } from 'payload'
+import { fieldAffectsData, fieldHasSubFields } from 'payload/shared'
 
 import type { AutoArrayRowLabelCandidate } from './AutoArrayRowLabel'
 
 type AutoArrayRowLabelsPluginOptions = {
-  componentExportName?: string
-  componentPath?: string
   excludePaths?: string[]
-  overrideExisting?: boolean
-  preferredFields?: string[]
 }
-
-type FieldWithName = Field & { name: string }
-type FieldWithFields = Field & { fields: Field[] }
-type FieldWithTabs = Field & { tabs: { fields?: Field[] }[] }
-type FieldWithBlocks = Field & { blocks: { fields: Field[] }[] }
-
-const defaultComponentPath = '@/plugins/payload-row-labels/AutoArrayRowLabel'
-const defaultComponentExportName = 'AutoArrayRowLabel'
 
 const defaultPreferredFields = [
   'title',
@@ -36,22 +25,6 @@ const defaultPreferredFields = [
 
 const isRecord = (value: unknown): value is Record<string, unknown> => {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
-
-const hasName = (field: Field): field is FieldWithName => {
-  return 'name' in field && typeof field.name === 'string'
-}
-
-const hasFields = (field: Field): field is FieldWithFields => {
-  return 'fields' in field && Array.isArray(field.fields)
-}
-
-const hasTabs = (field: Field): field is FieldWithTabs => {
-  return 'tabs' in field && Array.isArray(field.tabs)
-}
-
-const hasBlocks = (field: Field): field is FieldWithBlocks => {
-  return 'blocks' in field && Array.isArray(field.blocks)
 }
 
 const toLabelString = (label: unknown): string | null => {
@@ -86,17 +59,10 @@ const singularize = (value: string): string => {
   return value
 }
 
-const getFallbackPrefix = (field: Field): string => {
-  const labels = isRecord((field as { labels?: unknown }).labels)
-    ? ((field as { labels?: Record<string, unknown> }).labels ?? {})
-    : {}
-  const label =
-    toLabelString(labels.singular) ??
-    toLabelString((field as { label?: unknown }).label) ??
-    (hasName(field) ? toTitleCase(field.name) : 'Item')
-
-  return singularize(label)
-}
+const getFallbackPrefix = (field: ArrayField): string =>
+  singularize(
+    toLabelString(field.labels?.singular) ?? toLabelString(field.label) ?? toTitleCase(field.name),
+  )
 
 const getOptionLabel = (option: Option): { label: string; value: string } | null => {
   if (typeof option === 'string') {
@@ -133,7 +99,7 @@ const getRelationCollection = (field: Field): string | null => {
     return null
   }
 
-  const relationTo = (field as { relationTo?: unknown }).relationTo
+  const relationTo = field.relationTo
   return typeof relationTo === 'string' ? relationTo : null
 }
 
@@ -158,7 +124,7 @@ const buildCandidates = (
   preferredFields: string[],
 ): AutoArrayRowLabelCandidate[] => {
   const relationshipCandidates = fields
-    .filter(hasName)
+    .filter(fieldAffectsData)
     .map((field): AutoArrayRowLabelCandidate | null => {
       const relationTo = getRelationCollection(field)
       if (!relationTo) {
@@ -180,7 +146,7 @@ const buildCandidates = (
     .filter((candidate): candidate is AutoArrayRowLabelCandidate => Boolean(candidate))
 
   const valueCandidates = fields
-    .filter(hasName)
+    .filter(fieldAffectsData)
     .filter(isValueCandidateField)
     .sort((left, right) => {
       return getFieldRank(left.name, preferredFields) - getFieldRank(right.name, preferredFields)
@@ -196,165 +162,89 @@ const buildCandidates = (
   return [...relationshipCandidates, ...valueCandidates]
 }
 
-const hasRowLabel = (field: Field): boolean => {
-  return Boolean(
-    isRecord((field as { admin?: unknown }).admin) &&
-    isRecord((field as { admin?: { components?: unknown } }).admin?.components) &&
-    (field as { admin?: { components?: { RowLabel?: unknown } } }).admin?.components?.RowLabel,
-  )
-}
-
-const withRowLabel = (
-  field: Field,
-  candidates: AutoArrayRowLabelCandidate[],
-  componentExportName: string,
-  componentPath: string,
-): Field => {
-  return {
-    ...field,
-    admin: {
-      ...(isRecord((field as { admin?: unknown }).admin)
-        ? (field as { admin?: object }).admin
-        : {}),
-      components: {
-        ...((field as { admin?: { components?: object } }).admin?.components ?? {}),
-        RowLabel: {
-          path: componentPath,
-          exportName: componentExportName,
-          clientProps: {
-            candidates,
-            fallbackPrefix: getFallbackPrefix(field),
-          },
-        },
+const withRowLabel = (field: ArrayField, candidates: AutoArrayRowLabelCandidate[]): ArrayField => ({
+  ...field,
+  admin: {
+    ...field.admin,
+    components: {
+      ...field.admin?.components,
+      RowLabel: {
+        path: '@/plugins/payload-row-labels/AutoArrayRowLabel',
+        exportName: 'AutoArrayRowLabel',
+        clientProps: { candidates, fallbackPrefix: getFallbackPrefix(field) },
       },
     },
-  } as Field
-}
+  },
+})
 
 const transformFields = (
-  fields: Field[] | undefined,
-  options: Required<
-    Pick<
-      AutoArrayRowLabelsPluginOptions,
-      'componentExportName' | 'componentPath' | 'preferredFields'
-    >
-  > &
-    Pick<AutoArrayRowLabelsPluginOptions, 'excludePaths' | 'overrideExisting'>,
-  collections: CollectionConfig[] | undefined,
+  fields: Field[],
+  collections: CollectionConfig[],
+  excludePaths: string[],
   pathPrefix: string,
-): Field[] | undefined => {
-  return fields?.map((field) => {
-    const fieldPath = hasName(field) ? `${pathPrefix}.${field.name}` : pathPrefix
+): Field[] =>
+  fields.map((field) => {
+    const fieldPath = fieldAffectsData(field) ? `${pathPrefix}.${field.name}` : pathPrefix
     let nextField = field
 
-    if (hasFields(nextField)) {
+    if (fieldHasSubFields(nextField)) {
       nextField = {
         ...nextField,
-        fields:
-          transformFields(nextField.fields, options, collections, fieldPath) ?? nextField.fields,
-      } as Field
+        fields: transformFields(nextField.fields, collections, excludePaths, fieldPath),
+      }
     }
-
-    if (hasTabs(nextField)) {
+    if (nextField.type === 'tabs') {
       nextField = {
         ...nextField,
         tabs: nextField.tabs.map((tab, index) => ({
           ...tab,
-          fields: transformFields(tab.fields, options, collections, `${fieldPath}.tabs.${index}`),
+          fields: transformFields(
+            tab.fields,
+            collections,
+            excludePaths,
+            `${fieldPath}.tabs.${index}`,
+          ),
         })),
-      } as Field
+      }
     }
-
-    if (hasBlocks(nextField)) {
+    if (nextField.type === 'blocks') {
       nextField = {
         ...nextField,
-        blocks: nextField.blocks.map((block, index) => {
-          const blockPath = 'slug' in block ? block.slug : String(index)
-
-          return {
-            ...block,
-            fields:
-              transformFields(block.fields, options, collections, `${fieldPath}.${blockPath}`) ??
-              [],
-          }
-        }),
-      } as Field
+        blocks: nextField.blocks.map((block) => ({
+          ...block,
+          fields: transformFields(
+            block.fields,
+            collections,
+            excludePaths,
+            `${fieldPath}.${block.slug}`,
+          ),
+        })),
+      }
     }
-
-    if (nextField.type !== 'array' || !hasFields(nextField)) {
+    if (
+      nextField.type !== 'array' ||
+      excludePaths.includes(fieldPath) ||
+      nextField.admin?.components?.RowLabel
+    ) {
       return nextField
     }
-
-    if (options.excludePaths?.includes(fieldPath)) {
-      return nextField
-    }
-
-    if (!options.overrideExisting && hasRowLabel(nextField)) {
-      return nextField
-    }
-
-    const candidates = buildCandidates(nextField.fields, collections, options.preferredFields)
-    if (candidates.length === 0) {
-      return nextField
-    }
-
-    return withRowLabel(nextField, candidates, options.componentExportName, options.componentPath)
+    const candidates = buildCandidates(nextField.fields, collections, defaultPreferredFields)
+    return candidates.length ? withRowLabel(nextField, candidates) : nextField
   })
-}
 
-const transformCollection = (
-  collection: CollectionConfig,
-  options: Required<
-    Pick<
-      AutoArrayRowLabelsPluginOptions,
-      'componentExportName' | 'componentPath' | 'preferredFields'
-    >
-  > &
-    Pick<AutoArrayRowLabelsPluginOptions, 'excludePaths' | 'overrideExisting'>,
-  collections: CollectionConfig[] | undefined,
-): CollectionConfig => ({
-  ...collection,
-  fields:
-    transformFields(collection.fields, options, collections, collection.slug) ?? collection.fields,
-})
-
-const transformGlobal = (
-  global: GlobalConfig,
-  options: Required<
-    Pick<
-      AutoArrayRowLabelsPluginOptions,
-      'componentExportName' | 'componentPath' | 'preferredFields'
-    >
-  > &
-    Pick<AutoArrayRowLabelsPluginOptions, 'excludePaths' | 'overrideExisting'>,
-  collections: CollectionConfig[] | undefined,
-): GlobalConfig => ({
-  ...global,
-  fields: transformFields(global.fields, options, collections, global.slug) ?? global.fields,
-})
-
-export const autoArrayRowLabelsPlugin = (
-  pluginOptions: AutoArrayRowLabelsPluginOptions = {},
-): Plugin => {
-  return (config: Config): Config => {
-    const options = {
-      componentExportName: pluginOptions.componentExportName ?? defaultComponentExportName,
-      componentPath: pluginOptions.componentPath ?? defaultComponentPath,
-      excludePaths: pluginOptions.excludePaths,
-      overrideExisting: pluginOptions.overrideExisting,
-      preferredFields: pluginOptions.preferredFields ?? defaultPreferredFields,
-    }
-
+export const autoArrayRowLabelsPlugin =
+  ({ excludePaths = [] }: AutoArrayRowLabelsPluginOptions = {}): Plugin =>
+  (config) => {
+    const collections = config.collections ?? []
     return {
       ...config,
-      collections: config.collections?.map((collection) =>
-        transformCollection(collection, options, config.collections),
-      ),
-      globals: config.globals?.map((global) =>
-        transformGlobal(global, options, config.collections),
-      ),
+      collections: collections.map((collection) => ({
+        ...collection,
+        fields: transformFields(collection.fields, collections, excludePaths, collection.slug),
+      })),
+      globals: config.globals?.map((global) => ({
+        ...global,
+        fields: transformFields(global.fields, collections, excludePaths, global.slug),
+      })),
     }
   }
-}
-
-export type { AutoArrayRowLabelsPluginOptions }

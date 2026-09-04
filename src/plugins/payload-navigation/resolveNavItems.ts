@@ -1,5 +1,9 @@
-import type { CollectionSlug, Payload } from 'payload'
+import type { Payload } from 'payload'
 import { unstable_cache } from 'next/cache'
+
+import type { Header } from '@/payload-types'
+import type { Locale } from '@/i18n/routing'
+import { resolveContentPathFromReference } from '@/routing/resolveContentPath'
 
 import { fillSpecificUrl, inferUrls } from './inferUrls'
 import type { AutoOrder, ResolvedLeafLink, ResolvedNavItem } from './types'
@@ -9,54 +13,16 @@ import {
   STATIC_CONTENT_REVALIDATE_SECONDS,
 } from '@/utilities/publicCache'
 
-type Localized<T> = T | { [locale: string]: T | undefined } | null | undefined
+type RawNavItem = NonNullable<Header['navItems']>[number]
+type LinkInput = NonNullable<RawNavItem['link']>
+type NavigationCollection = NonNullable<RawNavItem['collection']>
 
-type LinkInput = {
-  label?: Localized<string>
-  newTab?: boolean | null
-  type?: 'reference' | 'custom' | null
-  url?: string | null
-  reference?: { relationTo: string; value: unknown } | null
-}
-
-type ManualItemInput = {
-  id?: string | null
-  link?: LinkInput | null
-}
-
-export type RawNavItem = {
-  id?: string | null
-  kind?: 'link' | 'dropdown' | null
-  link?: LinkInput | null
-  dropdownLabel?: Localized<string>
-  dropdownMode?: 'manual' | 'automatic' | null
-  manualItems?: ManualItemInput[] | null
-  collection?: string | null
-  field?: string | null
-  order?: AutoOrder | null
-  baseUrl?: string | null
-  specificUrl?: string | null
-  includeAll?: boolean | null
-  allLabel?: Localized<string>
-}
-
-type ResolveOptions = {
-  resolveLinkHref: (link: LinkInput) => string | null
-  locale: string
-}
-
-const pickLocalized = (value: Localized<string>, locale: string): string | null => {
-  if (typeof value === 'string') return value
-  if (value && typeof value === 'object') {
-    const direct = (value as Record<string, string | undefined>)[locale]
-    if (typeof direct === 'string' && direct.length > 0) return direct
-    const first = Object.values(value as Record<string, string | undefined>).find(
-      (entry) => typeof entry === 'string' && entry.length > 0,
-    )
-    return typeof first === 'string' ? first : null
-  }
-  return null
-}
+const resolveLinkHref = (link: LinkInput): string | null =>
+  link.type === 'reference' && link.reference
+    ? (resolveContentPathFromReference(link.reference.relationTo, link.reference.value) ??
+      link.url ??
+      null)
+    : (link.url ?? null)
 
 const compareValues = (a: string, b: string): number => {
   const numA = Number(a)
@@ -67,23 +33,23 @@ const compareValues = (a: string, b: string): number => {
 
 const fetchDistinctValues = async (
   payload: Payload,
-  collectionSlug: string,
+  collectionSlug: NavigationCollection,
   fieldName: string,
-  locale: string,
+  locale: Locale,
 ): Promise<string[]> => {
   const result = await payload.find({
-    collection: collectionSlug as CollectionSlug,
+    collection: collectionSlug,
     limit: 0,
     depth: 0,
-    locale: locale as Parameters<Payload['find']>[0]['locale'],
+    locale,
     overrideAccess: false,
     pagination: false,
-    select: { [fieldName]: true } as Record<string, true>,
+    select: { [fieldName]: true },
   })
 
   const values = new Set<string>()
-  for (const doc of result.docs as unknown as Record<string, unknown>[]) {
-    const raw = doc[fieldName]
+  for (const doc of result.docs) {
+    const raw: unknown = Object.entries(doc).find(([key]) => key === fieldName)?.[1]
     if (raw === null || raw === undefined || raw === '') continue
     if (raw instanceof Date) {
       values.add(raw.toISOString().slice(0, 10))
@@ -98,10 +64,10 @@ const fetchDistinctValues = async (
 }
 
 const cachedFetchDistinctValues = (
-  collectionSlug: string,
+  collectionSlug: NavigationCollection,
   fieldName: string,
   order: AutoOrder,
-  locale: string,
+  locale: Locale,
   payload: Payload,
 ) =>
   unstable_cache(
@@ -121,7 +87,7 @@ const cachedFetchDistinctValues = (
 const resolveAutomaticDropdown = async (
   row: RawNavItem,
   payload: Payload,
-  locale: string,
+  locale: Locale,
 ): Promise<ResolvedLeafLink[]> => {
   if (!row.collection || !row.field) return []
 
@@ -149,7 +115,7 @@ const resolveAutomaticDropdown = async (
 
   if (row.includeAll) {
     items.unshift({
-      label: pickLocalized(row.allLabel, locale) ?? 'All',
+      label: row.allLabel ?? 'All',
       href: baseUrl,
       newTab,
     })
@@ -158,18 +124,14 @@ const resolveAutomaticDropdown = async (
   return items
 }
 
-const resolveManualDropdown = (
-  row: RawNavItem,
-  resolveLinkHref: ResolveOptions['resolveLinkHref'],
-  locale: string,
-): ResolvedLeafLink[] => {
+const resolveManualDropdown = (row: RawNavItem): ResolvedLeafLink[] => {
   const items: ResolvedLeafLink[] = []
   for (const entry of row.manualItems ?? []) {
     const link = entry?.link
     if (!link) continue
     const href = resolveLinkHref(link)
     if (!href) continue
-    const label = pickLocalized(link.label, locale)
+    const label = link.label
     if (!label) continue
     items.push({ label, href, newTab: link.newTab ?? undefined })
   }
@@ -179,18 +141,18 @@ const resolveManualDropdown = (
 export const resolveNavItems = async (
   rawItems: RawNavItem[] | null | undefined,
   payload: Payload,
-  options: ResolveOptions,
+  { locale }: { locale: Locale },
 ): Promise<ResolvedNavItem[]> => {
   if (!rawItems || rawItems.length === 0) return []
 
   const resolved: ResolvedNavItem[] = []
   for (const row of rawItems) {
     if (row.kind === 'dropdown') {
-      const label = pickLocalized(row.dropdownLabel, options.locale) ?? ''
+      const label = row.dropdownLabel ?? ''
       const items =
         row.dropdownMode === 'automatic'
-          ? await resolveAutomaticDropdown(row, payload, options.locale)
-          : resolveManualDropdown(row, options.resolveLinkHref, options.locale)
+          ? await resolveAutomaticDropdown(row, payload, locale)
+          : resolveManualDropdown(row)
 
       resolved.push({
         id: row.id ?? null,
@@ -203,8 +165,8 @@ export const resolveNavItems = async (
 
     const link = row.link
     if (!link) continue
-    const href = options.resolveLinkHref(link)
-    const label = pickLocalized(link.label, options.locale)
+    const href = resolveLinkHref(link)
+    const label = link.label
     if (!href || !label) continue
 
     resolved.push({

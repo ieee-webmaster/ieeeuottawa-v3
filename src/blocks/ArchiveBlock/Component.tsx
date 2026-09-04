@@ -8,11 +8,7 @@ import { getLocale } from 'next-intl/server'
 import { CollectionArchive } from '@/components/CollectionArchive'
 import { getCachedArchivePosts, type PostCardData } from '@/utilities/publicCms'
 
-export const ArchiveBlock: React.FC<
-  ArchiveBlockProps & {
-    id?: string
-  }
-> = async (props) => {
+export const ArchiveBlock: React.FC<ArchiveBlockProps> = async (props) => {
   const { id, categories, introContent, limit: limitFromProps, populateBy, selectedDocs } = props
 
   const limit = limitFromProps || 3

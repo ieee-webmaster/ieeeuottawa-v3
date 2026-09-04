@@ -6,14 +6,7 @@ import type { CardGridBlock as CardGridBlockProps } from '@/payload-types'
 import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
-import {
-  Eyebrow,
-  SectionShell,
-  themeKickerText,
-  themeMutedText,
-  themeRule,
-  type BlockTheme,
-} from '@/blocks/_shared'
+import { Eyebrow, SectionShell, themeKickerText, themeMutedText, themeRule } from '@/blocks/_shared'
 
 const gridColumnClasses: Record<NonNullable<CardGridBlockProps['columns']>, string> = {
   '2': 'md:grid-cols-2',
@@ -36,7 +29,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = ({
   theme = 'default',
   title,
 }) => {
-  const t = (theme ?? 'default') as BlockTheme
+  const t = theme ?? 'default'
   const total = cards?.length ?? 0
   // Detect homogeneity so we can pick a layout that fits the content type:
   //   - all photo cards          → original aspect-[4/3] hero treatment

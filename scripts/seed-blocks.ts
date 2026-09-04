@@ -1,3 +1,4 @@
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import type { File, Payload, PayloadRequest } from 'payload'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
@@ -5,28 +6,28 @@ import path from 'node:path'
 import { createLocalReq, getPayload } from 'payload'
 import config from '@payload-config'
 
-const lex = (text: string) =>
-  ({
-    root: {
-      type: 'root',
-      children: [
-        {
-          type: 'paragraph',
-          version: 1,
-          children: [
-            { type: 'text', text, version: 1, detail: 0, format: 0, mode: 'normal', style: '' },
-          ],
-          direction: 'ltr',
-          format: '',
-          indent: 0,
-        },
-      ],
-      direction: 'ltr',
-      format: '',
-      indent: 0,
-      version: 1,
-    },
-  }) as any
+const lex = (text: string): DefaultTypedEditorState => ({
+  root: {
+    type: 'root',
+    children: [
+      {
+        type: 'paragraph',
+        textFormat: 0,
+        version: 1,
+        children: [
+          { type: 'text', text, version: 1, detail: 0, format: 0, mode: 'normal', style: '' },
+        ],
+        direction: 'ltr',
+        format: '',
+        indent: 0,
+      },
+    ],
+    direction: 'ltr',
+    format: '',
+    indent: 0,
+    version: 1,
+  },
+})
 
 const mimeTypes: Record<string, string> = {
   '.svg': 'image/svg+xml',

@@ -1,24 +1,13 @@
-import type { Access, CollectionSlug, Field, PayloadRequest, Where } from 'payload'
+import type { Access, CollectionConfig, GlobalConfig, Field, PayloadRequest, Where } from 'payload'
 
 import { isSuperAdmin } from './identity'
-import {
-  hasAnyCollectionPermission,
-  hasAnyPermission,
-  hasCollectionPermission,
-  loadRoles,
-} from './roles'
+import { hasCollectionPermission, loadRoles } from './roles'
 import { buildTagWhere, canAccessTags, getAccessTagsFromValue } from './tags'
-import {
-  accessTagsFieldName,
-  type RbacAccessOptions,
-  type RbacId,
-  type RolePermission,
-  type TagAction,
-} from './types'
-import { combineWhere, isWhere, resolveBaseAccess } from './where'
+import { accessTagsFieldName, type RolePermission, type TagAction } from './types'
+import { combineWhere, resolveBaseAccess } from './where'
 
 const allowWithBaseWhere = (baseResult: boolean | Where): boolean | Where =>
-  isWhere(baseResult) ? baseResult : true
+  typeof baseResult !== 'boolean' ? baseResult : true
 
 const resolveMutationWhere = ({
   baseResult,
@@ -41,16 +30,16 @@ const resolveMutationWhere = ({
     return false
   }
 
-  const baseWhere = isWhere(baseResult) ? baseResult : null
+  const baseWhere = typeof baseResult !== 'boolean' ? baseResult : null
   const combined = combineWhere(baseWhere, tagWhere ?? null)
   return combined ?? true
 }
 
-export const buildAccessTagsField = (accessTagsCollectionSlug: string): Field => ({
+export const buildAccessTagsField = (): Field => ({
   name: accessTagsFieldName,
   label: 'Access tags',
   type: 'relationship',
-  relationTo: accessTagsCollectionSlug as CollectionSlug,
+  relationTo: 'access-tags',
   hasMany: true,
   admin: {
     position: 'sidebar',
@@ -61,31 +50,21 @@ export const buildAccessTagsField = (accessTagsCollectionSlug: string): Field =>
 
 export type AdminAccess = ({ req }: { req: PayloadRequest }) => boolean | Promise<boolean>
 
-export type BaseAccess = {
-  admin?: AdminAccess
-  create?: Access
-  read?: Access
-  update?: Access
-  delete?: Access
-}
+type BaseAccess = NonNullable<CollectionConfig['access']>
 
 type BuildAccessParams = {
   collection: string
   baseAccess: BaseAccess | undefined
-  options: RbacAccessOptions
   requireTagsForWrite: boolean
   includeTagAccess: boolean
-  adminAccess?: 'authenticated' | 'collection' | 'any'
   selfUpdateField?: string
 }
 
 export const buildCollectionAccess = ({
   collection,
   baseAccess,
-  options,
   requireTagsForWrite,
   includeTagAccess,
-  adminAccess = 'authenticated',
   selfUpdateField,
 }: BuildAccessParams) => {
   const admin: AdminAccess = async ({ req }) => {
@@ -98,39 +77,28 @@ export const buildCollectionAccess = ({
       return false
     }
 
-    if (isSuperAdmin(req.user, options.superAdminField)) {
-      return true
-    }
-
-    if (adminAccess === 'authenticated') {
-      return true
-    }
-
-    const roles = await loadRoles(req, options, req.user)
-    if (adminAccess === 'any') {
-      return hasAnyPermission(roles)
-    }
-
-    return hasAnyCollectionPermission(roles, collection)
+    return true
   }
 
   const read: Access = (args) => resolveBaseAccess(baseAccess?.read, args)
 
-  const create: Access = async (args) => {
+  const create: Access<{ accessTags?: unknown }> = async (args) => {
     const baseResult = await resolveBaseAccess(baseAccess?.create, args)
     if (baseResult === false) {
       return false
     }
 
     if (!args.req.user) {
-      return baseAccess?.create && (baseResult === true || isWhere(baseResult)) ? baseResult : false
+      return baseAccess?.create && (baseResult === true || typeof baseResult !== 'boolean')
+        ? baseResult
+        : false
     }
 
-    if (isSuperAdmin(args.req.user, options.superAdminField)) {
+    if (isSuperAdmin(args.req.user)) {
       return true
     }
 
-    const roles = await loadRoles(args.req, options, args.req.user)
+    const roles = await loadRoles(args.req)
     if (!hasCollectionPermission(roles, collection, 'create')) {
       return false
     }
@@ -139,13 +107,11 @@ export const buildCollectionAccess = ({
       return true
     }
 
-    const dataTags = getAccessTagsFromValue(
-      (args.data as { accessTags?: unknown } | undefined)?.accessTags,
-    )
+    const dataTags = getAccessTagsFromValue(args.data?.accessTags)
     return canAccessTags(roles, dataTags, 'create', requireTagsForWrite)
   }
 
-  const update: Access = async (args) => {
+  const update: Access<{ accessTags?: unknown }> = async (args) => {
     const baseResult = await resolveBaseAccess(baseAccess?.update, args)
     if (baseResult === false) {
       return false
@@ -155,28 +121,25 @@ export const buildCollectionAccess = ({
       return false
     }
 
-    if (isSuperAdmin(args.req.user, options.superAdminField)) {
+    if (isSuperAdmin(args.req.user)) {
       return allowWithBaseWhere(baseResult)
     }
 
-    const roles = await loadRoles(args.req, options, args.req.user)
+    const roles = await loadRoles(args.req)
     if (!hasCollectionPermission(roles, collection, 'update')) {
       if (selfUpdateField) {
-        const userId = (args.req.user as { id?: RbacId }).id
+        const userId = args.req.user.id
         if (userId !== undefined) {
           const selfWhere: Where = { [selfUpdateField]: { equals: userId } }
-          const baseWhere = isWhere(baseResult) ? baseResult : null
+          const baseWhere = typeof baseResult !== 'boolean' ? baseResult : null
           return combineWhere(baseWhere, selfWhere) ?? selfWhere
         }
       }
       return false
     }
 
-    if (
-      includeTagAccess &&
-      (args.data as { accessTags?: unknown } | undefined)?.accessTags !== undefined
-    ) {
-      const dataTags = getAccessTagsFromValue((args.data as { accessTags?: unknown }).accessTags)
+    if (includeTagAccess && args.data?.accessTags !== undefined) {
+      const dataTags = getAccessTagsFromValue(args.data.accessTags)
       if (!canAccessTags(roles, dataTags, 'update', requireTagsForWrite)) {
         return false
       }
@@ -201,11 +164,11 @@ export const buildCollectionAccess = ({
       return false
     }
 
-    if (isSuperAdmin(args.req.user, options.superAdminField)) {
+    if (isSuperAdmin(args.req.user)) {
       return allowWithBaseWhere(baseResult)
     }
 
-    const roles = await loadRoles(args.req, options, args.req.user)
+    const roles = await loadRoles(args.req)
     if (!hasCollectionPermission(roles, collection, 'delete')) {
       return false
     }
@@ -228,29 +191,25 @@ export const buildCollectionAccess = ({
   }
 }
 
-export type GlobalBaseAccess = {
-  read?: Access
-  update?: Access
-}
+type GlobalBaseAccess = NonNullable<GlobalConfig['access']>
 
 type BuildGlobalAccessParams = {
   globalSlug: string
   baseAccess: GlobalBaseAccess | undefined
-  options: RbacAccessOptions
 }
 
-export const buildGlobalAccess = ({ globalSlug, baseAccess, options }: BuildGlobalAccessParams) => {
+export const buildGlobalAccess = ({ globalSlug, baseAccess }: BuildGlobalAccessParams) => {
   const read: Access = (args) => resolveBaseAccess(baseAccess?.read, args)
 
   const update: Access = async (args) => {
     const baseResult = await resolveBaseAccess(baseAccess?.update, args)
     if (baseResult === false) return false
     if (!args.req.user) return false
-    if (isSuperAdmin(args.req.user, options.superAdminField)) {
+    if (isSuperAdmin(args.req.user)) {
       return allowWithBaseWhere(baseResult)
     }
 
-    const roles = await loadRoles(args.req, options, args.req.user)
+    const roles = await loadRoles(args.req)
     if (!hasCollectionPermission(roles, globalSlug, 'update')) {
       return false
     }

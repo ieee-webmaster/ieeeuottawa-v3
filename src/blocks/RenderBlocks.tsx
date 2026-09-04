@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import { Fragment } from 'react'
 
 import type { Page } from '@/payload-types'
 
@@ -17,66 +17,57 @@ import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { QuickLinksBlock } from '@/blocks/QuickLinks/Component'
 import { SplitSectionBlock } from '@/blocks/SplitSection/Component'
 
-const blockComponents = {
-  accordion: AccordionBlockComponent,
-  archive: ArchiveBlock,
-  banner: BannerBlock,
-  cardGrid: CardGridBlock,
-  committeeTeamMembers: CommitteeTeamMembersBlock,
-  ctaBand: CTABandBlock,
-  content: ContentBlock,
-  cta: CallToActionBlock,
-  formBlock: FormBlock,
-  gallery: GalleryBlockComponent,
-  logoGrid: LogoGridBlock,
-  mediaBlock: MediaBlock,
-  quickLinks: QuickLinksBlock,
-  splitSection: SplitSectionBlock,
+const renderBlock = (block: Page['layout'][number]) => {
+  switch (block.blockType) {
+    case 'accordion':
+      return <AccordionBlockComponent {...block} />
+    case 'archive':
+      return <ArchiveBlock {...block} />
+    case 'banner':
+      return <BannerBlock {...block} />
+    case 'cardGrid':
+      return <CardGridBlock {...block} />
+    case 'committeeTeamMembers':
+      return <CommitteeTeamMembersBlock {...block} />
+    case 'ctaBand':
+      return <CTABandBlock {...block} />
+    case 'content':
+      return <ContentBlock {...block} />
+    case 'cta':
+      return <CallToActionBlock {...block} />
+    case 'formBlock':
+      return <FormBlock {...block} />
+    case 'gallery':
+      return <GalleryBlockComponent {...block} />
+    case 'logoGrid':
+      return <LogoGridBlock {...block} />
+    case 'mediaBlock':
+      return <MediaBlock {...block} disableInnerContainer />
+    case 'quickLinks':
+      return <QuickLinksBlock {...block} />
+    case 'splitSection':
+      return <SplitSectionBlock {...block} />
+    default: {
+      const unsupported: never = block
+      throw new Error(`Unsupported block: ${unsupported}`)
+    }
+  }
 }
 
 const blocksNeedingOuterSpacing = new Set(['cta', 'formBlock', 'mediaBlock'])
 
-export const RenderBlocks: React.FC<{
-  blocks: Page['layout'][0][]
-}> = (props) => {
-  const { blocks } = props
-
-  const hasBlocks = blocks && Array.isArray(blocks) && blocks.length > 0
-
-  if (hasBlocks) {
-    return (
-      <Fragment>
-        {blocks.map((block, index) => {
-          const { blockType } = block
-          const key = block.id ?? index
-
-          if (blockType && blockType in blockComponents) {
-            const Block = blockComponents[blockType]
-
-            if (Block) {
-              const renderedBlock = (
-                <>
-                  {/* @ts-expect-error there may be some mismatch between the expected types here */}
-                  <Block {...block} disableInnerContainer />
-                </>
-              )
-
-              if (blocksNeedingOuterSpacing.has(blockType)) {
-                return (
-                  <div className="my-16" key={key}>
-                    {renderedBlock}
-                  </div>
-                )
-              }
-
-              return <Fragment key={key}>{renderedBlock}</Fragment>
-            }
-          }
-          return null
-        })}
-      </Fragment>
-    )
-  }
-
-  return null
-}
+export const RenderBlocks = ({ blocks }: { blocks: Page['layout'] }) => (
+  <>
+    {blocks.map((block, index) => {
+      const content = renderBlock(block)
+      const key = block.id ?? index
+      return blocksNeedingOuterSpacing.has(block.blockType) ? (
+        <div className="my-16" key={key}>
+          {content}
+        </div>
+      ) : (
+        <Fragment key={key}>{content}</Fragment>
+      )
+    })}
+  </>
+)

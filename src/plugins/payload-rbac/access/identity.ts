@@ -1,6 +1,7 @@
+import type { User } from '@/payload-types'
 import type { RbacId } from './types'
 
-export const isRecord = (value: unknown): value is Record<string, unknown> =>
+const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
 
 const isRbacId = (value: unknown): value is RbacId =>
@@ -8,9 +9,8 @@ const isRbacId = (value: unknown): value is RbacId =>
 
 export const idKey = (id: RbacId): string => String(id)
 
-export const isSuperAdmin = (user: unknown, superAdminField: string): boolean => {
-  return isRecord(user) && Boolean(user[superAdminField])
-}
+export const isSuperAdmin = (user: Pick<User, 'superAdmin'> | null | undefined): boolean =>
+  user?.superAdmin === true
 
 export const getIdsFromValue = (value: unknown): RbacId[] => {
   if (!value) {
@@ -34,10 +34,5 @@ export const getIdsFromValue = (value: unknown): RbacId[] => {
     .filter((id): id is RbacId => id !== null)
 }
 
-export const getRoleIds = (user: unknown): RbacId[] => {
-  if (!isRecord(user) || !user.roles) {
-    return []
-  }
-
-  return getIdsFromValue(user.roles)
-}
+export const getRoleIds = (user: Pick<User, 'roles'> | null | undefined): RbacId[] =>
+  user?.roles?.map((role) => (typeof role === 'number' ? role : role.id)) ?? []

@@ -20,7 +20,7 @@ export const AccordionBlockComponent: React.FC<AccordionBlockProps> = ({
   theme = 'default',
   title,
 }) => {
-  const t = (theme ?? 'default') as BlockTheme
+  const t = theme ?? 'default'
   const total = items?.length ?? 0
 
   return (

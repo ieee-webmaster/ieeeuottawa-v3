@@ -1,4 +1,4 @@
-import type { ArrayField, Field } from 'payload'
+import type { ArrayField } from 'payload'
 
 import { link } from '@/fields/link'
 
@@ -17,19 +17,6 @@ const isManualDropdown = (sib: { kind?: unknown; dropdownMode?: unknown }) =>
   sib?.kind === 'dropdown' && sib?.dropdownMode !== 'automatic'
 const isAutoDropdown = (sib: { kind?: unknown; dropdownMode?: unknown }) =>
   sib?.kind === 'dropdown' && sib?.dropdownMode === 'automatic'
-
-const linkField = (): Field => {
-  const base = link({ appearances: false }) as Field & {
-    admin?: Record<string, unknown>
-  }
-  return {
-    ...base,
-    admin: {
-      ...(base.admin ?? {}),
-      condition: (_, sib) => isLinkRow(sib as { kind?: unknown }),
-    },
-  } as Field
-}
 
 export const buildNavItemsField = ({ allowedCollections }: BuildArgs): ArrayField => {
   const collectionOptions = allowedCollections.map((slug) => ({
@@ -64,7 +51,7 @@ export const buildNavItemsField = ({ allowedCollections }: BuildArgs): ArrayFiel
         ],
         admin: { layout: 'horizontal' },
       },
-      linkField(),
+      link({ appearances: false, overrides: { admin: { condition: (_, sib) => isLinkRow(sib) } } }),
       {
         name: 'dropdownLabel',
         type: 'text',
@@ -72,7 +59,7 @@ export const buildNavItemsField = ({ allowedCollections }: BuildArgs): ArrayFiel
         required: true,
         admin: {
           description: 'Label shown for the dropdown trigger.',
-          condition: (_, sib) => isDropdownRow(sib as { kind?: unknown }),
+          condition: (_, sib) => isDropdownRow(sib),
         },
       },
       {
@@ -85,7 +72,7 @@ export const buildNavItemsField = ({ allowedCollections }: BuildArgs): ArrayFiel
         ],
         admin: {
           layout: 'horizontal',
-          condition: (_, sib) => isDropdownRow(sib as { kind?: unknown }),
+          condition: (_, sib) => isDropdownRow(sib),
         },
       },
       {
@@ -94,8 +81,7 @@ export const buildNavItemsField = ({ allowedCollections }: BuildArgs): ArrayFiel
         labels: { singular: 'Dropdown link', plural: 'Dropdown links' },
         admin: {
           initCollapsed: true,
-          condition: (_, sib) =>
-            isManualDropdown(sib as { kind?: unknown; dropdownMode?: unknown }),
+          condition: (_, sib) => isManualDropdown(sib),
         },
         fields: [link({ appearances: false })],
       },
@@ -105,7 +91,7 @@ export const buildNavItemsField = ({ allowedCollections }: BuildArgs): ArrayFiel
         options: collectionOptions,
         admin: {
           description: 'Collection to scan for dropdown values.',
-          condition: (_, sib) => isAutoDropdown(sib as { kind?: unknown; dropdownMode?: unknown }),
+          condition: (_, sib) => isAutoDropdown(sib),
         },
       },
       {
@@ -113,9 +99,7 @@ export const buildNavItemsField = ({ allowedCollections }: BuildArgs): ArrayFiel
         type: 'text',
         admin: {
           description: 'Field whose distinct values become the dropdown entries.',
-          condition: (_, sib) =>
-            isAutoDropdown(sib as { kind?: unknown; dropdownMode?: unknown }) &&
-            Boolean((sib as { collection?: unknown }).collection),
+          condition: (_, sib) => isAutoDropdown(sib) && Boolean(sib?.collection),
           components: {
             Field: `${COMPONENT_PATH}/AutoFieldSelect#AutoFieldSelect`,
           },
@@ -131,13 +115,13 @@ export const buildNavItemsField = ({ allowedCollections }: BuildArgs): ArrayFiel
         ],
         admin: {
           layout: 'horizontal',
-          condition: (_, sib) => isAutoDropdown(sib as { kind?: unknown; dropdownMode?: unknown }),
+          condition: (_, sib) => isAutoDropdown(sib),
         },
       },
       {
         type: 'row',
         admin: {
-          condition: (_, sib) => isAutoDropdown(sib as { kind?: unknown; dropdownMode?: unknown }),
+          condition: (_, sib) => isAutoDropdown(sib),
         },
         fields: [
           {
@@ -164,7 +148,7 @@ export const buildNavItemsField = ({ allowedCollections }: BuildArgs): ArrayFiel
         name: 'autoNewTab',
         type: 'ui',
         admin: {
-          condition: (_, sib) => isAutoDropdown(sib as { kind?: unknown; dropdownMode?: unknown }),
+          condition: (_, sib) => isAutoDropdown(sib),
           components: {
             Field: `${COMPONENT_PATH}/AutoFieldSelect#AutoNewTabCheckbox`,
           },
@@ -176,7 +160,7 @@ export const buildNavItemsField = ({ allowedCollections }: BuildArgs): ArrayFiel
         defaultValue: false,
         admin: {
           description: 'Include an "All" link as the first dropdown entry.',
-          condition: (_, sib) => isAutoDropdown(sib as { kind?: unknown; dropdownMode?: unknown }),
+          condition: (_, sib) => isAutoDropdown(sib),
         },
       },
       {
@@ -186,9 +170,7 @@ export const buildNavItemsField = ({ allowedCollections }: BuildArgs): ArrayFiel
         defaultValue: 'All',
         admin: {
           description: 'Label for the "All" link.',
-          condition: (_, sib) =>
-            isAutoDropdown(sib as { kind?: unknown; dropdownMode?: unknown }) &&
-            Boolean((sib as { includeAll?: unknown }).includeAll),
+          condition: (_, sib) => isAutoDropdown(sib) && Boolean(sib?.includeAll),
         },
       },
     ],

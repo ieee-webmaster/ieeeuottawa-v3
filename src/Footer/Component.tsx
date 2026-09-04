@@ -8,8 +8,7 @@ import type { Footer } from '@/payload-types'
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { Logo } from '@/components/Logo/Logo'
 import { SocialIcons } from '@/components/SocialIcons'
-import { resolveNavItems, type RawNavItem } from '@/plugins/payload-navigation'
-import { resolveContentPathFromReference } from '@/routing/resolveContentPath'
+import { resolveNavItems } from '@/plugins/payload-navigation'
 import { FooterNav } from './Nav'
 
 const currentYear = new Date().getFullYear()
@@ -19,18 +18,8 @@ export async function Footer() {
   const footerData: Footer = await getCachedGlobal('footer', 2, locale)()
   const payload = await getPayload({ config: configPromise })
 
-  const navItems = await resolveNavItems(footerData?.navItems as RawNavItem[] | null, payload, {
+  const navItems = await resolveNavItems(footerData?.navItems, payload, {
     locale,
-    resolveLinkHref: (link) => {
-      if (link.type === 'reference' && link.reference) {
-        return (
-          resolveContentPathFromReference(link.reference.relationTo, link.reference.value) ??
-          link.url ??
-          null
-        )
-      }
-      return link.url ?? null
-    },
   })
 
   const socialLinks = footerData?.socialLinks || []

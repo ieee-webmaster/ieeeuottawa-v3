@@ -6,7 +6,7 @@ import type { GalleryBlock as GalleryBlockProps } from '@/payload-types'
 import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
-import { Eyebrow, SectionShell, themeMutedText, themeRule, type BlockTheme } from '@/blocks/_shared'
+import { Eyebrow, SectionShell, themeMutedText, themeRule } from '@/blocks/_shared'
 
 export const GalleryBlockComponent: React.FC<GalleryBlockProps> = ({
   description,
@@ -16,7 +16,7 @@ export const GalleryBlockComponent: React.FC<GalleryBlockProps> = ({
   theme = 'default',
   title,
 }) => {
-  const t = (theme ?? 'default') as BlockTheme
+  const t = theme ?? 'default'
   const total = items?.length ?? 0
 
   return (

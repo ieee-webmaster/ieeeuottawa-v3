@@ -7,8 +7,6 @@ import {
   canAccessTags,
   getAccessTagsFromValue,
   getRoleIds,
-  hasAnyPermission,
-  hasAnyCollectionPermission,
   hasCollectionPermission,
   isSuperAdmin,
   type RolePermission,
@@ -17,19 +15,21 @@ import { ensureFirstUserIsSuperAdmin, rbacPlugin } from '../../src/plugins/paylo
 
 describe('RBAC: id normalization', () => {
   it('extracts numeric role ids from a populated user', () => {
-    expect(getRoleIds({ roles: [1, 2, { id: 3 }] })).toEqual([1, 2, 3])
+    expect(
+      getRoleIds({ roles: [1, 2, { id: 3, name: 'Editor', createdAt: '', updatedAt: '' }] }),
+    ).toEqual([1, 2, 3])
   })
 
-  it('extracts string role ids', () => {
-    expect(getRoleIds({ roles: ['a', { id: 'b' }] })).toEqual(['a', 'b'])
+  it('accepts string tag IDs at the input boundary', () => {
+    expect(getAccessTagsFromValue(['a', { id: 'b' }])).toEqual(['a', 'b'])
   })
 
   it('handles mixed numeric and string ids', () => {
-    expect(getRoleIds({ roles: [1, 'b', { id: 'c' }, { id: 4 }] })).toEqual([1, 'b', 'c', 4])
+    expect(getAccessTagsFromValue([1, 'b', { id: 'c' }, { id: 4 }])).toEqual([1, 'b', 'c', 4])
   })
 
   it('drops null/undefined and unrecognized shapes', () => {
-    expect(getRoleIds({ roles: [null, undefined, {}, { id: null }, true, 5] })).toEqual([5])
+    expect(getAccessTagsFromValue([null, undefined, {}, { id: null }, true, 5])).toEqual([5])
   })
 
   it('returns [] when user has no roles', () => {
@@ -43,14 +43,14 @@ describe('RBAC: id normalization', () => {
 })
 
 describe('RBAC: super admin', () => {
-  it('treats a truthy superAdminField as super admin', () => {
-    expect(isSuperAdmin({ superAdmin: true }, 'superAdmin')).toBe(true)
+  it('recognizes the generated superAdmin flag', () => {
+    expect(isSuperAdmin({ superAdmin: true })).toBe(true)
   })
 
   it('does not treat a falsy field as super admin', () => {
-    expect(isSuperAdmin({ superAdmin: false }, 'superAdmin')).toBe(false)
-    expect(isSuperAdmin({}, 'superAdmin')).toBe(false)
-    expect(isSuperAdmin(null, 'superAdmin')).toBe(false)
+    expect(isSuperAdmin({ superAdmin: false })).toBe(false)
+    expect(isSuperAdmin({})).toBe(false)
+    expect(isSuperAdmin(null)).toBe(false)
   })
 })
 
@@ -75,16 +75,6 @@ describe('RBAC: collection permissions (no admin wildcard)', () => {
     expect(hasCollectionPermission([roleWithUpdateAndDelete], 'pages', 'create')).toBe(false)
   })
 
-  it('returns true for hasAnyCollectionPermission when any action is granted', () => {
-    expect(hasAnyCollectionPermission([roleWithUpdateOnly], 'pages')).toBe(true)
-    expect(hasAnyCollectionPermission([roleWithUpdateOnly], 'posts')).toBe(false)
-  })
-
-  it('returns true for hasAnyPermission when any collection action is granted', () => {
-    expect(hasAnyPermission([roleWithUpdateOnly])).toBe(true)
-    expect(hasAnyPermission([{ collectionPermissions: [] }])).toBe(false)
-  })
-
   it('returns false for collections not matched on any role', () => {
     expect(hasCollectionPermission([roleWithUpdateOnly], 'posts', 'update')).toBe(false)
   })
@@ -102,44 +92,12 @@ describe('RBAC: read access behavior', () => {
     const access = buildCollectionAccess({
       collection: 'users',
       baseAccess: undefined,
-      options: {
-        rolesCollectionSlug: 'roles',
-        accessTagsCollectionSlug: 'access-tags',
-        superAdminField: 'superAdmin',
-      },
       requireTagsForWrite: false,
       includeTagAccess: false,
     })
 
     await expect(access.admin({ req } as never)).resolves.toBe(true)
     expect(find).not.toHaveBeenCalled()
-  })
-
-  it('can still scope admin access to the matching collection when configured', async () => {
-    const role: RolePermission = {
-      collectionPermissions: [{ collection: 'pages', actions: ['update'] }],
-    }
-    const find = vi.fn().mockResolvedValue({ docs: [role] })
-    const req = {
-      user: { id: 1, superAdmin: false, roles: [10] },
-      payload: { find },
-      context: {},
-    }
-
-    const access = buildCollectionAccess({
-      collection: 'posts',
-      baseAccess: undefined,
-      options: {
-        rolesCollectionSlug: 'roles',
-        accessTagsCollectionSlug: 'access-tags',
-        superAdminField: 'superAdmin',
-      },
-      requireTagsForWrite: false,
-      includeTagAccess: false,
-      adminAccess: 'collection',
-    })
-
-    await expect(access.admin({ req } as never)).resolves.toBe(false)
   })
 
   it('allows authenticated read without collection permissions', async () => {
@@ -153,11 +111,6 @@ describe('RBAC: read access behavior', () => {
     const access = buildCollectionAccess({
       collection: 'pages',
       baseAccess: undefined,
-      options: {
-        rolesCollectionSlug: 'roles',
-        accessTagsCollectionSlug: 'access-tags',
-        superAdminField: 'superAdmin',
-      },
       requireTagsForWrite: false,
       includeTagAccess: false,
     })
@@ -175,11 +128,6 @@ describe('RBAC: read access behavior', () => {
     const access = buildCollectionAccess({
       collection: 'posts',
       baseAccess,
-      options: {
-        rolesCollectionSlug: 'roles',
-        accessTagsCollectionSlug: 'access-tags',
-        superAdminField: 'superAdmin',
-      },
       requireTagsForWrite: false,
       includeTagAccess: false,
     })
@@ -197,11 +145,6 @@ describe('RBAC: read access behavior', () => {
     const access = buildCollectionAccess({
       collection: 'form-submissions',
       baseAccess,
-      options: {
-        rolesCollectionSlug: 'roles',
-        accessTagsCollectionSlug: 'access-tags',
-        superAdminField: 'superAdmin',
-      },
       requireTagsForWrite: false,
       includeTagAccess: false,
     })
@@ -215,11 +158,6 @@ describe('RBAC: read access behavior', () => {
     const access = buildCollectionAccess({
       collection: 'pages',
       baseAccess: undefined,
-      options: {
-        rolesCollectionSlug: 'roles',
-        accessTagsCollectionSlug: 'access-tags',
-        superAdminField: 'superAdmin',
-      },
       requireTagsForWrite: false,
       includeTagAccess: false,
     })
@@ -239,11 +177,6 @@ describe('RBAC: read access behavior', () => {
     const access = buildCollectionAccess({
       collection: 'pages',
       baseAccess: undefined,
-      options: {
-        rolesCollectionSlug: 'roles',
-        accessTagsCollectionSlug: 'access-tags',
-        superAdminField: 'superAdmin',
-      },
       requireTagsForWrite: false,
       includeTagAccess: false,
     })
@@ -263,11 +196,6 @@ describe('RBAC: read access behavior', () => {
     const access = buildCollectionAccess({
       collection: 'users',
       baseAccess: undefined,
-      options: {
-        rolesCollectionSlug: 'roles',
-        accessTagsCollectionSlug: 'access-tags',
-        superAdminField: 'superAdmin',
-      },
       requireTagsForWrite: false,
       includeTagAccess: false,
       selfUpdateField: 'id',
@@ -291,11 +219,6 @@ describe('RBAC: read access behavior', () => {
     const access = buildCollectionAccess({
       collection: 'users',
       baseAccess: undefined,
-      options: {
-        rolesCollectionSlug: 'roles',
-        accessTagsCollectionSlug: 'access-tags',
-        superAdminField: 'superAdmin',
-      },
       requireTagsForWrite: false,
       includeTagAccess: false,
       selfUpdateField: 'id',
@@ -310,7 +233,11 @@ describe('RBAC: tag permissions', () => {
   const role: RolePermission = {
     tagPermissions: [
       { tag: 1, effect: 'allow', actions: ['update', 'delete'] },
-      { tag: { id: 2 }, effect: 'deny', actions: ['update'] },
+      {
+        tag: { id: 2, name: 'Private', slug: 'private', createdAt: '', updatedAt: '' },
+        effect: 'deny',
+        actions: ['update'],
+      },
     ],
   }
 
@@ -396,7 +323,7 @@ describe('RBAC: ensureFirstUserIsSuperAdmin', () => {
   }
 
   it('promotes when no users exist', async () => {
-    const hook = ensureFirstUserIsSuperAdmin('users', 'superAdmin')
+    const hook = ensureFirstUserIsSuperAdmin
     const { req } = buildReq(0)
     const result = await hook({
       data: { email: 'first@example.com' },
@@ -407,7 +334,7 @@ describe('RBAC: ensureFirstUserIsSuperAdmin', () => {
   })
 
   it('does not promote on subsequent users', async () => {
-    const hook = ensureFirstUserIsSuperAdmin('users', 'superAdmin')
+    const hook = ensureFirstUserIsSuperAdmin
     const { req } = buildReq(1)
     const result = await hook({
       data: { email: 'second@example.com' },
@@ -418,7 +345,7 @@ describe('RBAC: ensureFirstUserIsSuperAdmin', () => {
   })
 
   it('always uses overrideAccess to count existing users (prevents privilege escalation)', async () => {
-    const hook = ensureFirstUserIsSuperAdmin('users', 'superAdmin')
+    const hook = ensureFirstUserIsSuperAdmin
     const { req, find } = buildReq(1)
     await hook({
       data: { email: 'attacker@example.com' },
@@ -431,7 +358,7 @@ describe('RBAC: ensureFirstUserIsSuperAdmin', () => {
   })
 
   it('skips on non-create operations', async () => {
-    const hook = ensureFirstUserIsSuperAdmin('users', 'superAdmin')
+    const hook = ensureFirstUserIsSuperAdmin
     const { req, find } = buildReq(0)
     const data = { email: 'someone@example.com' }
     const result = await hook({ data, req, operation: 'update' } as never)
@@ -452,7 +379,7 @@ describe('RBAC: superAdmin/roles field-level access', () => {
       ],
     } as never
 
-    const plugin = rbacPlugin({ collections: ['pages'], userCollectionSlug: 'users' })
+    const plugin = rbacPlugin({ collections: ['pages'] })
     const result = plugin(baseConfig) as {
       collections: Array<{
         slug: string
@@ -509,11 +436,6 @@ describe('RBAC: update tag check (empty array enforcement)', () => {
     const access = buildCollectionAccess({
       collection: 'pages',
       baseAccess: undefined,
-      options: {
-        rolesCollectionSlug: 'roles',
-        accessTagsCollectionSlug: 'access-tags',
-        superAdminField: 'superAdmin',
-      },
       requireTagsForWrite: true,
       includeTagAccess: true,
     })
@@ -525,11 +447,6 @@ describe('RBAC: update tag check (empty array enforcement)', () => {
     const access = buildCollectionAccess({
       collection: 'pages',
       baseAccess: undefined,
-      options: {
-        rolesCollectionSlug: 'roles',
-        accessTagsCollectionSlug: 'access-tags',
-        superAdminField: 'superAdmin',
-      },
       requireTagsForWrite: false,
       includeTagAccess: true,
     })
@@ -542,11 +459,6 @@ describe('RBAC: update tag check (empty array enforcement)', () => {
     const access = buildCollectionAccess({
       collection: 'pages',
       baseAccess: undefined,
-      options: {
-        rolesCollectionSlug: 'roles',
-        accessTagsCollectionSlug: 'access-tags',
-        superAdminField: 'superAdmin',
-      },
       requireTagsForWrite: true,
       includeTagAccess: true,
     })
@@ -574,11 +486,6 @@ describe('RBAC: loadRoles per-request cache', () => {
     const access = buildCollectionAccess({
       collection: 'pages',
       baseAccess: undefined,
-      options: {
-        rolesCollectionSlug: 'roles',
-        accessTagsCollectionSlug: 'access-tags',
-        superAdminField: 'superAdmin',
-      },
       requireTagsForWrite: false,
       includeTagAccess: false,
     })
@@ -593,17 +500,10 @@ describe('RBAC: loadRoles per-request cache', () => {
 })
 
 describe('RBAC: globals', () => {
-  const rbacOptions = {
-    rolesCollectionSlug: 'roles',
-    accessTagsCollectionSlug: 'access-tags',
-    superAdminField: 'superAdmin',
-  }
-
   it('delegates read to base access', async () => {
     const access = buildGlobalAccess({
       globalSlug: 'header',
       baseAccess: { read: () => true },
-      options: rbacOptions,
     })
     await expect(access.read({ req: { user: undefined } } as never)).resolves.toBe(true)
   })
@@ -612,7 +512,6 @@ describe('RBAC: globals', () => {
     const access = buildGlobalAccess({
       globalSlug: 'header',
       baseAccess: undefined,
-      options: rbacOptions,
     })
     await expect(access.update({ req: { user: undefined } } as never)).resolves.toBe(false)
   })
@@ -627,7 +526,6 @@ describe('RBAC: globals', () => {
     const access = buildGlobalAccess({
       globalSlug: 'header',
       baseAccess: undefined,
-      options: rbacOptions,
     })
     await expect(access.update({ req, data: {} } as never)).resolves.toBe(false)
   })
@@ -645,7 +543,6 @@ describe('RBAC: globals', () => {
     const access = buildGlobalAccess({
       globalSlug: 'header',
       baseAccess: undefined,
-      options: rbacOptions,
     })
     await expect(access.update({ req, data: {} } as never)).resolves.toBe(true)
   })
@@ -660,7 +557,6 @@ describe('RBAC: globals', () => {
     const access = buildGlobalAccess({
       globalSlug: 'footer',
       baseAccess: undefined,
-      options: rbacOptions,
     })
     await expect(access.update({ req, data: {} } as never)).resolves.toBe(true)
     expect(find).not.toHaveBeenCalled()
@@ -679,7 +575,6 @@ describe('RBAC: globals', () => {
     const access = buildGlobalAccess({
       globalSlug: 'header',
       baseAccess: undefined,
-      options: rbacOptions,
     })
     await expect(access.update({ req, data: {} } as never)).resolves.toBe(false)
   })
@@ -698,7 +593,6 @@ describe('RBAC: rbacPlugin global walk', () => {
     const plugin = rbacPlugin({
       collections: ['pages'],
       globals: ['header', 'footer'],
-      userCollectionSlug: 'users',
     })
     const result = plugin(baseConfig) as {
       globals: Array<{
@@ -726,7 +620,6 @@ describe('RBAC: rbacPlugin global walk', () => {
     const plugin = rbacPlugin({
       collections: ['pages'],
       globals: ['header', 'footer'],
-      userCollectionSlug: 'users',
     })
     const result = plugin(baseConfig) as {
       collections: Array<{

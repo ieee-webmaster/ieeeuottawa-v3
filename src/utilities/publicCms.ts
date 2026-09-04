@@ -501,8 +501,6 @@ const findDocsList = async (locale: Locale) => {
   return docs
 }
 
-export type DocListItem = Awaited<ReturnType<typeof findDocsList>>[number]
-
 export const getCachedDocsList = (locale: Locale) =>
   unstable_cache(
     async () => findDocsList(locale),

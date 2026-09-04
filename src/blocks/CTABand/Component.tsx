@@ -4,7 +4,7 @@ import type { CTABandBlock as CTABandBlockProps } from '@/payload-types'
 
 import { CMSLink } from '@/components/Link'
 import { cn } from '@/utilities/ui'
-import { Eyebrow, SectionShell, themeMutedText, type BlockTheme } from '@/blocks/_shared'
+import { Eyebrow, SectionShell, themeMutedText } from '@/blocks/_shared'
 
 export const CTABandBlock: React.FC<CTABandBlockProps> = ({
   alignment = 'left',
@@ -14,7 +14,7 @@ export const CTABandBlock: React.FC<CTABandBlockProps> = ({
   theme = 'accent',
   title,
 }) => {
-  const t = (theme ?? 'accent') as BlockTheme
+  const t = theme ?? 'accent'
   const centered = alignment === 'center'
 
   return (

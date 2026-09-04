@@ -1,7 +1,6 @@
 import type {
   ResolvedDropdownRow,
   ResolvedLeafLink,
-  ResolvedLinkRow,
   ResolvedNavItem,
 } from '@/plugins/payload-navigation'
 
@@ -11,13 +10,13 @@ type FooterNavProps = {
   items: ResolvedNavItem[]
 }
 
-const FooterDropdownLink = ({ entry }: { entry: ResolvedLeafLink }) => (
+const FooterLink = ({ item }: { item: ResolvedLeafLink }) => (
   <Link
-    href={entry.href}
+    href={item.href}
     className="text-sm text-white/80 transition-colors hover:text-white"
-    {...(entry.newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {})}
+    {...(item.newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {})}
   >
-    {entry.label}
+    {item.label}
   </Link>
 )
 
@@ -30,23 +29,13 @@ const FooterDropdown = ({ item }: { item: ResolvedDropdownRow }) => {
       <ul className="flex flex-col gap-1">
         {item.items.map((entry, index) => (
           <li key={`${entry.href}-${index}`}>
-            <FooterDropdownLink entry={entry} />
+            <FooterLink item={entry} />
           </li>
         ))}
       </ul>
     </div>
   )
 }
-
-const FooterLink = ({ item }: { item: ResolvedLinkRow }) => (
-  <Link
-    href={item.href}
-    className="text-sm text-white/80 transition-colors hover:text-white"
-    {...(item.newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {})}
-  >
-    {item.label}
-  </Link>
-)
 
 export const FooterNav = ({ items }: FooterNavProps) => (
   <nav className="flex flex-wrap gap-x-8 gap-y-4 md:justify-end" aria-label="Footer navigation">

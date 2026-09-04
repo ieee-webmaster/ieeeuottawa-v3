@@ -16,14 +16,11 @@ const collectTagPermissions = (roles: RolePermission[], action: TagAction): TagP
 
   roles.forEach((role) => {
     role.tagPermissions?.forEach((permission) => {
-      if (!permission?.actions?.includes(action)) {
+      if (!permission.actions.includes(action)) {
         return
       }
 
-      const tagId = getAccessTagsFromValue(permission.tag)[0]
-      if (tagId === undefined) {
-        return
-      }
+      const tagId = typeof permission.tag === 'number' ? permission.tag : permission.tag.id
 
       if (permission.effect === 'deny') {
         denied.set(idKey(tagId), tagId)
