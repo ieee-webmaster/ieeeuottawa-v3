@@ -6,20 +6,12 @@ import type { Committee, Person, Team } from '@/payload-types'
 import { type Payload } from 'payload'
 
 import { createImportContext, upsertMediaFromLocalFile } from '../helpers'
-
-export type CommitteeData = {
-  coverImageFile?: string
-  teams: Array<{
-    members: Array<{ personSlug: string; roleTitle: string }>
-    name: string
-  }>
-  year: string
-}
+import { committeesSchema, type CommitteeData } from '../schemas'
 
 export async function loadCommittees(dataDir: string) {
-  return JSON.parse(
-    await fs.readFile(path.join(dataDir, 'committee.json'), 'utf8'),
-  ) as CommitteeData[]
+  return committeesSchema.parse(
+    JSON.parse(await fs.readFile(path.join(dataDir, 'committee.json'), 'utf8')),
+  )
 }
 
 export async function importCommittees(

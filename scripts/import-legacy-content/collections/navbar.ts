@@ -1,6 +1,6 @@
 import path from 'node:path'
 
-import type { SocialLink } from '@/payload-types'
+import type { Header, SocialLink } from '@/payload-types'
 import { type Payload } from 'payload'
 
 import { createImportContext, upsertMediaFromLocalFile } from '../helpers'
@@ -59,15 +59,15 @@ export async function importNavbar(payload: Payload, dataDir: string) {
     })
   ).docs[0]
 
-  const contactNavItem = contactPage
+  const contactNavItem: NonNullable<Header['navItems']>[number] = contactPage
     ? {
         link: {
-          type: 'reference' as const,
+          type: 'reference',
           label: 'Contact',
-          reference: { relationTo: 'pages' as const, value: contactPage.id },
+          reference: { relationTo: 'pages', value: contactPage.id },
         },
       }
-    : { link: { type: 'custom' as const, label: 'Contact', url: '/contact' } }
+    : { link: { type: 'custom', label: 'Contact', url: '/contact' } }
 
   const headerResult = await payload.updateGlobal({
     slug: 'header',
@@ -90,20 +90,6 @@ export async function importNavbar(payload: Payload, dataDir: string) {
     },
   })
 
-  const frenchContactNavItem = contactPage
-    ? {
-        id: headerResult.navItems?.[1]?.id,
-        link: {
-          type: 'reference' as const,
-          label: 'Contact',
-          reference: { relationTo: 'pages' as const, value: contactPage.id },
-        },
-      }
-    : {
-        id: headerResult.navItems?.[1]?.id,
-        link: { type: 'custom' as const, label: 'Contact', url: '/contact' },
-      }
-
   await payload.updateGlobal({
     slug: 'header',
     context: createImportContext(),
@@ -114,7 +100,7 @@ export async function importNavbar(payload: Payload, dataDir: string) {
           id: headerResult.navItems?.[0]?.id,
           link: { type: 'custom', label: 'Articles', url: '/posts' },
         },
-        frenchContactNavItem,
+        { ...contactNavItem, id: headerResult.navItems?.[1]?.id },
       ],
     },
   })
