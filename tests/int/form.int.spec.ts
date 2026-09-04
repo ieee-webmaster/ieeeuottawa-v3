@@ -121,4 +121,25 @@ describe('CMS form values', () => {
     const view = render(createElement(FormBlock, { ...props, form: 4 }))
     expect(view.container.innerHTML).toBe('')
   })
+
+  it.each([
+    [
+      'a Payload error',
+      '{"errors":[{"message":"Please supply an email address","name":"ValidationError"}]}',
+      'Please supply an email address',
+    ],
+    ['an invalid message', '{"errors":[{"message":{"text":"Invalid"}}]}', 'Internal Server Error'],
+    ['an empty error list', '{"errors":[]}', 'Internal Server Error'],
+    ['a null response', 'null', 'Internal Server Error'],
+    ['an HTML error page', '<html>Bad gateway</html>', 'Internal Server Error'],
+  ])('handles %s without accepting unvalidated error data', async (_name, body, message) => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn<typeof globalThis.fetch>().mockResolvedValue(new Response(body, { status: 400 })),
+    )
+    const view = render(createElement(FormBlock, { ...props, form: { ...form, fields: [] } }))
+    fireEvent.click(view.getByRole('button', { name: 'Send' }))
+    await waitFor(() => expect(view.getByRole('alert').textContent).toBe(`400: ${message}`))
+    expect(view.getByRole('button', { name: 'Send' }).hasAttribute('disabled')).toBe(false)
+  })
 })
