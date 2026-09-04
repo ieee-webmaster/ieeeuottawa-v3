@@ -1,4 +1,5 @@
 import type { Endpoint, Field, PayloadRequest } from 'payload'
+import type { FieldDescriptor } from './schemas'
 
 const SCANNABLE_FIELD_TYPES = new Set([
   'text',
@@ -10,12 +11,6 @@ const SCANNABLE_FIELD_TYPES = new Set([
   'radio',
   'checkbox',
 ])
-
-type FieldDescriptor = {
-  name: string
-  type: string
-  label: string
-}
 
 const labelOf = (field: Field, fallback: string): string => {
   const label = (field as { label?: unknown }).label

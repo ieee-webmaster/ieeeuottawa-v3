@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, render, waitFor } from '@testing-library/react'
+import { act, cleanup, render, screen, waitFor } from '@testing-library/react'
 import { createElement } from 'react'
 
 import { autoArrayRowLabelsPlugin } from '../../src/plugins/payload-row-labels'
@@ -289,5 +289,41 @@ describe('AutoArrayRowLabel render', () => {
     )
 
     await waitFor(() => expect(container.textContent).toBe('Ada Lovelace'))
+  })
+
+  it.each([
+    ['a localized label', '{"fullName":{"fr":"Adèle","en":"Ada"}}', 'Ada'],
+    ['a fallback locale', '{"fullName":{"fr":"Adèle"}}', 'Adèle'],
+    ['a nested object label', '{"fullName":{"en":{"unexpected":"Ada"}}}', 'Person 01'],
+    ['a boolean label', '{"fullName":false}', 'false'],
+    ['a numeric label', '{"fullName":42}', '42'],
+    ['an array label', '{"fullName":["Ada"]}', 'Person 01'],
+    ['a null document', 'null', 'Person 01'],
+    ['an array document', '[]', 'Person 01'],
+    ['invalid JSON', '<html>Bad gateway</html>', 'Person 01'],
+  ])('handles %s from the relationship endpoint', async (_name, body, label) => {
+    rowLabelHookState.fields = {
+      'committees.0.teams.0.members.0.person': { value: 42 },
+    }
+    vi.stubGlobal('fetch', vi.fn<typeof globalThis.fetch>().mockResolvedValue(new Response(body)))
+    const { AutoArrayRowLabel } =
+      await import('../../src/plugins/payload-row-labels/AutoArrayRowLabel')
+    await act(async () => {
+      render(
+        createElement(AutoArrayRowLabel, {
+          candidates: [
+            {
+              kind: 'relationship',
+              path: 'person',
+              relationTo: 'people',
+              labelField: 'fullName',
+              fallbackPrefix: 'Person',
+            },
+          ],
+          path: rowLabelHookState.path,
+        }),
+      )
+    })
+    expect(screen.getByText(label)).toBeDefined()
   })
 })

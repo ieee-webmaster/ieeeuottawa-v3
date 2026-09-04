@@ -3,12 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { CheckboxInput, SelectInput, useConfig, useField, useFormFields } from '@payloadcms/ui'
 import type { TextFieldClientComponent, UIFieldClientComponent } from 'payload'
-
-type FieldDescriptor = {
-  name: string
-  type: string
-  label: string
-}
+import { collectionFieldsResponseSchema } from '../schemas'
 
 const siblingPath = (path: string, name: string): string => {
   const parts = path.split('.')
@@ -42,9 +37,10 @@ export const AutoFieldSelect: TextFieldClientComponent = (props) => {
           `${apiRoute}/payload-navigation/collection-fields?slug=${encodeURIComponent(collection)}`,
         )
         if (!response.ok) throw new Error('Failed to load collection fields')
-        const data = (await response.json()) as { fields?: FieldDescriptor[] }
+        const result = collectionFieldsResponseSchema.safeParse(await response.json())
+        if (!result.success) throw result.error
         if (cancelled) return
-        const next = (data.fields ?? []).map((entry) => ({
+        const next = result.data.fields.map((entry) => ({
           label: entry.label === entry.name ? entry.name : `${entry.label} (${entry.name})`,
           value: entry.name,
         }))

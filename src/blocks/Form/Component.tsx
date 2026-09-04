@@ -7,24 +7,9 @@ import { useRouter } from '@/i18n/navigation'
 import RichText from '@/components/RichText'
 import { Button } from '@/components/ui/button'
 import { getClientSideURL } from '@/utilities/getURL'
+import { payloadErrorResponseSchema } from '@/utilities/payloadErrorResponse'
 import { RenderFormField } from './fields'
 import { getFormDefaultValues, type FormValues } from './types'
-
-// The HTTP response is untrusted; only the error message is needed by the UI.
-const submissionErrorMessage = (result: unknown): string => {
-  if (result && typeof result === 'object' && 'errors' in result && Array.isArray(result.errors)) {
-    const first: unknown = result.errors[0]
-    if (
-      first &&
-      typeof first === 'object' &&
-      'message' in first &&
-      typeof first.message === 'string'
-    ) {
-      return first.message
-    }
-  }
-  return 'Internal Server Error'
-}
 
 export const FormBlock = (props: FormBlockProps) => {
   if (typeof props.form === 'number') return null
@@ -61,8 +46,11 @@ const PopulatedFormBlock = ({
         method: 'POST',
       })
       if (!response.ok) {
-        const result: unknown = await response.json().catch(() => null)
-        setError({ message: submissionErrorMessage(result), status: response.status })
+        const result = payloadErrorResponseSchema.safeParse(await response.json().catch(() => null))
+        setError({
+          message: (result.success && result.data.errors[0]?.message) || 'Internal Server Error',
+          status: response.status,
+        })
         return
       }
       setHasSubmitted(true)

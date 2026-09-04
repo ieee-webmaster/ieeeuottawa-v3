@@ -3,6 +3,11 @@
 import { useEffect, useState } from 'react'
 import { SelectInput, useField, useFormFields } from '@payloadcms/ui'
 import type { SelectFieldClientComponent } from 'payload'
+import { z } from 'zod'
+
+const teamPositionsResponseSchema = z.object({
+  positions: z.array(z.object({ positionTitle: z.string() })).nullish(),
+})
 
 export const CommitteePositionSelect: SelectFieldClientComponent = (props) => {
   const { path, field } = props
@@ -39,14 +44,12 @@ export const CommitteePositionSelect: SelectFieldClientComponent = (props) => {
           throw new Error('Failed to fetch team')
         }
 
-        const team = await response.json()
-
-        const positions = Array.isArray(team?.positions) ? team.positions : []
-        const positionOptions = positions.map((pos: { positionTitle?: string; role?: string }) => {
-          const label = pos.positionTitle ?? pos.role ?? 'Position'
-          const value = pos.positionTitle ?? pos.role ?? label
-          return { label, value }
-        })
+        const result = teamPositionsResponseSchema.safeParse(await response.json())
+        if (!result.success) throw result.error
+        const positionOptions = (result.data.positions ?? []).map(({ positionTitle }) => ({
+          label: positionTitle,
+          value: positionTitle,
+        }))
 
         setOptions(positionOptions)
       } catch (error) {

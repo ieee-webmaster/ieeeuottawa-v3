@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useConfig, useFormFields, useLocale, useRowLabel } from '@payloadcms/ui'
 import type { RowLabelProps } from '@payloadcms/ui'
+import { z } from 'zod'
 
 export type AutoArrayRowLabelCandidate =
   | {
@@ -23,35 +24,22 @@ export type AutoArrayRowLabelProps = RowLabelProps & {
   fallbackPrefix?: string
 }
 
-type LocalizedValue = Record<string, unknown>
+const recordSchema = z.record(z.string(), z.unknown())
+const scalarLabelSchema = z.union([z.string(), z.number(), z.boolean()]).nullish()
+const localizedLabelSchema = z.union([scalarLabelSchema, z.record(z.string(), scalarLabelSchema)])
 
 const getLocalizedLabel = (value: unknown, locale?: string): string | null => {
-  if (value === null || value === undefined || value === '') {
-    return null
-  }
+  const result = localizedLabelSchema.safeParse(value)
+  if (!result.success) return null
 
-  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-    return String(value)
-  }
+  const label =
+    result.data && typeof result.data === 'object'
+      ? locale && result.data[locale] !== undefined
+        ? result.data[locale]
+        : Object.values(result.data).find((entry) => entry != null && entry !== '')
+      : result.data
 
-  if (typeof value !== 'object' || Array.isArray(value)) {
-    return null
-  }
-
-  const localized = value as LocalizedValue
-  const localeValue = locale ? localized[locale] : undefined
-  if (localeValue !== undefined) {
-    return getLocalizedLabel(localeValue, locale)
-  }
-
-  for (const nextValue of Object.values(localized)) {
-    const label = getLocalizedLabel(nextValue, locale)
-    if (label) {
-      return label
-    }
-  }
-
-  return null
+  return label == null || label === '' ? null : String(label)
 }
 
 const getValueLabel = (
@@ -177,8 +165,9 @@ export const AutoArrayRowLabel: React.FC<AutoArrayRowLabelProps> = ({
           throw new Error('Failed to load row label')
         }
 
-        const doc = (await response.json()) as Record<string, unknown>
-        const label = getLocalizedLabel(doc[lookupLabelField ?? 'id'], locale)
+        const result = recordSchema.safeParse(await response.json())
+        if (!result.success) throw result.error
+        const label = getLocalizedLabel(result.data[lookupLabelField ?? 'id'], locale)
 
         if (!cancelled) {
           setRemote({ key: lookupKey, label })
