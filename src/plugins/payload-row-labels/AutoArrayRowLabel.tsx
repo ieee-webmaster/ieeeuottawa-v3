@@ -72,13 +72,12 @@ const getReferenceId = (value: unknown): string | null => {
     return null
   }
 
-  const record = value as { id?: unknown; value?: unknown }
-  if (typeof record.id === 'number' || typeof record.id === 'string') {
-    return String(record.id)
+  if ('id' in value && (typeof value.id === 'number' || typeof value.id === 'string')) {
+    return String(value.id)
   }
 
-  if (typeof record.value === 'number' || typeof record.value === 'string') {
-    return String(record.value)
+  if ('value' in value && (typeof value.value === 'number' || typeof value.value === 'string')) {
+    return String(value.value)
   }
 
   return null

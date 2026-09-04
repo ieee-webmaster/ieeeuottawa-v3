@@ -49,7 +49,9 @@ export default async function Post({ params: paramsPromise }: Args) {
       <PostHero locale={locale} post={post} />
 
       <SectionShell theme="default" padding="py-12 md:py-20">
-        <RichText className="mx-auto max-w-3xl" data={post.content} enableGutter={false} />
+        {post.content && (
+          <RichText className="mx-auto max-w-3xl" data={post.content} enableGutter={false} />
+        )}
       </SectionShell>
 
       {post.relatedPosts && post.relatedPosts.length > 0 ? (

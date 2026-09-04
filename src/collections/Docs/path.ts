@@ -1,9 +1,9 @@
 export const resolveDocsPath = (doc: unknown): string | null => {
-  if (typeof doc !== 'object' || doc === null) {
+  if (typeof doc !== 'object' || doc === null || !('year' in doc)) {
     return null
   }
 
-  const year = (doc as { year?: unknown }).year
+  const { year } = doc
   if (typeof year !== 'string') {
     return null
   }

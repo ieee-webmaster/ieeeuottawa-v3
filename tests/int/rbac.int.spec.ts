@@ -1,4 +1,7 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
+import type { Page, User } from '@/payload-types'
+import { fieldAffectsData } from 'payload/shared'
+import { createRequest, testConfig } from '../helpers/payload'
 
 import {
   buildCollectionAccess,
@@ -82,12 +85,7 @@ describe('RBAC: collection permissions (no admin wildcard)', () => {
 
 describe('RBAC: read access behavior', () => {
   it('allows admin collection access for authenticated users by default', async () => {
-    const find = vi.fn().mockResolvedValue({ docs: [] })
-    const req = {
-      user: { id: 1, superAdmin: false, roles: [] },
-      payload: { find },
-      context: {},
-    }
+    const { req, find } = await createRequest({ id: 1, superAdmin: false, roles: [] })
 
     const access = buildCollectionAccess({
       collection: 'users',
@@ -96,17 +94,12 @@ describe('RBAC: read access behavior', () => {
       includeTagAccess: false,
     })
 
-    await expect(access.admin({ req } as never)).resolves.toBe(true)
+    await expect(access.admin({ req })).resolves.toBe(true)
     expect(find).not.toHaveBeenCalled()
   })
 
   it('allows authenticated read without collection permissions', async () => {
-    const find = vi.fn().mockResolvedValue({ docs: [] })
-    const req = {
-      user: { id: 1, superAdmin: false, roles: [] },
-      payload: { find },
-      context: {},
-    }
+    const { req, find } = await createRequest({ id: 1, superAdmin: false, roles: [] })
 
     const access = buildCollectionAccess({
       collection: 'pages',
@@ -115,7 +108,7 @@ describe('RBAC: read access behavior', () => {
       includeTagAccess: false,
     })
 
-    const result = await access.read({ req } as never)
+    const result = await access.read({ req })
     expect(result).toBe(true)
     expect(find).not.toHaveBeenCalled()
   })
@@ -132,7 +125,7 @@ describe('RBAC: read access behavior', () => {
       includeTagAccess: false,
     })
 
-    const result = await access.read({ req: { user: undefined } } as never)
+    const result = await access.read({ req: (await createRequest(null)).req })
     expect(result).toMatchObject({ _status: { equals: 'published' } })
   })
 
@@ -140,7 +133,7 @@ describe('RBAC: read access behavior', () => {
     const baseAccess = {
       create: () => true,
     }
-    const find = vi.fn()
+    const { req, find } = await createRequest(null)
 
     const access = buildCollectionAccess({
       collection: 'form-submissions',
@@ -149,7 +142,7 @@ describe('RBAC: read access behavior', () => {
       includeTagAccess: false,
     })
 
-    const result = await access.create({ req: { user: undefined, payload: { find } } } as never)
+    const result = await access.create({ req })
     expect(result).toBe(true)
     expect(find).not.toHaveBeenCalled()
   })
@@ -162,17 +155,12 @@ describe('RBAC: read access behavior', () => {
       includeTagAccess: false,
     })
 
-    const result = await access.create({ req: { user: undefined } } as never)
+    const result = await access.create({ req: (await createRequest(null)).req })
     expect(result).toBe(false)
   })
 
   it('denies updates when the user has no matching collection permissions', async () => {
-    const find = vi.fn().mockResolvedValue({ docs: [] })
-    const req = {
-      user: { id: 1, superAdmin: false, roles: [10] },
-      payload: { find },
-      context: {},
-    }
+    const { req } = await createRequest({ id: 1, superAdmin: false, roles: [10] })
 
     const access = buildCollectionAccess({
       collection: 'pages',
@@ -181,17 +169,12 @@ describe('RBAC: read access behavior', () => {
       includeTagAccess: false,
     })
 
-    const result = await access.update({ req, data: { title: 'update' } } as never)
+    const result = await access.update({ req, data: {} })
     expect(result).toBe(false)
   })
 
   it('falls back to a self-id where clause when selfUpdateField is set', async () => {
-    const find = vi.fn().mockResolvedValue({ docs: [] })
-    const req = {
-      user: { id: 42, superAdmin: false, roles: [10] },
-      payload: { find },
-      context: {},
-    }
+    const { req } = await createRequest({ id: 42, superAdmin: false, roles: [10] })
 
     const access = buildCollectionAccess({
       collection: 'users',
@@ -201,7 +184,7 @@ describe('RBAC: read access behavior', () => {
       selfUpdateField: 'id',
     })
 
-    const result = await access.update({ req, data: { firstName: 'Self' } } as never)
+    const result = await access.update({ req, data: {} })
     expect(result).toEqual({ id: { equals: 42 } })
   })
 
@@ -209,12 +192,7 @@ describe('RBAC: read access behavior', () => {
     const role: RolePermission = {
       collectionPermissions: [{ collection: 'users', actions: ['update'] }],
     }
-    const find = vi.fn().mockResolvedValue({ docs: [role] })
-    const req = {
-      user: { id: 42, superAdmin: false, roles: [10] },
-      payload: { find },
-      context: {},
-    }
+    const { req } = await createRequest({ id: 42, superAdmin: false, roles: [10] }, [role])
 
     const access = buildCollectionAccess({
       collection: 'users',
@@ -224,7 +202,7 @@ describe('RBAC: read access behavior', () => {
       selfUpdateField: 'id',
     })
 
-    const result = await access.update({ req, data: { firstName: 'Other' } } as never)
+    const result = await access.update({ req, data: {} })
     expect(result).toBe(true)
   })
 })
@@ -307,124 +285,85 @@ describe('RBAC: tag where filters', () => {
   })
 
   it('uses numeric ids in where clauses', () => {
-    const where = buildTagWhere('accessTags', [role], 'update', true) as {
-      and: [{ accessTags: { in: number[] } }]
-    }
-    expect(where.and[0].accessTags.in).toEqual([1])
-    expect(typeof where.and[0].accessTags.in[0]).toBe('number')
+    expect(buildTagWhere('accessTags', [role], 'update', true)).toMatchObject({
+      and: [{ accessTags: { in: [1] } }, { accessTags: { not_in: [2] } }],
+    })
   })
 })
 
 describe('RBAC: ensureFirstUserIsSuperAdmin', () => {
-  const buildReq = (totalDocs: number) => {
-    const find = vi.fn().mockResolvedValue({ totalDocs })
-    const req: Record<string, unknown> = { payload: { find } }
-    return { req, find }
+  const buildArgs = async (
+    totalDocs: number,
+    data: Partial<User>,
+    operation: 'create' | 'update' = 'create',
+    user: Partial<User> | null = null,
+  ) => {
+    const { req, find } = await createRequest(user, [], totalDocs)
+    const collection = req.payload.config.collections.find(({ slug }) => slug === 'users')
+    if (!collection) throw new Error('Missing users collection')
+    return { args: { collection, context: req.context, data, operation, req }, find }
   }
 
   it('promotes when no users exist', async () => {
-    const hook = ensureFirstUserIsSuperAdmin
-    const { req } = buildReq(0)
-    const result = await hook({
-      data: { email: 'first@example.com' },
-      req,
-      operation: 'create',
-    } as never)
-    expect(result).toMatchObject({ superAdmin: true })
+    const { args } = await buildArgs(0, { email: 'first@example.com' })
+    expect(await ensureFirstUserIsSuperAdmin(args)).toMatchObject({ superAdmin: true })
   })
 
   it('does not promote on subsequent users', async () => {
-    const hook = ensureFirstUserIsSuperAdmin
-    const { req } = buildReq(1)
-    const result = await hook({
-      data: { email: 'second@example.com' },
-      req,
-      operation: 'create',
-    } as never)
-    expect(result).not.toMatchObject({ superAdmin: true })
+    const { args } = await buildArgs(1, { email: 'second@example.com' })
+    expect(await ensureFirstUserIsSuperAdmin(args)).not.toMatchObject({ superAdmin: true })
   })
 
-  it('always uses overrideAccess to count existing users (prevents privilege escalation)', async () => {
-    const hook = ensureFirstUserIsSuperAdmin
-    const { req, find } = buildReq(1)
-    await hook({
-      data: { email: 'attacker@example.com' },
-      req: { ...req, user: { id: 1 } } as never,
-      operation: 'create',
-    } as never)
+  it('counts all users in the same request transaction (prevents privilege escalation)', async () => {
+    const { args, find } = await buildArgs(1, { email: 'attacker@example.com' }, 'create', {})
+    await ensureFirstUserIsSuperAdmin(args)
     expect(find).toHaveBeenCalledWith(
-      expect.objectContaining({ collection: 'users', overrideAccess: true }),
+      expect.objectContaining({ collection: 'users', overrideAccess: true, req: args.req }),
     )
   })
 
   it('skips on non-create operations', async () => {
-    const hook = ensureFirstUserIsSuperAdmin
-    const { req, find } = buildReq(0)
     const data = { email: 'someone@example.com' }
-    const result = await hook({ data, req, operation: 'update' } as never)
-    expect(result).toBe(data)
+    const { args, find } = await buildArgs(0, data, 'update')
+    expect(await ensureFirstUserIsSuperAdmin(args)).toBe(data)
     expect(find).not.toHaveBeenCalled()
   })
 })
 
 describe('RBAC: superAdmin/roles field-level access', () => {
-  const buildUsersCollection = () => {
-    const baseConfig = {
-      collections: [
-        {
-          slug: 'users',
-          auth: true,
-          fields: [],
-        },
-      ],
-    } as never
-
-    const plugin = rbacPlugin({ collections: ['pages'] })
-    const result = plugin(baseConfig) as {
-      collections: Array<{
-        slug: string
-        fields: Array<{ name?: string; access?: Record<string, (args: never) => unknown> }>
-      }>
+  const getCreateAccess = async (fieldName: string) => {
+    const result = await rbacPlugin({ collections: ['pages'] })(testConfig)
+    const users = result.collections?.find(({ slug }) => slug === 'users')
+    const field = users?.fields.find((field) => fieldAffectsData(field) && field.name === fieldName)
+    if (!field || !('access' in field) || !field.access?.create) {
+      throw new Error(`Missing create access for ${fieldName}`)
     }
-    return result.collections.find((c) => c.slug === 'users')!
+    return field.access.create
   }
 
-  it('forbids non-super-admins from setting superAdmin on create', () => {
-    const users = buildUsersCollection()
-    const field = users.fields.find((f) => f.name === 'superAdmin')!
-    const args = { req: { user: { id: 1, superAdmin: false } } } as never
-    expect(field.access!.create(args)).toBe(false)
+  it('forbids non-super-admins from setting superAdmin on create', async () => {
+    const create = await getCreateAccess('superAdmin')
+    const { req } = await createRequest({ superAdmin: false })
+    expect(create({ req })).toBe(false)
   })
 
-  it('allows super-admins to set superAdmin on create', () => {
-    const users = buildUsersCollection()
-    const field = users.fields.find((f) => f.name === 'superAdmin')!
-    const args = { req: { user: { id: 1, superAdmin: true } } } as never
-    expect(field.access!.create(args)).toBe(true)
+  it('allows super-admins to set superAdmin on create', async () => {
+    const create = await getCreateAccess('superAdmin')
+    const { req } = await createRequest({ superAdmin: true })
+    expect(create({ req })).toBe(true)
   })
 
-  it('forbids non-super-admins from setting roles on create', () => {
-    const users = buildUsersCollection()
-    const field = users.fields.find((f) => f.name === 'roles')!
-    const args = { req: { user: { id: 1, superAdmin: false } } } as never
-    expect(field.access!.create(args)).toBe(false)
+  it('forbids non-super-admins from setting roles on create', async () => {
+    const create = await getCreateAccess('roles')
+    const { req } = await createRequest({ superAdmin: false })
+    expect(create({ req })).toBe(false)
   })
 })
 
 describe('RBAC: update tag check (empty array enforcement)', () => {
-  const buildArgs = (roles: RolePermission[], data: unknown) => {
-    const find = vi.fn().mockResolvedValue({ docs: roles })
-    return {
-      args: {
-        req: {
-          user: { id: 1, superAdmin: false, roles: [10] },
-          payload: { find },
-          context: {},
-        },
-        data,
-      } as never,
-      find,
-    }
+  const buildArgs = async (roles: RolePermission[], data: { accessTags?: unknown }) => {
+    const { req, find } = await createRequest({}, roles)
+    return { args: { req, data }, find }
   }
 
   const role: RolePermission = {
@@ -439,7 +378,7 @@ describe('RBAC: update tag check (empty array enforcement)', () => {
       requireTagsForWrite: true,
       includeTagAccess: true,
     })
-    const { args } = buildArgs([role], { accessTags: [] })
+    const { args } = await buildArgs([role], { accessTags: [] })
     expect(await access.update(args)).toBe(false)
   })
 
@@ -450,7 +389,7 @@ describe('RBAC: update tag check (empty array enforcement)', () => {
       requireTagsForWrite: false,
       includeTagAccess: true,
     })
-    const { args } = buildArgs([role], { accessTags: [] })
+    const { args } = await buildArgs([role], { accessTags: [] })
     const result = await access.update(args)
     expect(result).not.toBe(false)
   })
@@ -462,7 +401,8 @@ describe('RBAC: update tag check (empty array enforcement)', () => {
       requireTagsForWrite: true,
       includeTagAccess: true,
     })
-    const { args } = buildArgs([role], { title: 'patch only' })
+    const data: Partial<Page> = { title: 'Patch without tags' }
+    const { args } = await buildArgs([role], data)
     const result = await access.update(args)
     expect(result).not.toBe(false)
   })
@@ -476,12 +416,7 @@ describe('RBAC: loadRoles per-request cache', () => {
         { collection: 'pages', actions: ['delete'] },
       ],
     }
-    const find = vi.fn().mockResolvedValue({ docs: [role] })
-    const req = {
-      user: { id: 1, superAdmin: false, roles: [10] },
-      payload: { find },
-      context: {},
-    }
+    const { req, find } = await createRequest({ id: 1, superAdmin: false, roles: [10] }, [role])
 
     const access = buildCollectionAccess({
       collection: 'pages',
@@ -490,9 +425,9 @@ describe('RBAC: loadRoles per-request cache', () => {
       includeTagAccess: false,
     })
 
-    await access.update({ req, data: {} } as never)
-    await access.delete({ req } as never)
-    await access.update({ req, data: {} } as never)
+    await access.update({ req, data: {} })
+    await access.delete({ req })
+    await access.update({ req, data: {} })
 
     expect(find).toHaveBeenCalledTimes(1)
     expect(find).toHaveBeenCalledWith(expect.objectContaining({ overrideAccess: true }))
@@ -505,7 +440,7 @@ describe('RBAC: globals', () => {
       globalSlug: 'header',
       baseAccess: { read: () => true },
     })
-    await expect(access.read({ req: { user: undefined } } as never)).resolves.toBe(true)
+    await expect(access.read({ req: (await createRequest(null)).req })).resolves.toBe(true)
   })
 
   it('denies update for unauthenticated requests', async () => {
@@ -513,52 +448,37 @@ describe('RBAC: globals', () => {
       globalSlug: 'header',
       baseAccess: undefined,
     })
-    await expect(access.update({ req: { user: undefined } } as never)).resolves.toBe(false)
+    await expect(access.update({ req: (await createRequest(null)).req })).resolves.toBe(false)
   })
 
   it('denies update for authenticated users without the matching permission', async () => {
-    const find = vi.fn().mockResolvedValue({ docs: [] })
-    const req = {
-      user: { id: 1, superAdmin: false, roles: [10] },
-      payload: { find },
-      context: {},
-    }
+    const { req } = await createRequest({ id: 1, superAdmin: false, roles: [10] })
     const access = buildGlobalAccess({
       globalSlug: 'header',
       baseAccess: undefined,
     })
-    await expect(access.update({ req, data: {} } as never)).resolves.toBe(false)
+    await expect(access.update({ req, data: {} })).resolves.toBe(false)
   })
 
   it('allows update when a role grants update on the global slug', async () => {
     const role: RolePermission = {
       collectionPermissions: [{ collection: 'header', actions: ['update'] }],
     }
-    const find = vi.fn().mockResolvedValue({ docs: [role] })
-    const req = {
-      user: { id: 1, superAdmin: false, roles: [10] },
-      payload: { find },
-      context: {},
-    }
+    const { req } = await createRequest({ id: 1, superAdmin: false, roles: [10] }, [role])
     const access = buildGlobalAccess({
       globalSlug: 'header',
       baseAccess: undefined,
     })
-    await expect(access.update({ req, data: {} } as never)).resolves.toBe(true)
+    await expect(access.update({ req, data: {} })).resolves.toBe(true)
   })
 
   it('always allows update for super admins', async () => {
-    const find = vi.fn()
-    const req = {
-      user: { id: 1, superAdmin: true, roles: [] },
-      payload: { find },
-      context: {},
-    }
+    const { req, find } = await createRequest({ id: 1, superAdmin: true, roles: [] })
     const access = buildGlobalAccess({
       globalSlug: 'footer',
       baseAccess: undefined,
     })
-    await expect(access.update({ req, data: {} } as never)).resolves.toBe(true)
+    await expect(access.update({ req, data: {} })).resolves.toBe(true)
     expect(find).not.toHaveBeenCalled()
   })
 
@@ -566,74 +486,66 @@ describe('RBAC: globals', () => {
     const role: RolePermission = {
       collectionPermissions: [{ collection: 'header', actions: ['create', 'delete'] }],
     }
-    const find = vi.fn().mockResolvedValue({ docs: [role] })
-    const req = {
-      user: { id: 1, superAdmin: false, roles: [10] },
-      payload: { find },
-      context: {},
-    }
+    const { req } = await createRequest({ id: 1, superAdmin: false, roles: [10] }, [role])
     const access = buildGlobalAccess({
       globalSlug: 'header',
       baseAccess: undefined,
     })
-    await expect(access.update({ req, data: {} } as never)).resolves.toBe(false)
+    await expect(access.update({ req, data: {} })).resolves.toBe(false)
   })
 })
 
 describe('RBAC: rbacPlugin global walk', () => {
-  it('wraps named globals with RBAC update access and leaves others alone', () => {
+  it('wraps named globals with RBAC update access and leaves others alone', async () => {
     const baseConfig = {
+      ...testConfig,
       collections: [{ slug: 'users', auth: true, fields: [] }],
       globals: [
         { slug: 'header', access: { read: () => true }, fields: [] },
         { slug: 'footer', access: { read: () => true }, fields: [] },
         { slug: 'unmanaged', fields: [] },
       ],
-    } as never
+    }
     const plugin = rbacPlugin({
       collections: ['pages'],
       globals: ['header', 'footer'],
     })
-    const result = plugin(baseConfig) as {
-      globals: Array<{
-        slug: string
-        access?: { read?: unknown; update?: unknown }
-      }>
-    }
-    const header = result.globals.find((g) => g.slug === 'header')!
-    const footer = result.globals.find((g) => g.slug === 'footer')!
-    const unmanaged = result.globals.find((g) => g.slug === 'unmanaged')!
+    const result = await plugin(baseConfig)
+    const header = result.globals?.find((g) => g.slug === 'header')
+    const footer = result.globals?.find((g) => g.slug === 'footer')
+    const unmanaged = result.globals?.find((g) => g.slug === 'unmanaged')
 
-    expect(typeof header.access?.update).toBe('function')
-    expect(typeof footer.access?.update).toBe('function')
-    expect(unmanaged.access).toBeUndefined()
+    expect(typeof header?.access?.update).toBe('function')
+    expect(typeof footer?.access?.update).toBe('function')
+    expect(unmanaged?.access).toBeUndefined()
   })
 
-  it('adds global slugs to the role-editor collection dropdown', () => {
+  it('adds global slugs to the role-editor collection dropdown', async () => {
     const baseConfig = {
+      ...testConfig,
       collections: [{ slug: 'users', auth: true, fields: [] }],
       globals: [
         { slug: 'header', fields: [] },
         { slug: 'footer', fields: [] },
       ],
-    } as never
+    }
     const plugin = rbacPlugin({
       collections: ['pages'],
       globals: ['header', 'footer'],
     })
-    const result = plugin(baseConfig) as {
-      collections: Array<{
-        slug: string
-        fields: Array<{
-          name?: string
-          fields?: Array<{ name?: string; options?: { value: string }[] }>
-        }>
-      }>
-    }
-    const roles = result.collections.find((c) => c.slug === 'roles')!
-    const collectionPermissions = roles.fields.find((f) => f.name === 'collectionPermissions')!
-    const collectionField = collectionPermissions.fields!.find((f) => f.name === 'collection')!
-    const values = collectionField.options!.map((o) => o.value)
+    const result = await plugin(baseConfig)
+    const roles = result.collections?.find((c) => c.slug === 'roles')
+    const collectionPermissions = roles?.fields.find(
+      (field) => fieldAffectsData(field) && field.name === 'collectionPermissions',
+    )
+    if (collectionPermissions?.type !== 'array') throw new Error('Missing collection permissions')
+    const collectionField = collectionPermissions.fields.find(
+      (field) => fieldAffectsData(field) && field.name === 'collection',
+    )
+    if (collectionField?.type !== 'select') throw new Error('Missing collection options')
+    const values = collectionField.options.map((option) =>
+      typeof option === 'string' ? option : option.value,
+    )
 
     expect(values).toContain('pages')
     expect(values).toContain('users')

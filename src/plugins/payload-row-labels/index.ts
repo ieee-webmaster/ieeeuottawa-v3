@@ -1,4 +1,4 @@
-import type { ArrayField, CollectionConfig, Field, Option, Plugin } from 'payload'
+import type { ArrayField, CollectionConfig, Field, Option, OptionObject, Plugin } from 'payload'
 import { fieldAffectsData, fieldHasSubFields } from 'payload/shared'
 
 import type { AutoArrayRowLabelCandidate } from './AutoArrayRowLabel'
@@ -23,18 +23,14 @@ const defaultPreferredFields = [
   'date',
 ]
 
-const isRecord = (value: unknown): value is Record<string, unknown> => {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
-
-const toLabelString = (label: unknown): string | null => {
+const toLabelString = (label: ArrayField['label'] | OptionObject['label']): string | null => {
   if (typeof label === 'string') {
     return label
   }
 
-  if (isRecord(label)) {
-    const firstValue = Object.values(label).find((value) => typeof value === 'string')
-    return typeof firstValue === 'string' ? firstValue : null
+  if (label && typeof label === 'object') {
+    const first = Object.values(label).find((value) => typeof value === 'string')
+    return typeof first === 'string' ? first : null
   }
 
   return null
@@ -64,32 +60,25 @@ const getFallbackPrefix = (field: ArrayField): string =>
     toLabelString(field.labels?.singular) ?? toLabelString(field.label) ?? toTitleCase(field.name),
   )
 
-const getOptionLabel = (option: Option): { label: string; value: string } | null => {
+const getOptionLabel = (option: Option): { label: string; value: string } => {
   if (typeof option === 'string') {
     return { label: option, value: option }
   }
 
-  const value = 'value' in option ? option.value : null
-  if (typeof value !== 'string' && typeof value !== 'number') {
-    return null
-  }
-
   return {
-    label: toLabelString(option.label) ?? String(value),
-    value: String(value),
+    label: toLabelString(option.label) ?? option.value,
+    value: option.value,
   }
 }
 
 const getSelectOptions = (field: Field): Record<string, string> | undefined => {
-  if (field.type !== 'select' || !Array.isArray(field.options)) {
+  if (field.type !== 'select') {
     return undefined
   }
 
   return field.options.reduce<Record<string, string>>((options, option) => {
     const normalized = getOptionLabel(option)
-    if (normalized) {
-      options[normalized.value] = normalized.label
-    }
+    options[normalized.value] = normalized.label
     return options
   }, {})
 }

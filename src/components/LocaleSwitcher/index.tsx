@@ -15,11 +15,11 @@ const localeLabels: Record<Locale, string> = {
 }
 
 export const LocaleSwitcher: React.FC<Props> = ({ className }) => {
-  const currentLocale = useLocale() as Locale
+  const currentLocale = useLocale()
   const router = useRouter()
   const pathname = usePathname()
 
-  const otherLocale = routing.locales.find((l) => l !== currentLocale) as Locale
+  const otherLocale = routing.locales.find((l) => l !== currentLocale) ?? routing.defaultLocale
 
   const handleSwitch = () => {
     router.replace(pathname, { locale: otherLocale })

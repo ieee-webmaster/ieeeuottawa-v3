@@ -51,12 +51,12 @@ export const getPublishedPageSlugs = unstable_cache(
   },
 )
 
-export const getPageBySlug = async ({
-  draft = false,
+export const getPageBySlug = async <TDraft extends boolean = false>({
+  draft,
   locale,
   slug,
 }: {
-  draft?: boolean
+  draft?: TDraft
   locale: Locale
   slug: string
 }) => {
@@ -67,7 +67,7 @@ export const getPageBySlug = async ({
     draft,
     limit: 1,
     locale,
-    overrideAccess: draft,
+    overrideAccess: draft ?? false,
     pagination: false,
     where: {
       slug: {
@@ -171,12 +171,12 @@ export const getCachedPostTotalPages = unstable_cache(
   },
 )
 
-export const getPostBySlug = async ({
-  draft = false,
+export const getPostBySlug = async <TDraft extends boolean = false>({
+  draft,
   locale,
   slug,
 }: {
-  draft?: boolean
+  draft?: TDraft
   locale: Locale
   slug: string
 }) => {
@@ -187,7 +187,7 @@ export const getPostBySlug = async ({
     draft,
     limit: 1,
     locale,
-    overrideAccess: draft,
+    overrideAccess: draft ?? false,
     pagination: false,
     where: {
       slug: {
@@ -324,12 +324,12 @@ export const getCachedEventList = (locale: Locale) =>
     },
   )()
 
-export const getEventBySlug = async ({
-  draft = false,
+export const getEventBySlug = async <TDraft extends boolean = false>({
+  draft,
   locale,
   slug,
 }: {
-  draft?: boolean
+  draft?: TDraft
   locale: Locale
   slug: string
 }) => {
@@ -340,7 +340,7 @@ export const getEventBySlug = async ({
     draft,
     limit: 1,
     locale,
-    overrideAccess: draft,
+    overrideAccess: draft ?? false,
     pagination: false,
     where: {
       slug: {

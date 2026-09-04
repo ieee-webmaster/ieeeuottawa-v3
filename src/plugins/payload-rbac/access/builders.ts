@@ -1,4 +1,4 @@
-import type { Access, CollectionConfig, GlobalConfig, Field, PayloadRequest, Where } from 'payload'
+import type { Access, CollectionConfig, GlobalConfig, Field, Where } from 'payload'
 
 import { isSuperAdmin } from './identity'
 import { hasCollectionPermission, loadRoles } from './roles'
@@ -48,9 +48,9 @@ export const buildAccessTagsField = (): Field => ({
   },
 })
 
-export type AdminAccess = ({ req }: { req: PayloadRequest }) => boolean | Promise<boolean>
-
 type BaseAccess = NonNullable<CollectionConfig['access']>
+
+export type AdminAccess = NonNullable<BaseAccess['admin']>
 
 type BuildAccessParams = {
   collection: string

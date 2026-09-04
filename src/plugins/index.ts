@@ -3,6 +3,7 @@ import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { redirectsPlugin } from '@payloadcms/plugin-redirects'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { searchPlugin } from '@payloadcms/plugin-search'
+import { z } from 'zod'
 import { Plugin } from 'payload'
 import { revalidateRedirects } from '@/hooks/revalidateRedirects'
 import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
@@ -14,6 +15,8 @@ import { resolveContentPathFromDoc } from '@/routing/resolveContentPath'
 import { resolveLocale } from '@/i18n/routing'
 import { getAbsoluteUrl, prefixLocale } from '@/utilities/routes'
 import { formatSiteTitle } from '@/utilities/siteMetadata'
+
+const categoryBreadcrumbsSchema = z.array(z.object({ slug: z.string().nullish() }))
 
 const generateTitle: GenerateTitle<{ title?: string | null }> = ({ doc }) => {
   return formatSiteTitle(doc?.title)
@@ -36,13 +39,13 @@ export const plugins: Plugin[] = [
   redirectsPlugin({
     collections: ['pages', 'posts'],
     overrides: {
-      // @ts-expect-error - This is a valid override, mapped fields don't resolve to the same type
       fields: ({ defaultFields }) => {
         return defaultFields.map((field) => {
-          if ('name' in field && field.name === 'from') {
+          if (field.type === 'text' && field.name === 'from') {
             return {
               ...field,
               admin: {
+                ...field.admin,
                 description: 'You will need to rebuild the website when changing this field.',
               },
             }
@@ -57,7 +60,10 @@ export const plugins: Plugin[] = [
   }),
   nestedDocsPlugin({
     collections: ['categories'],
-    generateURL: (docs) => docs.reduce((url, doc) => `${url}/${doc.slug}`, ''),
+    generateURL: (docs) =>
+      categoryBreadcrumbsSchema
+        .parse(docs)
+        .reduce((url, { slug }) => (slug ? `${url}/${slug}` : url), ''),
   }),
   seoPlugin({
     generateTitle,
@@ -70,7 +76,7 @@ export const plugins: Plugin[] = [
     formOverrides: {
       fields: ({ defaultFields }) => {
         return defaultFields.map((field) => {
-          if ('name' in field && field.name === 'confirmationMessage') {
+          if (field.type === 'richText' && field.name === 'confirmationMessage') {
             return {
               ...field,
               editor: lexicalEditor({

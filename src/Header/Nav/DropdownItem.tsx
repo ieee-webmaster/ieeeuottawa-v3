@@ -24,7 +24,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({ item, orientation, o
   useEffect(() => {
     if (!open || orientation === 'vertical') return
     const onClick = (event: MouseEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) {
+      if (!(event.target instanceof Node) || !containerRef.current?.contains(event.target)) {
         setOpen(false)
       }
     }
@@ -101,7 +101,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({ item, orientation, o
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
       onBlur={(event) => {
-        if (!containerRef.current?.contains(event.relatedTarget as Node | null)) {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
           setOpen(false)
         }
       }}

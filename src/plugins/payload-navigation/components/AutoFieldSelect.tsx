@@ -17,13 +17,21 @@ export const AutoFieldSelect: TextFieldClientComponent = (props) => {
   const { config } = useConfig()
   const apiRoute = config.routes.api.replace(/\/$/, '')
 
-  const collectionPath = useMemo(() => siblingPath(path, 'collection'), [path])
-  const collection = useFormFields(
-    ([fields]) => fields[collectionPath]?.value as string | undefined,
-  )
+  const collectionPath = siblingPath(path, 'collection')
+  const collection = useFormFields(([fields]) => {
+    const value = fields[collectionPath]?.value
+    return typeof value === 'string' ? value : undefined
+  })
 
-  const [options, setOptions] = useState<{ label: string; value: string }[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loaded, setLoaded] = useState<{
+    collection: string
+    options: { label: string; value: string }[]
+  } | null>(null)
+  const options = useMemo(
+    () => (loaded && loaded.collection === collection ? loaded.options : []),
+    [loaded, collection],
+  )
+  const loading = Boolean(collection && loaded?.collection !== collection)
 
   useEffect(() => {
     let cancelled = false
@@ -31,7 +39,6 @@ export const AutoFieldSelect: TextFieldClientComponent = (props) => {
     if (!collection) return
 
     const load = async () => {
-      setLoading(true)
       try {
         const response = await fetch(
           `${apiRoute}/payload-navigation/collection-fields?slug=${encodeURIComponent(collection)}`,
@@ -44,11 +51,9 @@ export const AutoFieldSelect: TextFieldClientComponent = (props) => {
           label: entry.label === entry.name ? entry.name : `${entry.label} (${entry.name})`,
           value: entry.name,
         }))
-        setOptions(next)
+        setLoaded({ collection, options: next })
       } catch {
-        if (!cancelled) setOptions([])
-      } finally {
-        if (!cancelled) setLoading(false)
+        if (!cancelled) setLoaded({ collection, options: [] })
       }
     }
 
@@ -67,30 +72,24 @@ export const AutoFieldSelect: TextFieldClientComponent = (props) => {
     }
   }, [options, value, setValue])
 
-  const handleChange = (next: unknown) => {
-    if (next && typeof next === 'object' && 'value' in next) {
-      setValue((next as { value: string | null }).value ?? null)
-      return
-    }
-    setValue(typeof next === 'string' ? next : null)
-  }
-
   return (
     <SelectInput
       {...props}
       name={field.name}
       path={path}
       label={field.label ?? 'Field'}
-      options={collection ? options : []}
+      options={options}
       value={value ?? ''}
-      onChange={handleChange}
+      onChange={(next) =>
+        setValue(next && !Array.isArray(next) && typeof next.value === 'string' ? next.value : null)
+      }
       readOnly={!collection || loading}
     />
   )
 }
 
 export const AutoNewTabCheckbox: UIFieldClientComponent = ({ path }) => {
-  const newTabPath = useMemo(() => siblingPath(path, 'link.newTab'), [path])
+  const newTabPath = siblingPath(path, 'link.newTab')
   const { value, setValue } = useField<boolean | null>({ path: newTabPath })
 
   return (

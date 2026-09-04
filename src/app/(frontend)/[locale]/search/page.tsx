@@ -4,7 +4,6 @@ import { CollectionArchive } from '@/components/CollectionArchive'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { Search } from '@/search/Component'
-import { CardPostData } from '@/components/Card'
 import type { Config } from '@/payload-types'
 import { getTranslations } from 'next-intl/server'
 import { generateStaticMeta } from '@/utilities/generateMeta'
@@ -14,7 +13,7 @@ import { SearchXIcon } from 'lucide-react'
 type Args = {
   params: Promise<{ locale: Config['locale'] }>
   searchParams: Promise<{
-    q: string
+    q?: string | string[]
   }>
 }
 export default async function Page({
@@ -23,7 +22,7 @@ export default async function Page({
 }: Args) {
   const { locale } = await paramsPromise
   const { q: rawQuery } = await searchParamsPromise
-  const query = rawQuery?.trim() ?? ''
+  const query = (Array.isArray(rawQuery) ? rawQuery[0] : rawQuery)?.trim() ?? ''
   const payload = await getPayload({ config: configPromise })
   const t = await getTranslations({ locale, namespace: 'search' })
 
@@ -71,6 +70,19 @@ export default async function Page({
       : {}),
   })
 
+  const cardPosts = posts.docs.flatMap(({ slug, title, meta, categories }) =>
+    slug
+      ? [
+          {
+            slug,
+            title: title ?? '',
+            meta,
+            categories: categories?.map(({ title }) => ({ title: title || 'Untitled category' })),
+          },
+        ]
+      : [],
+  )
+
   return (
     <SectionShell theme="default" padding="pt-20 pb-20 md:pt-28 md:pb-28">
       <header className="grid gap-10 lg:grid-cols-12 lg:items-end">
@@ -106,7 +118,7 @@ export default async function Page({
               {t('resultCount', { count: posts.totalDocs })}
             </span>
           </div>
-          <CollectionArchive bare posts={posts.docs as CardPostData[]} />
+          <CollectionArchive bare posts={cardPosts} />
         </>
       ) : (
         <div className="border-y border-foreground/20 py-10 md:py-12">

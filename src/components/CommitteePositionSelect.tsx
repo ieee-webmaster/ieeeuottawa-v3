@@ -11,34 +11,29 @@ const teamPositionsResponseSchema = z.object({
 
 export const CommitteePositionSelect: SelectFieldClientComponent = (props) => {
   const { path, field } = props
-  const { value, setValue } = useField({ path })
+  const { value, setValue } = useField<string | null>({ path })
 
-  const [options, setOptions] = useState<{ label: string; value: string }[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loaded, setLoaded] = useState<{
+    teamId: string
+    options: { label: string; value: string }[]
+  } | null>(null)
 
   // Watch the sibling 'team' field (one level up from members array)
   const teamId = useFormFields(([fields]) => {
-    const pathParts = path.split('.')
-    // path: teams.0.members.0.role
-    // We need: teams.0.team
-    pathParts.pop() // Remove 'role' → [teams, 0, members, 0]
-    pathParts.pop() // Remove members index → [teams, 0, members]
-    pathParts.pop() // Remove 'members' → [teams, 0]
-    pathParts.push('team')
-    const teamPath = pathParts.join('.')
-    return fields[teamPath]?.value
+    const teamPath = [...path.split('.').slice(0, -3), 'team'].join('.')
+    const value = fields[teamPath]?.value
+    return typeof value === 'number' || typeof value === 'string' ? String(value) : undefined
   })
+  const options = loaded && loaded.teamId === teamId ? loaded.options : []
+  const loading = Boolean(teamId && loaded?.teamId !== teamId)
 
   useEffect(() => {
-    const loadPositions = async () => {
-      if (!teamId) {
-        setOptions([])
-        return
-      }
+    if (!teamId) return
+    let cancelled = false
 
-      setLoading(true)
+    const loadPositions = async () => {
       try {
-        const response = await fetch(`/api/teams/${teamId}?depth=0`)
+        const response = await fetch(`/api/teams/${encodeURIComponent(teamId)}?depth=0`)
 
         if (!response.ok) {
           throw new Error('Failed to fetch team')
@@ -51,33 +46,28 @@ export const CommitteePositionSelect: SelectFieldClientComponent = (props) => {
           value: positionTitle,
         }))
 
-        setOptions(positionOptions)
+        if (!cancelled) setLoaded({ teamId, options: positionOptions })
       } catch (error) {
         console.error('Error loading positions:', error)
-        setOptions([])
-      } finally {
-        setLoading(false)
+        if (!cancelled) setLoaded({ teamId, options: [] })
       }
     }
 
-    loadPositions()
-  }, [teamId])
-
-  const handleChange = (val: unknown) => {
-    if (val && typeof val === 'object' && 'value' in val) {
-      setValue(val.value || null)
-    } else {
-      setValue(val)
+    void loadPositions()
+    return () => {
+      cancelled = true
     }
-  }
+  }, [teamId])
 
   return (
     <SelectInput
       {...props}
       name={field.name}
       options={options}
-      value={value as string}
-      onChange={handleChange}
+      value={value ?? ''}
+      onChange={(next) =>
+        setValue(next && !Array.isArray(next) && typeof next.value === 'string' ? next.value : null)
+      }
       readOnly={!teamId || loading}
     />
   )

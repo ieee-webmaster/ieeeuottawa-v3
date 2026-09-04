@@ -1,15 +1,16 @@
 import { cn } from '@/utilities/ui'
 import { Link } from '@/i18n/navigation'
-import React, { Fragment } from 'react'
+import React from 'react'
 
-import type { Post } from '@/payload-types'
+import type { Category, Post } from '@/payload-types'
 
 import { Media } from '@/components/Media'
 
-export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'>
+export type CardPostData = Pick<Post, 'slug' | 'meta' | 'title'> & {
+  categories?: (number | Pick<Category, 'title'>)[] | null
+}
 
 export const Card: React.FC<{
-  alignItems?: 'center'
   className?: string
   doc?: CardPostData
   href: string
@@ -23,7 +24,9 @@ export const Card: React.FC<{
   const { categories, meta, title } = doc || {}
   const { description, image: metaImage } = meta || {}
 
-  const hasCategories = categories && Array.isArray(categories) && categories.length > 0
+  const categoryTitles = categories?.flatMap((category) =>
+    typeof category === 'number' ? [] : [category.title || 'Untitled category'],
+  )
   const titleToUse = titleFromProps || title
   const sanitizedDescription = description?.replace(/\s/g, ' ') // replace non-breaking space with white space
 
@@ -48,28 +51,9 @@ export const Card: React.FC<{
         </div>
 
         <div className="flex flex-1 flex-col gap-3">
-          {showCategories && hasCategories && (
+          {showCategories && !!categoryTitles?.length && (
             <div className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-primary">
-              {showCategories && hasCategories && (
-                <div>
-                  {categories?.map((category, index) => {
-                    if (typeof category === 'number') {
-                      return null
-                    }
-
-                    const categoryTitle = category.title || 'Untitled category'
-
-                    const isLast = index === categories.length - 1
-
-                    return (
-                      <Fragment key={index}>
-                        {categoryTitle}
-                        {!isLast && <Fragment>, &nbsp;</Fragment>}
-                      </Fragment>
-                    )
-                  })}
-                </div>
-              )}
+              <div>{categoryTitles.join(', \u00a0')}</div>
             </div>
           )}
           {titleToUse && (

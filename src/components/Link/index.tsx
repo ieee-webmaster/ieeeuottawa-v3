@@ -3,6 +3,7 @@ import { cn } from '@/utilities/ui'
 import { Link } from '@/i18n/navigation'
 import { resolveContentPathFromReference } from '@/routing/resolveContentPath'
 import React from 'react'
+import type { Page } from '@/payload-types'
 
 type CMSLinkType = {
   appearance?: 'inline' | ButtonProps['variant']
@@ -11,10 +12,7 @@ type CMSLinkType = {
   label?: string | null
   newTab?: boolean | null
   onClick?: () => void
-  reference?: {
-    relationTo: string
-    value: object | string | number | null
-  } | null
+  reference?: NonNullable<Page['hero']['links']>[number]['link']['reference']
   size?: ButtonProps['size'] | null
   type?: 'custom' | 'reference' | null
   url?: string | null

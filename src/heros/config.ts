@@ -77,7 +77,7 @@ export const hero: Field = {
       type: 'upload',
       admin: {
         condition: (_, { type } = {}) =>
-          ['highImpact', 'mediumImpact', 'affinityGroup'].includes(type),
+          type === 'highImpact' || type === 'mediumImpact' || type === 'affinityGroup',
       },
       relationTo: 'media',
       required: true,

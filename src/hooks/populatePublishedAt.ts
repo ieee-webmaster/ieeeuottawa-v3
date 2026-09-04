@@ -1,15 +1,8 @@
 import type { CollectionBeforeChangeHook } from 'payload'
+import type { Page } from '@/payload-types'
 
-export const populatePublishedAt: CollectionBeforeChangeHook = ({ data, operation, req }) => {
-  if (operation === 'create' || operation === 'update') {
-    if (req.data && !req.data.publishedAt) {
-      const now = new Date()
-      return {
-        ...data,
-        publishedAt: now,
-      }
-    }
-  }
+export const populatePublishedAt = (({ data, originalDoc }) => {
+  if (data.publishedAt || originalDoc?.publishedAt) return data
 
-  return data
-}
+  return { ...data, publishedAt: new Date().toISOString() }
+}) satisfies CollectionBeforeChangeHook<Page>
