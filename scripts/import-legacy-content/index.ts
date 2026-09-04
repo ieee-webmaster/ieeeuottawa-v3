@@ -7,7 +7,7 @@ import config from '@payload-config'
 import { getPayload, type Payload } from 'payload'
 
 import { importCommittees, loadCommittees } from './collections/committee'
-import { importDocs } from './collections/docs'
+import { importDocs, loadDocs } from './collections/docs'
 import { importNavbar } from './collections/navbar'
 import { importPeople, loadPeople } from './collections/people'
 import { importTeams, loadTeams } from './collections/teams'
@@ -21,10 +21,11 @@ async function main() {
   assertRequiredEnv(['BLOB_READ_WRITE_TOKEN', 'PAYLOAD_SECRET', 'POSTGRES_URL'])
 
   console.log(`Loading local data from ${DATA_DIR}`)
-  const [people, teamsByName, committees] = await Promise.all([
+  const [people, teamsByName, committees, docs] = await Promise.all([
     loadPeople(DATA_DIR),
     loadTeams(DATA_DIR),
     loadCommittees(DATA_DIR),
+    loadDocs(DATA_DIR),
   ])
   const teams = Array.from(teamsByName.values())
 
@@ -45,7 +46,7 @@ async function main() {
   const peopleBySlug = await importPeople(payload, DATA_DIR, people)
   const teamIds = await importTeams(payload, teams)
   await importCommittees(payload, DATA_DIR, committees, peopleBySlug, teamIds)
-  await importDocs(payload, DATA_DIR)
+  await importDocs(payload, docs)
   await importNavbar(payload, DATA_DIR)
   console.log('Import complete')
 }

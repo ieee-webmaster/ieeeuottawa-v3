@@ -5,22 +5,12 @@ import type { Team } from '@/payload-types'
 import { type Payload } from 'payload'
 
 import { createImportContext } from '../helpers'
-
-type RoleValue = 'commish' | 'coord' | 'exec'
-type TeamPosition = {
-  positionEmail?: string
-  role: RoleValue
-  title: { en: string; fr: string }
-}
-export type TeamData = {
-  name: string
-  positions: TeamPosition[]
-}
+import { teamsSchema, type TeamData } from '../schemas'
 
 export async function loadTeams(dataDir: string) {
-  const teams = JSON.parse(
-    await fs.readFile(path.join(dataDir, 'teams.json'), 'utf8'),
-  ) as TeamData[]
+  const teams = teamsSchema.parse(
+    JSON.parse(await fs.readFile(path.join(dataDir, 'teams.json'), 'utf8')),
+  )
   const teamsByName = new Map<string, TeamData>()
 
   for (const team of teams) teamsByName.set(team.name, team)

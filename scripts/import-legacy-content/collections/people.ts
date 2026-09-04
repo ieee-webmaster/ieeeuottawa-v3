@@ -5,14 +5,13 @@ import type { Person } from '@/payload-types'
 import { type Payload } from 'payload'
 
 import { findLocalAssetsBySlug, createImportContext, upsertMediaFromLocalFile } from '../helpers'
-
-export type PersonData = { linkedin?: string | null; name: string; slug: string }
+import { peopleSchema, type PersonData } from '../schemas'
 
 export async function loadPeople(dataDir: string) {
   const people = new Map<string, PersonData>()
-  const entries = JSON.parse(
-    await fs.readFile(path.join(dataDir, 'people.json'), 'utf8'),
-  ) as PersonData[]
+  const entries = peopleSchema.parse(
+    JSON.parse(await fs.readFile(path.join(dataDir, 'people.json'), 'utf8')),
+  )
 
   for (const entry of entries) {
     people.set(entry.slug, entry)

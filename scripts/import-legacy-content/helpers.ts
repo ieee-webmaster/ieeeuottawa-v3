@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import { setTimeout as sleep } from 'node:timers/promises'
 
 import type { Media } from '@/payload-types'
 import { del, list } from '@vercel/blob'
@@ -15,7 +16,7 @@ const forceMediaUpload =
   process.argv.includes('--force-media') || process.env.IMPORT_FORCE_MEDIA === '1'
 const verifyMediaStorage = process.env.IMPORT_VERIFY_MEDIA !== '0'
 
-const MIME_TYPES = {
+const MIME_TYPES: Record<string, string | undefined> = {
   '.gif': 'image/gif',
   '.jpeg': 'image/jpeg',
   '.jpg': 'image/jpeg',
@@ -23,7 +24,7 @@ const MIME_TYPES = {
   '.png': 'image/png',
   '.svg': 'image/svg+xml',
   '.webp': 'image/webp',
-} as const
+}
 
 export async function findLocalAssetsBySlug(directory: string) {
   const assets = new Map<string, string>()
@@ -93,7 +94,7 @@ export async function upsertMediaFromLocalFile(payload: Payload, filePath: strin
   const file = await fs.readFile(filePath)
   const uploadFile = {
     data: file,
-    mimetype: MIME_TYPES[extension as keyof typeof MIME_TYPES] || 'application/octet-stream',
+    mimetype: MIME_TYPES[extension] || 'application/octet-stream',
     name: uploadName,
     size: file.byteLength,
   }
@@ -252,10 +253,6 @@ function isBlobUploadError(error: unknown): boolean {
   return (
     error.message.includes('Vercel Blob') || (cause instanceof Error && isBlobUploadError(cause))
   )
-}
-
-async function sleep(ms: number) {
-  await new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 function getMediaFilenamePattern(filename: string) {

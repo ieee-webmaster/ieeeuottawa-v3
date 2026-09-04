@@ -1,64 +1,67 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import { pathToFileURL } from 'node:url'
+import { z } from 'zod'
+
+import type { DocData, DocsData } from './schemas'
 
 const SITE_URL = 'https://ieeeuottawa.ca'
 const DATA_DIR = path.resolve(process.cwd(), 'scripts/import-legacy-content/data')
 
-type OldAction = { url?: string }
-type OldFeaturedItem = {
-  actions?: OldAction[]
-  featuredImage?: { altText?: string; url?: string }
-  subtitle?: string
-  subtitleFr?: string
-  text?: string | null
-  textFr?: string | null
-  title?: string
-  titleFr?: string
-}
-type OldSection = {
-  actions?: OldAction[]
-  items?: OldFeaturedItem[]
-  title?: string
-  type?: string
-}
-type OldPage = {
-  sections?: OldSection[]
-}
+const oldItemSchema = z.object({
+  actions: z.array(z.object({ url: z.string().nullish() })).nullish(),
+  subtitle: z.string().nullish(),
+  text: z.string().nullable().optional(),
+  textFr: z.string().nullable().optional(),
+  title: z.string().nullish(),
+  titleFr: z.string().nullish(),
+})
+const oldSectionSchema = z.object({
+  title: z.string().nullish(),
+  items: z.array(oldItemSchema).nullish(),
+})
+const nextDataSchema = z.object({
+  props: z.object({
+    pageProps: z.object({
+      page: z.object({ sections: z.array(z.unknown()).nullish() }),
+    }),
+  }),
+})
+const sectionTypeSchema = z.object({ type: z.string().nullish() })
 
 async function main() {
   await fs.mkdir(DATA_DIR, { recursive: true })
 
-  const docsPage = await fetchOldPage('/documents/')
+  const docs = await fetchOldDocuments('/documents/')
 
-  await writeJson('docs.json', docsFromOldData(docsPage))
+  await writeJson('docs.json', docs)
 }
 
-async function fetchOldPage(route: string): Promise<OldPage> {
+async function fetchOldDocuments(route: string) {
   const response = await fetch(`${SITE_URL}${route}`)
   if (!response.ok) throw new Error(`Unable to fetch ${route}: ${response.status}`)
 
-  const html = await response.text()
-  const match = html.match(
-    /<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/,
-  )
-  if (!match) throw new Error(`Unable to find Next.js page data for ${route}`)
-
-  return JSON.parse(match[1]).props.pageProps.page
+  return extractDocs(await response.text())
 }
 
-function docsFromOldData(page: OldPage) {
-  const generalDocuments = []
-  const years = []
-  let currentYear:
-    | { meetingMinutes: unknown[]; otherDocuments: unknown[]; year: string }
-    | undefined
+export function extractDocs(html: string): DocsData {
+  const pageData = html.match(
+    /<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/,
+  )?.[1]
+  if (!pageData) throw new Error('Unable to find Next.js page data')
 
-  for (const section of page.sections ?? []) {
-    if (section.type !== 'FeaturedItemsSection') continue
+  const page = nextDataSchema.parse(JSON.parse(pageData)).props.pageProps.page
+  const generalDocuments: DocData[] = []
+  const years: DocsData['years'] = []
+  let currentYear: DocsData['years'][number] | undefined
+
+  for (const rawSection of page.sections ?? []) {
+    if (sectionTypeSchema.parse(rawSection).type !== 'FeaturedItemsSection') continue
+    const section = oldSectionSchema.parse(rawSection)
 
     const title = section.title || ''
     const year = title.match(/(\d{4}-\d{4})/)?.[1]
-    const docs = (section.items ?? []).map(docFromOldItem).filter(Boolean)
+    const docs = (section.items ?? []).map(docFromOldItem).filter((doc) => doc !== undefined)
 
     if (title.toLowerCase().includes('general documents')) {
       generalDocuments.push(...docs)
@@ -77,7 +80,7 @@ function docsFromOldData(page: OldPage) {
   return { generalDocuments, years }
 }
 
-function docFromOldItem(item: OldFeaturedItem) {
+function docFromOldItem(item: z.infer<typeof oldItemSchema>): DocData | undefined {
   const url = normalizeOldSiteUrl(item.actions?.find((action) => action.url)?.url)
   if (!item.title || !url) return undefined
 
@@ -96,7 +99,8 @@ function parseMeetingDate(value?: string | null) {
   const iso = value.match(/(\d{4}-\d{2}-\d{2})/)
   if (iso) return iso[1]
   const slashed = value.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/)
-  if (slashed) return `${slashed[3]}-${slashed[1].padStart(2, '0')}-${slashed[2].padStart(2, '0')}`
+  const [, month, day, year] = slashed ?? []
+  if (month && day && year) return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
 }
 
 function cleanText(value?: string | null) {
@@ -119,7 +123,9 @@ async function writeJson(fileName: string, data: unknown) {
   await fs.writeFile(path.join(DATA_DIR, fileName), `${JSON.stringify(data, null, 2)}\n`)
 }
 
-void main().catch((error: unknown) => {
-  console.error(error)
-  process.exitCode = 1
-})
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  void main().catch((error: unknown) => {
+    console.error(error)
+    process.exitCode = 1
+  })
+}

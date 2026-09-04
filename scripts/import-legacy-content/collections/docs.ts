@@ -4,26 +4,13 @@ import path from 'node:path'
 import { type Payload } from 'payload'
 
 import { createImportContext } from '../helpers'
+import { docsSchema, type DocData, type DocsData } from '../schemas'
 
-type DocData = {
-  description?: string
-  descriptionFr?: string
-  meetingDate?: string
-  name: string
-  nameFr?: string
-  url: string
-}
-type DocsData = {
-  generalDocuments: DocData[]
-  years: Array<{
-    meetingMinutes: DocData[]
-    otherDocuments: DocData[]
-    year: string
-  }>
+export async function loadDocs(dataDir: string) {
+  return docsSchema.parse(JSON.parse(await fs.readFile(path.join(dataDir, 'docs.json'), 'utf8')))
 }
 
-export async function importDocs(payload: Payload, dataDir: string) {
-  const docs = JSON.parse(await fs.readFile(path.join(dataDir, 'docs.json'), 'utf8')) as DocsData
+export async function importDocs(payload: Payload, docs: DocsData) {
   console.log(`docs: importing ${docs.years.length} years`)
 
   for (const yearDocs of docs.years) {
