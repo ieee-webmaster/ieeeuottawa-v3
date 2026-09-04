@@ -48,14 +48,14 @@ export const getResponsiveImageData = (
   sizesPreset: MediaSizesPreset = 'full',
 ): ResponsiveImageData | null => {
   const allCandidates = responsiveSizeNames
-    .map((name) => media.sizes?.[name])
-    .flatMap((size, index) => {
+    .flatMap((name) => {
+      const size = media.sizes?.[name]
       if (!size?.url || !size.width || size.width <= 0) return []
 
       return [
         {
           height: inferHeight(media, size.width, size.height),
-          name: responsiveSizeNames[index],
+          name,
           src: getMediaUrl(size.url, media.updatedAt),
           width: size.width,
         },

@@ -75,9 +75,9 @@ describe('Payload responsive media', () => {
 
     expect(image).toMatchObject({
       height: 4000,
-      src: expect.stringContaining('/hero.jpg'),
       width: 6000,
     })
+    expect(image?.src).toContain('/hero.jpg')
     expect(image?.srcSet).toBeUndefined()
   })
 

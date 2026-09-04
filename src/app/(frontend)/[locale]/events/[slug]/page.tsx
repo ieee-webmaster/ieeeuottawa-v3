@@ -38,8 +38,11 @@ const getTextLength = (node: unknown): number => {
     return node.text.length
   }
 
+  if ('root' in node) return getTextLength(node.root)
+
   if ('children' in node && Array.isArray(node.children)) {
-    return node.children.reduce((total, child) => total + getTextLength(child), 0)
+    const children: unknown[] = node.children
+    return children.reduce<number>((total, child) => total + getTextLength(child), 0)
   }
 
   return 0
@@ -57,15 +60,13 @@ export default async function EventPage({ params: paramsPromise }: Args) {
     return <PayloadRedirects url={url} />
   }
 
-  const eventDate = new Date(event.date)
-  const isPastEvent = !Number.isNaN(eventDate.valueOf()) && eventDate < new Date()
-  const hostedBy = event['hosted-by'].filter((item) => typeof item !== 'number')
+  const eventDate = event.date ? new Date(event.date) : null
+  const isPastEvent =
+    eventDate !== null && !Number.isNaN(eventDate.valueOf()) && eventDate < new Date()
+  const hostedBy = event['hosted-by']?.filter((item) => typeof item !== 'number') ?? []
   const hostedByLabel =
     hostedBy.length > 0 ? hostedBy.map((team) => team.name).join(', ') : 'IEEE uOttawa'
-  const eventContentLength =
-    'root' in event.content && Array.isArray(event.content.root.children)
-      ? event.content.root.children.reduce((total, child) => total + getTextLength(child), 0)
-      : 0
+  const eventContentLength = getTextLength(event.content)
 
   return (
     <article>
@@ -104,14 +105,16 @@ export default async function EventPage({ params: paramsPromise }: Args) {
         <div className={`my-10 h-px w-full md:my-14 ${themeRule.default}`} />
 
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
-          <div className="space-y-2">
-            <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-              {t('date')}
-            </p>
-            <time className="block text-base leading-relaxed" dateTime={event.date}>
-              {formatDateTime(event.date, locale)}
-            </time>
-          </div>
+          {event.date && (
+            <div className="space-y-2">
+              <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
+                {t('date')}
+              </p>
+              <time className="block text-base leading-relaxed" dateTime={event.date}>
+                {formatDateTime(event.date, locale)}
+              </time>
+            </div>
+          )}
           <div className="space-y-2">
             <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
               {t('location')}
@@ -134,7 +137,7 @@ export default async function EventPage({ params: paramsPromise }: Args) {
           </div>
         </div>
 
-        {event.heroImage && typeof event.heroImage !== 'string' ? (
+        {event.heroImage && typeof event.heroImage !== 'number' ? (
           <div className="relative mt-12 aspect-[4/3] overflow-hidden bg-foreground/[0.04] sm:aspect-video md:mt-16 lg:aspect-[21/9]">
             <PayloadMedia
               fill
@@ -148,7 +151,9 @@ export default async function EventPage({ params: paramsPromise }: Args) {
       </SectionShell>
 
       <SectionShell theme="default" padding="py-12 md:py-20">
-        <RichText className="mx-auto max-w-3xl" data={event.content} enableGutter={false} />
+        {event.content && (
+          <RichText className="mx-auto max-w-3xl" data={event.content} enableGutter={false} />
+        )}
         {!isPastEvent && event.SignupLink && eventContentLength > 1000 ? (
           <div className="mx-auto mt-12 flex max-w-3xl justify-start">
             <LinkButton href={event.SignupLink} innerText={t('signUp')} />

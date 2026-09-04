@@ -1,9 +1,9 @@
 export const resolvePostPath = (doc: unknown): string | null => {
-  if (typeof doc !== 'object' || doc === null) {
+  if (typeof doc !== 'object' || doc === null || !('slug' in doc)) {
     return null
   }
 
-  const slug = (doc as { slug?: unknown }).slug
+  const { slug } = doc
   if (typeof slug !== 'string') {
     return null
   }

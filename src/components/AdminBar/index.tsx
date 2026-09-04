@@ -23,10 +23,6 @@ const collectionLabels = {
     plural: 'Posts',
     singular: 'Post',
   },
-  projects: {
-    plural: 'Projects',
-    singular: 'Project',
-  },
 }
 
 const Title: React.FC = () => <span>Dashboard</span>
@@ -34,12 +30,10 @@ const Title: React.FC = () => <span>Dashboard</span>
 export const AdminBar: React.FC<{
   adminBarProps?: PayloadAdminBarProps
 }> = (props) => {
-  const { adminBarProps } = props || {}
+  const { adminBarProps } = props
   const segments = useSelectedLayoutSegments()
   const [show, setShow] = useState(false)
-  const collection = (
-    collectionLabels[segments?.[1] as keyof typeof collectionLabels] ? segments[1] : 'pages'
-  ) as keyof typeof collectionLabels
+  const collection = segments[0] === 'posts' ? 'posts' : 'pages'
   const router = useRouter()
   const pathname = usePathname()
 
@@ -65,10 +59,7 @@ export const AdminBar: React.FC<{
           }}
           cmsURL={getClientSideURL()}
           collectionSlug={collection}
-          collectionLabels={{
-            plural: collectionLabels[collection]?.plural || 'Pages',
-            singular: collectionLabels[collection]?.singular || 'Page',
-          }}
+          collectionLabels={collectionLabels[collection]}
           logo={<Title />}
           onAuthChange={onAuthChange}
           onPreviewExit={() => {

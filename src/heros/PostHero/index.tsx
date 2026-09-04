@@ -4,7 +4,7 @@ import React from 'react'
 import { getTranslations } from 'next-intl/server'
 import { ArrowLeft } from 'lucide-react'
 
-import type { Post } from '@/payload-types'
+import type { getPostBySlug } from '@/utilities/publicCms'
 
 import { Eyebrow, SectionShell, themeRule } from '@/blocks/_shared'
 import { Link } from '@/i18n/navigation'
@@ -13,24 +13,14 @@ import { formatAuthors } from '@/utilities/formatAuthors'
 
 export const PostHero: React.FC<{
   locale: Locale
-  post: Post
+  post: NonNullable<Awaited<ReturnType<typeof getPostBySlug<true>>>>
 }> = async ({ locale, post }) => {
   const { categories, heroImage, populatedAuthors, publishedAt, title } = post
   const t = await getTranslations({ locale, namespace: 'posts' })
 
-  const hasAuthors =
-    populatedAuthors &&
-    populatedAuthors.length > 0 &&
-    formatAuthors(populatedAuthors, locale) !== ''
+  const authors = formatAuthors(populatedAuthors ?? [], locale)
   const categoryLabel = categories
-    ?.filter(
-      (category): category is NonNullable<(typeof categories)[number]> & { title: string } =>
-        typeof category === 'object' &&
-        category !== null &&
-        'title' in category &&
-        typeof category.title === 'string',
-    )
-    .map((category) => category.title)
+    ?.flatMap((category) => (typeof category === 'number' ? [] : [category.title]))
     .join(', ')
 
   return (
@@ -58,12 +48,12 @@ export const PostHero: React.FC<{
       <div className={`my-10 h-px w-full md:my-14 ${themeRule.default}`} />
 
       <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
-        {hasAuthors ? (
+        {authors ? (
           <div className="space-y-2">
             <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
               {t('author')}
             </p>
-            <p className="text-base leading-relaxed">{formatAuthors(populatedAuthors, locale)}</p>
+            <p className="text-base leading-relaxed">{authors}</p>
           </div>
         ) : null}
         {publishedAt ? (
@@ -78,7 +68,7 @@ export const PostHero: React.FC<{
         ) : null}
       </div>
 
-      {heroImage && typeof heroImage !== 'string' ? (
+      {heroImage && typeof heroImage !== 'number' ? (
         <div className="relative mt-12 aspect-[4/3] overflow-hidden bg-foreground/[0.04] sm:aspect-video md:mt-16 lg:aspect-[21/9]">
           <Media
             fill

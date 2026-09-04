@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "strict": true,
+    "noUncheckedIndexedAccess": true,
     "esModuleInterop": true,
     "target": "ES2022",
     "lib": [
@@ -40,6 +41,7 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
+    "**/*.mts",
     ".next/types/**/*.ts",
     "redirects.js",
     "next-env.d.ts",

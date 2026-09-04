@@ -25,6 +25,7 @@
     "test": "pnpm run test:int && pnpm run test:e2e",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --no-experimental-strip-types\" pnpm exec playwright test --config=playwright.config.ts",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts",
+    "typecheck": "tsc --noEmit",
     "knip": "cross-env NODE_OPTIONS=\"--no-deprecation -r tsconfig-paths/register\" knip"
   },
   "dependencies": {

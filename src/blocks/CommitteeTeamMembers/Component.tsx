@@ -11,11 +11,14 @@ import { Media } from '@/components/Media'
 import { hasRenderableMediaSource } from '@/components/Media/hasRenderableMediaSource'
 import { getCachedCommitteeByID, getCachedTeamByID } from '@/utilities/publicCms'
 
-export const CommitteeTeamMembersBlock: React.FC<CommitteeTeamMembersBlockProps> = async ({
-  committee,
-  id,
-  team,
-}) => {
+type Props = Omit<CommitteeTeamMembersBlockProps, 'committee' | 'team'> & {
+  committee?: CommitteeTeamMembersBlockProps['committee'] | null
+  team?: CommitteeTeamMembersBlockProps['team'] | null
+}
+
+export const CommitteeTeamMembersBlock: React.FC<Props> = async ({ committee, id, team }) => {
+  if (!committee || !team) return null
+
   const locale = resolveLocale(await getLocale())
   const t = await getTranslations({ locale, namespace: 'committee' })
   const theme: BlockTheme = 'default'

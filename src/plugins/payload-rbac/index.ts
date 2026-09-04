@@ -7,6 +7,7 @@ import type {
   GlobalConfig,
   Plugin,
 } from 'payload'
+import type { User } from '@/payload-types'
 
 import {
   buildAccessTagsField,
@@ -70,7 +71,7 @@ const buildCollectionOptions = (slugs: string[]): { label: string; value: string
   }))
 }
 
-export const ensureFirstUserIsSuperAdmin: CollectionBeforeChangeHook = async ({
+export const ensureFirstUserIsSuperAdmin: CollectionBeforeChangeHook<User> = async ({
   data,
   req,
   operation,

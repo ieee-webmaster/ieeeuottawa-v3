@@ -2,6 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react'
 import { createElement } from 'react'
 
+import type { CollectionConfig, Field } from 'payload'
+import { testConfig } from '../helpers/payload'
+
 import { autoArrayRowLabelsPlugin } from '../../src/plugins/payload-row-labels'
 
 const rowLabelHookState: {
@@ -26,52 +29,25 @@ vi.mock('@payloadcms/ui', () => ({
   }),
 }))
 
-type RowLabelConfig = {
-  clientProps?: {
-    candidates?: Array<Record<string, unknown>>
-    fallbackPrefix?: string
-  }
-  exportName?: string
-  path?: string
+const applyPlugin = async (collections: CollectionConfig[]) => {
+  const result = await autoArrayRowLabelsPlugin()({ ...testConfig, collections })
+  return result.collections ?? []
 }
 
-type TestField = {
-  admin?: {
-    components?: {
-      RowLabel?: RowLabelConfig | string
-    }
-  }
-  fields?: TestField[]
-  label?: string
-  name?: string
-  type: string
+const getArray = (field: Field | undefined) => {
+  if (field?.type !== 'array') throw new Error('Expected an array field')
+  return field
 }
 
-type TestCollection = {
-  admin?: {
-    useAsTitle?: string
-  }
-  fields: TestField[]
-  labels?: {
-    singular?: string
-  }
-  slug: string
-}
-
-const applyPlugin = (collections: TestCollection[]) => {
-  const plugin = autoArrayRowLabelsPlugin()
-  return plugin({ collections } as never) as { collections: TestCollection[] }
-}
-
-const getRowLabel = (field: TestField): RowLabelConfig => {
-  const rowLabel = field.admin?.components?.RowLabel
-  expect(rowLabel).toBeTypeOf('object')
-  return rowLabel as RowLabelConfig
+const getRowLabel = (field: Field | undefined) => {
+  const rowLabel = getArray(field).admin?.components?.RowLabel
+  if (!rowLabel || typeof rowLabel !== 'object') throw new Error('Expected RowLabel configuration')
+  return rowLabel
 }
 
 describe('autoArrayRowLabelsPlugin', () => {
-  it('adds a reusable RowLabel component to array fields with value labels', () => {
-    const result = applyPlugin([
+  it('adds a reusable RowLabel component to array fields with value labels', async () => {
+    const result = await applyPlugin([
       {
         slug: 'teams',
         fields: [
@@ -85,20 +61,19 @@ describe('autoArrayRowLabelsPlugin', () => {
       },
     ])
 
-    const positions = result.collections[0].fields[0]
+    const positions = result[0]?.fields[0]
     const rowLabel = getRowLabel(positions)
 
     expect(rowLabel.path).toBe('@/plugins/payload-row-labels/AutoArrayRowLabel')
     expect(rowLabel.exportName).toBe('AutoArrayRowLabel')
-    expect(rowLabel.clientProps?.fallbackPrefix).toBe('Position')
-    expect(rowLabel.clientProps?.candidates?.[0]).toMatchObject({
-      kind: 'value',
-      path: 'positionTitle',
+    expect(rowLabel.clientProps).toMatchObject({
+      fallbackPrefix: 'Position',
+      candidates: [{ kind: 'value', path: 'positionTitle' }],
     })
   })
 
-  it('uses relationship labels before scalar fields for nested array rows', () => {
-    const result = applyPlugin([
+  it('uses relationship labels before scalar fields for nested array rows', async () => {
+    const result = await applyPlugin([
       {
         slug: 'people',
         labels: { singular: 'Person' },
@@ -117,7 +92,7 @@ describe('autoArrayRowLabelsPlugin', () => {
                 type: 'array',
                 fields: [
                   { name: 'role', type: 'text' },
-                  { name: 'person', type: 'relationship', relationTo: 'people' } as TestField,
+                  { name: 'person', type: 'relationship', relationTo: 'people' },
                 ],
               },
             ],
@@ -126,21 +101,26 @@ describe('autoArrayRowLabelsPlugin', () => {
       },
     ])
 
-    const members = result.collections[1].fields[0].fields?.[0]
+    const members = getArray(result[1]?.fields[0]).fields[0]
     expect(members).toBeDefined()
 
-    const rowLabel = getRowLabel(members as TestField)
-    expect(rowLabel.clientProps?.candidates?.[0]).toMatchObject({
-      fallbackPrefix: 'Person',
-      kind: 'relationship',
-      labelField: 'fullName',
-      path: 'person',
-      relationTo: 'people',
+    const rowLabel = getRowLabel(members)
+    expect(rowLabel.clientProps).toMatchObject({
+      candidates: [
+        {
+          fallbackPrefix: 'Person',
+          kind: 'relationship',
+          labelField: 'fullName',
+          path: 'person',
+          relationTo: 'people',
+        },
+        { kind: 'value', path: 'role' },
+      ],
     })
   })
 
-  it('passes select option labels for enum-like array rows', () => {
-    const result = applyPlugin([
+  it('passes select option labels for enum-like array rows', async () => {
+    const result = await applyPlugin([
       {
         slug: 'roles',
         fields: [
@@ -152,24 +132,29 @@ describe('autoArrayRowLabelsPlugin', () => {
                 name: 'collection',
                 type: 'select',
                 options: [{ label: 'People', value: 'people' }],
-              } as TestField,
-              { name: 'actions', type: 'select', options: ['create', 'update'] } as TestField,
+              },
+              { name: 'actions', type: 'select', options: ['create', 'update'] },
             ],
           },
         ],
       },
     ])
 
-    const rowLabel = getRowLabel(result.collections[0].fields[0])
-    expect(rowLabel.clientProps?.candidates?.[0]).toMatchObject({
-      kind: 'value',
-      options: { people: 'People' },
-      path: 'collection',
+    const rowLabel = getRowLabel(result[0]?.fields[0])
+    expect(rowLabel.clientProps).toMatchObject({
+      candidates: [
+        {
+          kind: 'value',
+          options: { people: 'People' },
+          path: 'collection',
+        },
+        { kind: 'value', path: 'actions', options: { create: 'create', update: 'update' } },
+      ],
     })
   })
 
-  it('preserves manually configured row labels by default', () => {
-    const result = applyPlugin([
+  it('preserves manually configured row labels by default', async () => {
+    const result = await applyPlugin([
       {
         slug: 'teams',
         fields: [
@@ -183,7 +168,7 @@ describe('autoArrayRowLabelsPlugin', () => {
       },
     ])
 
-    expect(result.collections[0].fields[0].admin?.components?.RowLabel).toBe(
+    expect(getArray(result[0]?.fields[0]).admin?.components?.RowLabel).toBe(
       '@/custom/RowLabel#RowLabel',
     )
   })
@@ -207,7 +192,7 @@ describe('AutoArrayRowLabel render', () => {
     }
     vi.stubGlobal(
       'fetch',
-      vi.fn(() => new Promise(() => {})),
+      vi.fn<typeof globalThis.fetch>(() => new Promise(() => {})),
     )
 
     const { AutoArrayRowLabel } =
@@ -234,7 +219,7 @@ describe('AutoArrayRowLabel render', () => {
 
   it('falls back to the array prefix when no candidate matches', async () => {
     rowLabelHookState.fields = {}
-    vi.stubGlobal('fetch', vi.fn())
+    vi.stubGlobal('fetch', vi.fn<typeof globalThis.fetch>())
 
     const { AutoArrayRowLabel } =
       await import('../../src/plugins/payload-row-labels/AutoArrayRowLabel')
@@ -263,10 +248,9 @@ describe('AutoArrayRowLabel render', () => {
     }
     vi.stubGlobal(
       'fetch',
-      vi.fn(async () => ({
-        ok: true,
-        json: async () => ({ fullName: 'Ada Lovelace' }),
-      })),
+      vi
+        .fn<typeof globalThis.fetch>()
+        .mockResolvedValue(Response.json({ fullName: 'Ada Lovelace' })),
     )
 
     const { AutoArrayRowLabel } =

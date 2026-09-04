@@ -1,12 +1,7 @@
 import React from 'react'
+import type { CodeBlock as CodeBlockProps } from '@/payload-types'
 
 import { Code } from './Component.client'
-
-export type CodeBlockProps = {
-  code: string
-  language?: string
-  blockType: 'code'
-}
 
 type Props = CodeBlockProps & {
   className?: string

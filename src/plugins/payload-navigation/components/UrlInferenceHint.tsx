@@ -1,6 +1,5 @@
 'use client'
 
-import { useMemo } from 'react'
 import { useFormFields } from '@payloadcms/ui'
 import type { FieldDescriptionClientComponent } from 'payload'
 
@@ -12,15 +11,18 @@ const replaceLast = (path: string, name: string): string => {
   return parts.join('.')
 }
 
+const stringValue = (value: unknown): string | undefined =>
+  typeof value === 'string' ? value : undefined
+
 export const UrlInferenceDescription: FieldDescriptionClientComponent = ({ path }) => {
-  const collectionPath = useMemo(() => replaceLast(path, 'collection'), [path])
-  const basePath = useMemo(() => replaceLast(path, 'baseUrl'), [path])
-  const specificPath = useMemo(() => replaceLast(path, 'specificUrl'), [path])
+  const collectionPath = replaceLast(path, 'collection')
+  const basePath = replaceLast(path, 'baseUrl')
+  const specificPath = replaceLast(path, 'specificUrl')
 
   const values = useFormFields(([fields]) => ({
-    collection: fields[collectionPath]?.value as string | undefined,
-    base: fields[basePath]?.value as string | undefined,
-    specific: fields[specificPath]?.value as string | undefined,
+    collection: stringValue(fields[collectionPath]?.value),
+    base: stringValue(fields[basePath]?.value),
+    specific: stringValue(fields[specificPath]?.value),
   }))
 
   const inferred = inferUrls({

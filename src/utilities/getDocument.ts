@@ -11,8 +11,8 @@ import {
 
 type Collection = keyof Config['collections']
 
-async function getDocumentByID(
-  collection: Collection,
+async function getDocumentByID<T extends Collection>(
+  collection: T,
   id: string,
   depth = 0,
   locale?: Config['locale'],
@@ -28,8 +28,8 @@ async function getDocumentByID(
   })
 }
 
-export const getCachedDocumentByID = (
-  collection: Collection,
+export const getCachedDocumentByID = <T extends Collection>(
+  collection: T,
   id: string,
   locale?: Config['locale'],
 ) =>

@@ -160,9 +160,10 @@ export default buildConfig({
     }),
   ],
   globals: [Header, Footer],
-  secret: process.env.PAYLOAD_SECRET,
+  secret: process.env.PAYLOAD_SECRET ?? '',
   sharp,
   typescript: {
+    strictDraftTypes: true,
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   jobs: {

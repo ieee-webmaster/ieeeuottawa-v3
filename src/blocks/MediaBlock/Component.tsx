@@ -9,7 +9,6 @@ import type { MediaBlock as MediaBlockProps } from '@/payload-types'
 import { Media } from '@/components/Media'
 
 type Props = MediaBlockProps & {
-  breakout?: boolean
   captionClassName?: string
   className?: string
   enableGutter?: boolean

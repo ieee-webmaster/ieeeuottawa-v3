@@ -1,4 +1,5 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, FieldHook } from 'payload'
+import type { Post } from '@/payload-types'
 
 import {
   BlocksFeature,
@@ -26,6 +27,17 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { slugField } from 'payload'
+
+export const populatePostPublishedAt: FieldHook<Post, Post['publishedAt'], Post> = ({
+  siblingData,
+  value,
+  originalDoc,
+}) => {
+  if (siblingData._status === 'published' && !value) {
+    return originalDoc?.publishedAt || new Date().toISOString()
+  }
+  return value === undefined ? originalDoc?.publishedAt : value
+}
 
 export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
@@ -173,14 +185,7 @@ export const Posts: CollectionConfig<'posts'> = {
         position: 'sidebar',
       },
       hooks: {
-        beforeChange: [
-          ({ siblingData, value }) => {
-            if (siblingData._status === 'published' && !value) {
-              return new Date()
-            }
-            return value
-          },
-        ],
+        beforeChange: [populatePostPublishedAt],
       },
     },
     {

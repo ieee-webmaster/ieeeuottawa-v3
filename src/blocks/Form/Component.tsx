@@ -11,8 +11,10 @@ import { payloadErrorResponseSchema } from '@/utilities/payloadErrorResponse'
 import { RenderFormField } from './fields'
 import { getFormDefaultValues, type FormValues } from './types'
 
-export const FormBlock = (props: FormBlockProps) => {
-  if (typeof props.form === 'number') return null
+type Props = Omit<FormBlockProps, 'form'> & { form?: FormBlockProps['form'] | null }
+
+export const FormBlock = (props: Props) => {
+  if (!props.form || typeof props.form === 'number') return null
   return <PopulatedFormBlock {...props} form={props.form} />
 }
 

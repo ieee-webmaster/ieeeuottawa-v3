@@ -15,25 +15,18 @@ const revalidateLinkedGlobals = () => {
   revalidateTag('global_footer', { expire: 0 })
 }
 
-const revalidateSocialLink: CollectionAfterChangeHook = ({ doc, req: { payload, context } }) => {
+const revalidateSocialLink: CollectionAfterChangeHook = ({ req: { payload, context } }) => {
   if (!context.disableRevalidate) {
     payload.logger.info('Revalidating header and footer after social link change')
     revalidateLinkedGlobals()
   }
-
-  return doc
 }
 
-const revalidateDeletedSocialLink: CollectionAfterDeleteHook = ({
-  doc,
-  req: { payload, context },
-}) => {
+const revalidateDeletedSocialLink: CollectionAfterDeleteHook = ({ req: { payload, context } }) => {
   if (!context.disableRevalidate) {
     payload.logger.info('Revalidating header and footer after social link delete')
     revalidateLinkedGlobals()
   }
-
-  return doc
 }
 
 export const SocialLinks: CollectionConfig = {

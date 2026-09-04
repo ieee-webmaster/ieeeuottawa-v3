@@ -11,12 +11,13 @@ import {
   RichText as ConvertRichText,
 } from '@payloadcms/richtext-lexical/react'
 
-import { CodeBlock, CodeBlockProps } from '@/blocks/Code/Component'
+import { CodeBlock } from '@/blocks/Code/Component'
 
 import type {
   BannerBlock as BannerBlockProps,
   CallToActionBlock as CTABlockProps,
   MediaBlock as MediaBlockProps,
+  CodeBlock as CodeBlockProps,
 } from '@/payload-types'
 import { BannerBlock } from '@/blocks/Banner/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
@@ -28,7 +29,9 @@ type NodeTypes =
   | SerializedBlockNode<CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps>
 
 const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
-  const { value, relationTo } = linkNode.fields.doc!
+  const reference = linkNode.fields.doc
+  if (!reference) throw new Error('Internal link is missing its document reference')
+  const { value, relationTo } = reference
   const path = resolveContentPathFromReference(relationTo, value)
   if (!path) {
     throw new Error(`Unsupported collection relation: ${relationTo}`)

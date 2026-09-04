@@ -11,15 +11,13 @@ export type InferUrlsResult = {
 
 const VALUE_TOKEN = '[value]'
 
-const trimOrEmpty = (value: string | null | undefined): string =>
-  typeof value === 'string' ? value.trim() : ''
+const trimOrEmpty = (value: string | null | undefined): string => value?.trim() ?? ''
 
 const ensureLeadingSlash = (value: string): string => (value.startsWith('/') ? value : `/${value}`)
 
 const stripValueToken = (specific: string): string => {
-  const withoutToken = specific.replace(new RegExp(`${VALUE_TOKEN.replace(/[[\]]/g, '\\$&')}$`), '')
-  if (withoutToken === specific) return specific
-  if (withoutToken === '' || withoutToken === '/') return '/'
+  if (!specific.endsWith(VALUE_TOKEN)) return specific
+  const withoutToken = specific.slice(0, -VALUE_TOKEN.length)
   return withoutToken.endsWith('/') ? withoutToken : `${withoutToken}/`
 }
 

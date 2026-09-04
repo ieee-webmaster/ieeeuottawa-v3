@@ -1,18 +1,16 @@
 'use client'
 import { Highlight, themes } from 'prism-react-renderer'
 import React from 'react'
+import type { CodeBlock } from '@/payload-types'
 import { CopyButton } from './CopyButton'
 
-type Props = {
-  code: string
-  language?: string
-}
+type Props = Pick<CodeBlock, 'code' | 'language'>
 
-export const Code: React.FC<Props> = ({ code, language = '' }) => {
+export const Code: React.FC<Props> = ({ code, language }) => {
   if (!code) return null
 
   return (
-    <Highlight code={code} language={language} theme={themes.vsDark}>
+    <Highlight code={code} language={language ?? ''} theme={themes.vsDark}>
       {({ getLineProps, getTokenProps, tokens }) => (
         <pre className="bg-black p-4 border text-xs border-border rounded overflow-x-auto">
           {tokens.map((line, i) => (
