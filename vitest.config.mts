@@ -9,5 +9,6 @@ export default defineConfig({
     hookTimeout: 60000,
     setupFiles: ['./vitest.setup.ts'],
     include: ['tests/int/**/*.int.spec.ts'],
+    server: { deps: { inline: ['next-intl'] } },
   },
 })

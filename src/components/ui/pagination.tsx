@@ -1,6 +1,7 @@
 import type { ButtonProps } from '@/components/ui/button'
 
 import { buttonVariants } from '@/components/ui/button'
+import { Link } from '@/i18n/navigation'
 import { cn } from '@/utilities/ui'
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
 import * as React from 'react'
@@ -25,23 +26,39 @@ const PaginationItem: React.FC<
 > = ({ className, ref, ...props }) => <li className={cn('', className)} ref={ref} {...props} />
 
 type PaginationLinkProps = {
+  disabled?: boolean
   isActive?: boolean
 } & Pick<ButtonProps, 'size'> &
-  React.ComponentProps<'button'>
+  React.ComponentProps<typeof Link>
 
-const PaginationLink = ({ className, isActive, size = 'icon', ...props }: PaginationLinkProps) => (
-  <button
-    aria-current={isActive ? 'page' : undefined}
-    className={cn(
-      buttonVariants({
-        size,
-        variant: isActive ? 'outline' : 'ghost',
-      }),
-      className,
-    )}
-    {...props}
-  />
-)
+const PaginationLink = ({
+  children,
+  className,
+  disabled,
+  isActive,
+  size = 'icon',
+  ...props
+}: PaginationLinkProps) => {
+  const classes = cn(
+    buttonVariants({ size, variant: isActive ? 'outline' : 'ghost' }),
+    disabled && 'pointer-events-none opacity-50',
+    className,
+  )
+
+  if (disabled) {
+    return (
+      <span aria-disabled aria-label={props['aria-label']} className={classes} role="link">
+        {children}
+      </span>
+    )
+  }
+
+  return (
+    <Link aria-current={isActive ? 'page' : undefined} className={classes} {...props}>
+      {children}
+    </Link>
+  )
+}
 
 const PaginationPrevious = ({
   className,
