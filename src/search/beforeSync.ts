@@ -2,7 +2,7 @@ import type { BeforeSync } from '@payloadcms/plugin-search/types'
 import type { Search } from '@/payload-types'
 import { z } from 'zod'
 
-const categorySchema = z.object({ id: z.number(), title: z.string() })
+const categorySchema = z.object({ id: z.number(), title: z.string().nullish() })
 const sourcePostSchema = z.object({
   id: z.number(),
   // The search plugin also calls beforeSync for incomplete autosaved drafts.

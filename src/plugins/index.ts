@@ -17,9 +17,11 @@ import { getAbsoluteUrl, prefixLocale } from '@/utilities/routes'
 import { formatSiteTitle } from '@/utilities/siteMetadata'
 
 const categoryBreadcrumbsSchema = z.array(z.object({ slug: z.string().nullish() }))
+const seoTitleDocSchema = z.object({ title: z.string().nullish() }).nullish()
 
-const generateTitle: GenerateTitle<{ title?: string | null }> = ({ doc }) => {
-  return formatSiteTitle(doc?.title)
+const generateTitle: GenerateTitle<unknown> = ({ doc }) => {
+  const result = seoTitleDocSchema.safeParse(doc)
+  return formatSiteTitle(result.success ? result.data?.title : undefined)
 }
 
 const generateURL: GenerateURL<Record<string, unknown>> = ({ collectionConfig, doc, locale }) => {

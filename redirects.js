@@ -1,5 +1,6 @@
-const redirects = async () => {
-  const internetExplorerRedirect = {
+/** @type {NonNullable<import('next').NextConfig['redirects']>} */
+const redirects = () => [
+  {
     destination: '/ie-incompatible.html',
     has: [
       {
@@ -10,11 +11,7 @@ const redirects = async () => {
     ],
     permanent: false,
     source: '/:path((?!ie-incompatible.html$).*)', // all pages except the incompatibility page
-  }
-
-  const redirects = [internetExplorerRedirect]
-
-  return redirects
-}
+  },
+]
 
 export default redirects

@@ -19,7 +19,7 @@ export const CommitteeCard = ({ committee, index, total }: Props) => {
   return (
     <li className="group relative focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary">
       <Link
-        href={`/committee/${yearLabel}`}
+        href={`/committee/${encodeURIComponent(yearLabel)}`}
         className="absolute inset-0 z-10 focus-visible:outline-none"
       >
         <span className="sr-only">{yearLabel}</span>

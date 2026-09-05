@@ -22,6 +22,7 @@ async function getDocumentByID<T extends Collection>(
   return payload.findByID({
     collection,
     depth,
+    disableErrors: true,
     id,
     locale,
     overrideAccess: false,

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react'
-import { createElement } from 'react'
+import { createElement, Fragment } from 'react'
 import type { Form, FormBlock as FormBlockProps } from '@/payload-types'
 
 const { push } = vi.hoisted(() => ({ push: vi.fn() }))
@@ -59,14 +59,14 @@ afterEach(() => {
 })
 
 describe('CMS form values', () => {
-  it('derives named defaults from generated field definitions, excluding message blocks', () => {
-    expect(getFormDefaultValues(form.fields)).toEqual({
-      name: 'Ada',
-      guests: 2,
-      consent: false,
-      topic: 'events',
-      country: '',
-      state: '',
+  it('derives scalar defaults from generated field definitions, excluding message blocks', () => {
+    expect(getFormDefaultValues(form.fields, 'test')).toEqual({
+      test_field_1: 'Ada',
+      test_field_2: 2,
+      test_field_3: false,
+      test_field_4: 'events',
+      test_field_5: '',
+      test_field_6: '',
     })
   })
 
@@ -78,7 +78,6 @@ describe('CMS form values', () => {
     const view = render(createElement(FormBlock, props))
     expect(view.getAllByRole('combobox')).toHaveLength(3)
     const input = view.getByRole('textbox', { name: /Name/ })
-    expect(input.getAttribute('name')).toBe('name')
     fireEvent.change(input, { target: { value: 'Grace' } })
     fireEvent.click(view.getByRole('button', { name: 'Send' }))
     await waitFor(() => expect(view.getByText('This field is required')).toBeDefined())
@@ -103,6 +102,89 @@ describe('CMS form values', () => {
       }),
     )
     await waitFor(() => expect(view.queryByRole('button', { name: 'Send' })).toBeNull())
+  })
+
+  it('preserves literal CMS names, defaults and errors when names resemble object paths', async () => {
+    const fetch = vi
+      .fn<typeof globalThis.fetch>()
+      .mockResolvedValue(new Response('{}', { status: 201 }))
+    vi.stubGlobal('fetch', fetch)
+    const view = render(
+      createElement(FormBlock, {
+        ...props,
+        form: {
+          ...form,
+          fields: [
+            {
+              blockType: 'text',
+              name: 'contact',
+              label: 'Contact',
+              defaultValue: 'Initial contact',
+            },
+            { blockType: 'email', name: 'contact.email', label: 'Email', required: true },
+            { blockType: 'text', name: 'people[0].name', label: 'Person', defaultValue: 'Ada' },
+            { blockType: 'text', name: '__proto__', label: 'Extra', defaultValue: 'Original' },
+            { blockType: 'checkbox', name: 'consent.accepted', label: 'Consent', required: true },
+          ],
+        },
+      }),
+    )
+
+    expect(view.getByDisplayValue('Initial contact')).toBe(
+      view.getByRole('textbox', { name: 'Contact' }),
+    )
+    expect(view.getByDisplayValue('Ada')).toBe(view.getByRole('textbox', { name: 'Person' }))
+    fireEvent.click(view.getByRole('button', { name: 'Send' }))
+    await waitFor(() => expect(view.getAllByText('This field is required')).toHaveLength(2))
+    expect(fetch).not.toHaveBeenCalled()
+
+    fireEvent.change(view.getByRole('textbox', { name: 'Contact' }), { target: { value: 'IEEE' } })
+    fireEvent.change(view.getByRole('textbox', { name: /Email/ }), {
+      target: { value: 'ada@example.com' },
+    })
+    fireEvent.change(view.getByRole('textbox', { name: 'Person' }), { target: { value: 'Grace' } })
+    fireEvent.change(view.getByRole('textbox', { name: 'Extra' }), { target: { value: 'Updated' } })
+    fireEvent.click(view.getByRole('checkbox', { name: /Consent/ }))
+    fireEvent.click(view.getByRole('button', { name: 'Send' }))
+
+    await waitFor(() => expect(fetch).toHaveBeenCalledOnce())
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/api/form-submissions'),
+      expect.objectContaining({
+        body: JSON.stringify({
+          form: form.id,
+          submissionData: [
+            { field: 'contact', value: 'IEEE' },
+            { field: 'contact.email', value: 'ada@example.com' },
+            { field: 'people[0].name', value: 'Grace' },
+            { field: '__proto__', value: 'Updated' },
+            { field: 'consent.accepted', value: 'true' },
+          ],
+        }),
+      }),
+    )
+  })
+
+  it('keeps labels associated with their own controls when the same form appears twice', () => {
+    const view = render(
+      createElement(
+        Fragment,
+        null,
+        ...['First consent', 'Second consent'].map((label) =>
+          createElement(FormBlock, {
+            ...props,
+            key: label,
+            form: { ...form, fields: [{ blockType: 'checkbox', name: 'consent', label }] },
+          }),
+        ),
+      ),
+    )
+    const first = view.getByRole('checkbox', { name: 'First consent' })
+    const second = view.getByRole('checkbox', { name: 'Second consent' })
+    expect(first.id).not.toBe(second.id)
+    fireEvent.click(view.getByText('Second consent'))
+    expect(second.getAttribute('aria-checked')).toBe('true')
+    expect(first.getAttribute('aria-checked')).toBe('false')
   })
 
   it('keeps the form usable after a failed request and clears the delayed loading indicator', async () => {

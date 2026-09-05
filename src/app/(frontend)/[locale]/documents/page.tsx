@@ -65,7 +65,7 @@ export default async function DocumentsPage({ params: paramsPromise }: Args) {
               className="group relative focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary"
             >
               <Link
-                href={`/documents/${doc.year}`}
+                href={`/documents/${encodeURIComponent(doc.year)}`}
                 className="absolute inset-0 z-10 focus-visible:outline-none"
               >
                 <span className="sr-only">{doc.year}</span>

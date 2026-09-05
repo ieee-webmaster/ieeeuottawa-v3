@@ -1,8 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterReadPromise, buildConfig } from 'payload'
 import { ZodError } from 'zod'
+import { Categories } from '@/collections/Categories'
 import type { Category } from '@/payload-types'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
-import { createRequest } from '../helpers/payload'
+import { createRequest, testConfig } from '../helpers/payload'
 
 const searchDoc = {
   doc: { relationTo: 'posts', value: '1' },
@@ -14,6 +16,57 @@ const sourcePost = { id: 1, slug: 'post-slug', title: 'Post title' }
 afterEach(() => vi.restoreAllMocks())
 
 describe('search index source boundary', () => {
+  it.each([undefined, null])(
+    'indexes a category with a %s English translation after Payload reads it',
+    async (title) => {
+      const { req } = await createRequest()
+      req.payload.config = await buildConfig({
+        ...testConfig,
+        collections: [{ slug: 'users', auth: true, fields: [] }],
+        localization: { locales: ['en', 'fr'], defaultLocale: 'en', fallback: true },
+      })
+      const field = Categories.fields.find((field) => 'name' in field && field.name === 'title')
+      if (!field) throw new Error('Missing category title field')
+      const category: Record<string, unknown> = { id: 2, title: { en: title, fr: 'Robotique' } }
+
+      await afterReadPromise({
+        collection: null,
+        context: req.context,
+        currentDepth: 1,
+        depth: 0,
+        doc: category,
+        draft: false,
+        fallbackLocale: 'en',
+        field,
+        fieldDepth: 0,
+        fieldIndex: 0,
+        fieldPromises: [],
+        findMany: false,
+        flattenLocales: true,
+        global: null,
+        locale: 'en',
+        overrideAccess: true,
+        parentIndexPath: '',
+        parentPath: '',
+        parentSchemaPath: '',
+        populationPromises: [],
+        req,
+        showHiddenFields: false,
+        siblingDoc: category,
+      })
+      expect(category.title).toBe(title)
+
+      const result = await beforeSyncWithSearch({
+        req,
+        payload: req.payload,
+        collectionSlug: 'posts',
+        searchDoc,
+        originalDoc: { ...sourcePost, categories: [category] },
+      })
+      expect(result.categories).toEqual([{ relationTo: 'categories', categoryID: '2', title }])
+    },
+  )
+
   it('indexes populated and ID-only categories without losing request or index fields', async () => {
     const { req } = await createRequest()
     const category: Category = {
@@ -114,6 +167,7 @@ describe('search index source boundary', () => {
     ['object slug', { slug: { value: 'post-slug' } }],
     ['non-array categories', { categories: { id: 2, title: 'Robotics' } }],
     ['malformed populated category', { categories: [{ id: 2, title: { en: 'Robotics' } }] }],
+    ['non-ID category object', { categories: [{ title: 'Robotics' }] }],
     ['non-ID image object', { meta: { image: { url: '/image.jpg' } } }],
     ['object description', { meta: { description: { html: 'Summary' } } }],
   ])('rejects %s before reading categories', async (_name, invalidFields) => {

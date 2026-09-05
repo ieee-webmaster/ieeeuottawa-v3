@@ -7,6 +7,7 @@ import { Eyebrow, SectionShell, themeRule } from '@/blocks/_shared'
 import { draftMode } from 'next/headers'
 import { cache } from 'react'
 import { getTranslations } from 'next-intl/server'
+import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
 import { generateMeta } from '@/utilities/generateMeta'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import type { Config } from '@/payload-types'
@@ -29,31 +30,11 @@ type Args = {
   }>
 }
 
-const getTextLength = (node: unknown): number => {
-  if (typeof node !== 'object' || node === null) {
-    return 0
-  }
-
-  if ('text' in node && typeof node.text === 'string') {
-    return node.text.length
-  }
-
-  if ('root' in node) return getTextLength(node.root)
-
-  if ('children' in node && Array.isArray(node.children)) {
-    const children: unknown[] = node.children
-    return children.reduce<number>((total, child) => total + getTextLength(child), 0)
-  }
-
-  return 0
-}
-
 export default async function EventPage({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { locale, slug = '' } = await paramsPromise
-  const decodedSlug = decodeURIComponent(slug)
-  const url = `/events/${encodeURIComponent(decodedSlug)}`
-  const event = await queryEventBySlug({ slug: decodedSlug, locale })
+  const url = `/events/${encodeURIComponent(slug)}`
+  const event = await queryEventBySlug({ slug, locale })
   const t = await getTranslations({ locale, namespace: 'events' })
 
   if (!event) {
@@ -66,7 +47,9 @@ export default async function EventPage({ params: paramsPromise }: Args) {
   const hostedBy = event['hosted-by']?.filter((item) => typeof item !== 'number') ?? []
   const hostedByLabel =
     hostedBy.length > 0 ? hostedBy.map((team) => team.name).join(', ') : 'IEEE uOttawa'
-  const eventContentLength = getTextLength(event.content)
+  const eventContentLength = event.content
+    ? convertLexicalToPlaintext({ data: event.content }).length
+    : 0
 
   return (
     <article>
@@ -166,8 +149,7 @@ export default async function EventPage({ params: paramsPromise }: Args) {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { locale, slug = '' } = await paramsPromise
-  const decodedSlug = decodeURIComponent(slug)
-  const event = await queryEventBySlug({ slug: decodedSlug, locale })
+  const event = await queryEventBySlug({ slug, locale })
 
   return generateMeta({ collection: 'events', doc: event, locale })
 }
