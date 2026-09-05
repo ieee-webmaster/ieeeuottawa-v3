@@ -14,6 +14,7 @@
     "format:check": "prettier . --check",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
+    "hooks:install": "git config --local core.hooksPath .githooks",
     "import:legacy": "cross-env NODE_OPTIONS=--no-deprecation tsx -r tsconfig-paths/register scripts/import-legacy-content/index.ts",
     "ii": "cross-env NODE_OPTIONS=--no-deprecation pnpm --ignore-workspace install",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
