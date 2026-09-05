@@ -11,7 +11,8 @@ import { getCachedArchivePosts, type PostCardData } from '@/utilities/publicCms'
 export const ArchiveBlock: React.FC<ArchiveBlockProps> = async (props) => {
   const { id, categories, introContent, limit: limitFromProps, populateBy, selectedDocs } = props
 
-  const limit = limitFromProps || 3
+  const requestedLimit = limitFromProps ?? 3
+  const limit = Number.isSafeInteger(requestedLimit) && requestedLimit > 0 ? requestedLimit : 3
 
   let posts: PostCardData[] = []
 
