@@ -1,5 +1,3 @@
-'use client'
-
 import React, { useEffect, useId, useRef, useState } from 'react'
 import { ChevronDownIcon } from 'lucide-react'
 
