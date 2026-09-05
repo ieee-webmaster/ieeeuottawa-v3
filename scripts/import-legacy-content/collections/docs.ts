@@ -26,12 +26,14 @@ export async function importDocs(payload: Payload, docs: DocsData) {
 
       const englishData = {
         generalDocuments: docs.generalDocuments.map((doc, index) =>
-          mapDoc(doc, `general-${index}`),
+          mapDoc(doc, existing?.generalDocuments?.[index]?.id),
         ),
         meetingMinutes: yearDocs.meetingMinutes.map((doc, index) =>
-          mapDoc(doc, `meeting-${index}`),
+          mapDoc(doc, existing?.meetingMinutes?.[index]?.id),
         ),
-        otherDocuments: yearDocs.otherDocuments.map((doc, index) => mapDoc(doc, `other-${index}`)),
+        otherDocuments: yearDocs.otherDocuments.map((doc, index) =>
+          mapDoc(doc, existing?.otherDocuments?.[index]?.id),
+        ),
         year: yearDocs.year,
       }
       const doc = existing
@@ -54,13 +56,13 @@ export async function importDocs(payload: Payload, docs: DocsData) {
         context: createImportContext(),
         data: {
           generalDocuments: docs.generalDocuments.map((entry, index) =>
-            mapDoc(entry, `general-${index}`, 'fr'),
+            mapDoc(entry, doc.generalDocuments?.[index]?.id, 'fr'),
           ),
           meetingMinutes: yearDocs.meetingMinutes.map((entry, index) =>
-            mapDoc(entry, `meeting-${index}`, 'fr'),
+            mapDoc(entry, doc.meetingMinutes?.[index]?.id, 'fr'),
           ),
           otherDocuments: yearDocs.otherDocuments.map((entry, index) =>
-            mapDoc(entry, `other-${index}`, 'fr'),
+            mapDoc(entry, doc.otherDocuments?.[index]?.id, 'fr'),
           ),
         },
         id: doc.id,
@@ -74,7 +76,7 @@ export async function importDocs(payload: Payload, docs: DocsData) {
   }
 }
 
-function mapDoc(doc: DocData, id: string, locale: 'en' | 'fr' = 'en') {
+function mapDoc(doc: DocData, id?: string | null, locale: 'en' | 'fr' = 'en') {
   return {
     description: locale === 'fr' ? doc.descriptionFr || doc.description : doc.description,
     googleDocsUrl: doc.url,

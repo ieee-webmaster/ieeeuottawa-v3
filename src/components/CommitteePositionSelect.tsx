@@ -2,16 +2,17 @@
 
 import { useEffect, useState } from 'react'
 import { SelectInput, useField, useFormFields } from '@payloadcms/ui'
-import type { SelectFieldClientComponent } from 'payload'
+import type { TextFieldClientComponent } from 'payload'
 import { z } from 'zod'
 
 const teamPositionsResponseSchema = z.object({
-  positions: z.array(z.object({ positionTitle: z.string() })).nullish(),
+  positions: z.array(z.object({ positionTitle: z.string().nullish() })).nullish(),
 })
 
-export const CommitteePositionSelect: SelectFieldClientComponent = (props) => {
+export const CommitteePositionSelect: TextFieldClientComponent = (props) => {
   const { path, field } = props
-  const { value, setValue } = useField<string | null>({ path })
+  const { disabled, value, setValue } = useField<string | null>({ path })
+  const readOnly = Boolean(props.readOnly || field.admin?.readOnly || disabled)
 
   const [loaded, setLoaded] = useState<{
     teamId: string
@@ -41,10 +42,9 @@ export const CommitteePositionSelect: SelectFieldClientComponent = (props) => {
 
         const result = teamPositionsResponseSchema.safeParse(await response.json())
         if (!result.success) throw result.error
-        const positionOptions = (result.data.positions ?? []).map(({ positionTitle }) => ({
-          label: positionTitle,
-          value: positionTitle,
-        }))
+        const positionOptions = (result.data.positions ?? []).flatMap(({ positionTitle }) =>
+          positionTitle ? [{ label: positionTitle, value: positionTitle }] : [],
+        )
 
         if (!cancelled) setLoaded({ teamId, options: positionOptions })
       } catch (error) {
@@ -61,14 +61,18 @@ export const CommitteePositionSelect: SelectFieldClientComponent = (props) => {
 
   return (
     <SelectInput
-      {...props}
       name={field.name}
+      path={path}
+      label={field.label}
+      required={field.required}
+      localized={field.localized}
+      description={field.admin?.description}
       options={options}
       value={value ?? ''}
       onChange={(next) =>
         setValue(next && !Array.isArray(next) && typeof next.value === 'string' ? next.value : null)
       }
-      readOnly={!teamId || loading}
+      readOnly={readOnly || !teamId || loading}
     />
   )
 }

@@ -1,5 +1,5 @@
 import type { Endpoint, Field, PayloadRequest } from 'payload'
-import { fieldAffectsData } from 'payload/shared'
+import { fieldAffectsData, tabHasName } from 'payload/shared'
 import type { FieldDescriptor } from './schemas'
 
 const SCANNABLE_FIELD_TYPES = new Set([
@@ -34,7 +34,8 @@ const collectScannableFields = (fields: Field[] | undefined): FieldDescriptor[] 
     }
     if (field.type === 'tabs') {
       for (const tab of field.tabs) {
-        out.push(...collectScannableFields(tab.fields))
+        // Named tabs store nested values; automatic navigation reads top-level fields.
+        if (!tabHasName(tab)) out.push(...collectScannableFields(tab.fields))
       }
       continue
     }

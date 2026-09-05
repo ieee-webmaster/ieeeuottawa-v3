@@ -1,3 +1,4 @@
+/** @param {string} value */
 const normalizeSiteUrl = (value) => {
   const url = /^https?:\/\//i.test(value) ? value : `https://${value}`
 

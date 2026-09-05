@@ -14,22 +14,27 @@ const NEXT_PUBLIC_SERVER_URL =
 const devImageOrigins =
   process.env.NODE_ENV === 'production' ? [] : ['http://localhost:3000', 'http://127.0.0.1:3000']
 
+/** @type {NonNullable<import('next').NextConfig['images']>['remotePatterns']} */
 const remotePatterns = [
   NEXT_PUBLIC_SERVER_URL,
   process.env.STORAGE_VERCEL_BLOB_BASE_URL,
   ...devImageOrigins,
-]
-  .filter(Boolean)
-  .map((item) => {
-    const url = new URL(item)
+].flatMap((item) => {
+  if (!item) return []
+  const url = new URL(item)
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    throw new Error('Image origins must use HTTP or HTTPS')
+  }
 
-    return {
+  return [
+    {
       hostname: url.hostname,
       port: url.port,
-      protocol: url.protocol.replace(':', ''),
+      protocol: url.protocol === 'https:' ? 'https' : 'http',
       pathname: '/**',
-    }
-  })
+    },
+  ]
+})
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

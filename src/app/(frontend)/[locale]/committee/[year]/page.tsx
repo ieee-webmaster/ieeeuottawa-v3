@@ -242,7 +242,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   return generateStaticMeta({
     description: t('landingDescription'),
     locale,
-    path: `/committee/${year}`,
+    path: `/committee/${encodeURIComponent(year)}`,
     title: `${year} ${t('title')}`,
   })
 }

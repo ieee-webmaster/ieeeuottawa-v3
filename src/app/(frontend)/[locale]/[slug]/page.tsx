@@ -27,11 +27,9 @@ type Args = {
 export default async function Page({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { locale, slug = 'home' } = await paramsPromise
-  // Decode to support slugs with special characters
-  const decodedSlug = decodeURIComponent(slug)
-  const url = decodedSlug === 'home' ? '/' : `/${encodeURIComponent(decodedSlug)}`
+  const url = slug === 'home' ? '/' : `/${encodeURIComponent(slug)}`
   const page = await queryPageBySlug({
-    slug: decodedSlug,
+    slug,
     locale,
   })
 
@@ -56,10 +54,8 @@ export default async function Page({ params: paramsPromise }: Args) {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { locale, slug = 'home' } = await paramsPromise
-  // Decode to support slugs with special characters
-  const decodedSlug = decodeURIComponent(slug)
   const page = await queryPageBySlug({
-    slug: decodedSlug,
+    slug,
     locale,
   })
 

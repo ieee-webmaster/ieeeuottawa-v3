@@ -1,5 +1,5 @@
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
-import type { File, Payload, PayloadRequest } from 'payload'
+import type { File, Payload } from 'payload'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 
@@ -46,7 +46,7 @@ async function loadFile(relativeFromCwd: string): Promise<File> {
   }
 }
 
-async function ensureMedia(payload: Payload, req: PayloadRequest, file: File, alt: string) {
+async function ensureMedia(payload: Payload, file: File, alt: string) {
   const existing = await payload.find({
     collection: 'media',
     where: { filename: { equals: file.name } },
@@ -62,7 +62,7 @@ async function ensureMedia(payload: Payload, req: PayloadRequest, file: File, al
         id: existing.docs[0].id,
         data: { alt },
         overrideAccess: true,
-        req,
+        context: { disableRevalidate: true },
       })
     }
 
@@ -74,7 +74,7 @@ async function ensureMedia(payload: Payload, req: PayloadRequest, file: File, al
     data: { alt },
     file,
     overrideAccess: true,
-    req,
+    context: { disableRevalidate: true },
   })
 }
 
@@ -103,13 +103,13 @@ async function seedBlocksDemo() {
   ])
 
   const [m1, m2, m3, mHero, discordLogo, linkedInLogo, instagramLogo] = await Promise.all([
-    ensureMedia(payload, req, post1File, 'Abstract gradient - robotics chapter'),
-    ensureMedia(payload, req, post2File, 'Abstract gradient - signals chapter'),
-    ensureMedia(payload, req, post3File, 'Abstract gradient - computing chapter'),
-    ensureMedia(payload, req, hero1File, 'Engineering at the boundary - split section'),
-    ensureMedia(payload, req, discordLogoFile, 'Discord logo'),
-    ensureMedia(payload, req, linkedInLogoFile, 'LinkedIn logo'),
-    ensureMedia(payload, req, instagramLogoFile, 'Instagram logo'),
+    ensureMedia(payload, post1File, 'Abstract gradient - robotics chapter'),
+    ensureMedia(payload, post2File, 'Abstract gradient - signals chapter'),
+    ensureMedia(payload, post3File, 'Abstract gradient - computing chapter'),
+    ensureMedia(payload, hero1File, 'Engineering at the boundary - split section'),
+    ensureMedia(payload, discordLogoFile, 'Discord logo'),
+    ensureMedia(payload, linkedInLogoFile, 'LinkedIn logo'),
+    ensureMedia(payload, instagramLogoFile, 'Instagram logo'),
   ])
 
   await payload.delete({

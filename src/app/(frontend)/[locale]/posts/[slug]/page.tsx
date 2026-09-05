@@ -31,10 +31,8 @@ type Args = {
 export default async function Post({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { locale, slug = '' } = await paramsPromise
-  // Decode to support slugs with special characters
-  const decodedSlug = decodeURIComponent(slug)
-  const url = `/posts/${encodeURIComponent(decodedSlug)}`
-  const post = await queryPostBySlug({ slug: decodedSlug, locale })
+  const url = `/posts/${encodeURIComponent(slug)}`
+  const post = await queryPostBySlug({ slug, locale })
   const t = await getTranslations({ locale, namespace: 'posts' })
 
   if (!post) return <PayloadRedirects url={url} />
@@ -73,9 +71,7 @@ export default async function Post({ params: paramsPromise }: Args) {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { locale, slug = '' } = await paramsPromise
-  // Decode to support slugs with special characters
-  const decodedSlug = decodeURIComponent(slug)
-  const post = await queryPostBySlug({ slug: decodedSlug, locale })
+  const post = await queryPostBySlug({ slug, locale })
 
   return generateMeta({ collection: 'posts', doc: post, locale })
 }

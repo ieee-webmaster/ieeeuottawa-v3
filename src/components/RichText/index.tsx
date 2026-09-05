@@ -2,7 +2,6 @@ import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import {
   DefaultNodeTypes,
   SerializedBlockNode,
-  SerializedLinkNode,
   type DefaultTypedEditorState,
 } from '@payloadcms/richtext-lexical'
 import {
@@ -28,21 +27,21 @@ type NodeTypes =
   | DefaultNodeTypes
   | SerializedBlockNode<CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps>
 
-const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
-  const reference = linkNode.fields.doc
-  if (!reference) throw new Error('Internal link is missing its document reference')
-  const { value, relationTo } = reference
-  const path = resolveContentPathFromReference(relationTo, value)
-  if (!path) {
-    throw new Error(`Unsupported collection relation: ${relationTo}`)
-  }
-
-  return path
-}
-
 const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
   ...defaultConverters,
-  ...LinkJSXConverter({ internalDocToHref }),
+  link: (args) => {
+    const { node, nodesToJSX } = args
+    const reference = node.fields.linkType === 'internal' ? node.fields.doc : undefined
+    const href = reference
+      ? resolveContentPathFromReference(reference.relationTo, reference.value)
+      : null
+    if (node.fields.linkType === 'internal' && !href) {
+      return nodesToJSX({ nodes: node.children })
+    }
+
+    const converter = LinkJSXConverter({ internalDocToHref: () => href ?? '' }).link
+    return typeof converter === 'function' ? converter(args) : converter
+  },
   blocks: {
     banner: ({ node }) => <BannerBlock className="col-start-2 mb-4" {...node.fields} />,
     mediaBlock: ({ node }) => (

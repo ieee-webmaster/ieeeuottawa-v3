@@ -13,7 +13,8 @@ const siblingPath = (path: string, name: string): string => {
 
 export const AutoFieldSelect: TextFieldClientComponent = (props) => {
   const { path, field } = props
-  const { value, setValue } = useField<string | null>({ path })
+  const { disabled, value, setValue } = useField<string | null>({ path })
+  const readOnly = Boolean(props.readOnly || field.admin?.readOnly || disabled)
   const { config } = useConfig()
   const apiRoute = config.routes.api.replace(/\/$/, '')
 
@@ -65,32 +66,34 @@ export const AutoFieldSelect: TextFieldClientComponent = (props) => {
   }, [apiRoute, collection])
 
   useEffect(() => {
-    if (!value) return
+    if (readOnly || !value) return
     if (options.length === 0) return
     if (!options.some((option) => option.value === value)) {
       setValue(null)
     }
-  }, [options, value, setValue])
+  }, [options, readOnly, value, setValue])
 
   return (
     <SelectInput
-      {...props}
       name={field.name}
       path={path}
       label={field.label ?? 'Field'}
+      required={field.required}
+      localized={field.localized}
+      description={field.admin?.description}
       options={options}
       value={value ?? ''}
       onChange={(next) =>
         setValue(next && !Array.isArray(next) && typeof next.value === 'string' ? next.value : null)
       }
-      readOnly={!collection || loading}
+      readOnly={readOnly || !collection || loading}
     />
   )
 }
 
-export const AutoNewTabCheckbox: UIFieldClientComponent = ({ path }) => {
+export const AutoNewTabCheckbox: UIFieldClientComponent = ({ path, field, readOnly }) => {
   const newTabPath = siblingPath(path, 'link.newTab')
-  const { value, setValue } = useField<boolean | null>({ path: newTabPath })
+  const { disabled, value, setValue } = useField<boolean | null>({ path: newTabPath })
 
   return (
     <CheckboxInput
@@ -98,6 +101,7 @@ export const AutoNewTabCheckbox: UIFieldClientComponent = ({ path }) => {
       label="Open generated links in new tab"
       name={newTabPath}
       onToggle={(event) => setValue(event.target.checked)}
+      readOnly={readOnly || field.admin?.readOnly || disabled}
     />
   )
 }

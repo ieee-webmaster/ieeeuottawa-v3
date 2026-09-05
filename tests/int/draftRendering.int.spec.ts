@@ -124,6 +124,34 @@ describe('event draft rendering', () => {
     expect(screen.getByText('Draft body content')).toBeDefined()
     expect(media.mock.calls[0]?.[0].resource).toEqual(event.heroImage)
   })
+
+  it.each([1000, 1001])(
+    'shows the repeated signup link only for a long event (%i characters)',
+    async (length) => {
+      getEvent.mockResolvedValue({
+        ...draft,
+        SignupLink: 'https://example.test/signup',
+        content: {
+          root: {
+            type: 'root',
+            version: 1,
+            direction: null,
+            format: '',
+            indent: 0,
+            children: [
+              {
+                type: 'paragraph',
+                version: 1,
+                children: [{ type: 'text', version: 1, text: 'x'.repeat(length), format: 1 }],
+              },
+            ],
+          },
+        },
+      })
+      render(await EventPage({ params }))
+      expect(screen.getAllByRole('link', { name: 'signUp' })).toHaveLength(length > 1000 ? 2 : 1)
+    },
+  )
 })
 
 describe('localized admin collection routing', () => {

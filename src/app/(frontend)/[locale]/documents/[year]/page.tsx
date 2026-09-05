@@ -43,7 +43,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   return generateStaticMeta({
     description: t('description'),
     locale,
-    path: `/documents/${year}`,
+    path: `/documents/${encodeURIComponent(year)}`,
     title: `${year} ${t('title')}`,
   })
 }
