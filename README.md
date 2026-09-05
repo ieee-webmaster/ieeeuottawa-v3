@@ -71,7 +71,7 @@ docker-compose up
 4. In another terminal, install dependencies and start the dev server.
 
 ```bash
-pnpm install && pnpm dev
+pnpm install && pnpm hooks:install && pnpm dev
 ```
 
 &nbsp;<br> 5. open `http://localhost:3000` to open the app in your browser.

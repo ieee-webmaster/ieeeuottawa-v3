@@ -3,6 +3,7 @@
   "tags": ["-lintignore"],
   "entry": [
     "next-sitemap.config.cjs",
+    "scripts/check-staged-format.ts",
     "scripts/seed-blocks.ts",
     "scripts/import-legacy-content/extract-live-site-data.ts"
   ]
