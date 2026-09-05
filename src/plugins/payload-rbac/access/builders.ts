@@ -2,7 +2,7 @@ import type { Access, CollectionConfig, GlobalConfig, Field, Where } from 'paylo
 
 import { isSuperAdmin } from './identity'
 import { hasCollectionPermission, loadRoles } from './roles'
-import { buildTagWhere, canAccessTags, getAccessTagsFromValue } from './tags'
+import { accessTagsSchema, buildTagWhere, canAccessTags } from './tags'
 import { accessTagsFieldName, type RolePermission, type TagAction } from './types'
 import { combineWhere, resolveBaseAccess } from './where'
 
@@ -107,8 +107,8 @@ export const buildCollectionAccess = ({
       return true
     }
 
-    const dataTags = getAccessTagsFromValue(args.data?.accessTags)
-    return canAccessTags(roles, dataTags, 'create', requireTagsForWrite)
+    const dataTags = accessTagsSchema.safeParse(args.data?.accessTags)
+    return dataTags.success && canAccessTags(roles, dataTags.data, 'create', requireTagsForWrite)
   }
 
   const update: Access<{ accessTags?: unknown }> = async (args) => {
@@ -139,8 +139,11 @@ export const buildCollectionAccess = ({
     }
 
     if (includeTagAccess && args.data?.accessTags !== undefined) {
-      const dataTags = getAccessTagsFromValue(args.data.accessTags)
-      if (!canAccessTags(roles, dataTags, 'update', requireTagsForWrite)) {
+      const dataTags = accessTagsSchema.safeParse(args.data.accessTags)
+      if (
+        !dataTags.success ||
+        !canAccessTags(roles, dataTags.data, 'update', requireTagsForWrite)
+      ) {
         return false
       }
     }

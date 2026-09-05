@@ -1,18 +1,31 @@
 import type { Where } from 'payload'
+import { z } from 'zod'
+import type { AccessTag } from '@/payload-types'
 
-import { getIdsFromValue, idKey } from './identity'
-import type { RbacId, RolePermission, TagAction } from './types'
+import type { RolePermission, TagAction } from './types'
 
-export const getAccessTagsFromValue = (value: unknown): RbacId[] => getIdsFromValue(value)
+// Access runs before native relationship validation, which draft writes can skip.
+const tagIdSchema = z
+  .union([
+    z.number(),
+    z
+      .string()
+      .trim()
+      .regex(/^[+-]?\d+$/),
+  ])
+  .pipe(z.coerce.number<string | number>().int())
+export const accessTagsSchema = z
+  .union([
+    z.array(z.union([tagIdSchema, z.object({ id: tagIdSchema }).transform(({ id }) => id)])),
+    tagIdSchema.transform((id) => [id]),
+    z.enum(['', 'none', 'null']).transform(() => []),
+  ])
+  .nullish()
+  .transform((ids) => ids ?? [])
 
-type TagPermissionMaps = {
-  allowed: Map<string, RbacId>
-  denied: Map<string, RbacId>
-}
-
-const collectTagPermissions = (roles: RolePermission[], action: TagAction): TagPermissionMaps => {
-  const allowed = new Map<string, RbacId>()
-  const denied = new Map<string, RbacId>()
+const collectTagPermissions = (roles: RolePermission[], action: TagAction) => {
+  const allowed = new Set<AccessTag['id']>()
+  const denied = new Set<AccessTag['id']>()
 
   roles.forEach((role) => {
     role.tagPermissions?.forEach((permission) => {
@@ -23,11 +36,11 @@ const collectTagPermissions = (roles: RolePermission[], action: TagAction): TagP
       const tagId = typeof permission.tag === 'number' ? permission.tag : permission.tag.id
 
       if (permission.effect === 'deny') {
-        denied.set(idKey(tagId), tagId)
+        denied.add(tagId)
         return
       }
 
-      allowed.set(idKey(tagId), tagId)
+      allowed.add(tagId)
     })
   })
 
@@ -36,7 +49,7 @@ const collectTagPermissions = (roles: RolePermission[], action: TagAction): TagP
 
 export const canAccessTags = (
   roles: RolePermission[],
-  tagIds: RbacId[],
+  tagIds: AccessTag['id'][],
   action: TagAction,
   requireTags: boolean,
 ): boolean => {
@@ -46,7 +59,7 @@ export const canAccessTags = (
 
   const { allowed, denied } = collectTagPermissions(roles, action)
 
-  if (tagIds.some((tagId) => denied.has(idKey(tagId)))) {
+  if (tagIds.some((tagId) => denied.has(tagId))) {
     return false
   }
 
@@ -54,7 +67,7 @@ export const canAccessTags = (
     return false
   }
 
-  return tagIds.some((tagId) => allowed.has(idKey(tagId)))
+  return tagIds.some((tagId) => allowed.has(tagId))
 }
 
 export const buildTagWhere = (
@@ -69,8 +82,8 @@ export const buildTagWhere = (
     return requireTags ? false : null
   }
 
-  const allowedIds = Array.from(allowed.values())
-  const deniedIds = Array.from(denied.values())
+  const allowedIds = Array.from(allowed)
+  const deniedIds = Array.from(denied)
 
   let base: Where | null = null
 
