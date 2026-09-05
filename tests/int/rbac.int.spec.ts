@@ -8,7 +8,7 @@ import {
   buildGlobalAccess,
   buildTagWhere,
   canAccessTags,
-  getAccessTagsFromValue,
+  accessTagsSchema,
   getRoleIds,
   hasCollectionPermission,
   isSuperAdmin,
@@ -23,25 +23,56 @@ describe('RBAC: id normalization', () => {
     ).toEqual([1, 2, 3])
   })
 
-  it('accepts string tag IDs at the input boundary', () => {
-    expect(getAccessTagsFromValue(['a', { id: 'b' }])).toEqual(['a', 'b'])
+  it('normalizes numeric wire IDs once at the input boundary', () => {
+    expect(accessTagsSchema.safeParse(['01', ' 2', '+3'])).toEqual({
+      success: true,
+      data: [1, 2, 3],
+    })
   })
 
-  it('handles mixed numeric and string ids', () => {
-    expect(getAccessTagsFromValue([1, 'b', { id: 'c' }, { id: 4 }])).toEqual([1, 'b', 'c', 4])
+  it('extracts numeric IDs from populated relationships', () => {
+    expect(accessTagsSchema.safeParse([1, { id: '02' }, { id: 3, name: 'Public' }])).toEqual({
+      success: true,
+      data: [1, 2, 3],
+    })
   })
 
-  it('drops null/undefined and unrecognized shapes', () => {
-    expect(getAccessTagsFromValue([null, undefined, {}, { id: null }, true, 5])).toEqual([5])
+  it.each([undefined, null, [], '', 'none', 'null'].map((value) => ({ value })))(
+    'preserves native empty tags $value',
+    ({ value }) => {
+      expect(accessTagsSchema.safeParse(value)).toEqual({ success: true, data: [] })
+    },
+  )
+
+  it.each([1, '01'])('accepts native scalar relationship ID %j', (value) => {
+    expect(accessTagsSchema.safeParse(value)).toEqual({ success: true, data: [1] })
+  })
+
+  it.each(
+    [
+      'invalid',
+      true,
+      false,
+      {},
+      { id: 1 },
+      [1, null],
+      [1, undefined],
+      [1, { id: null }],
+      [1, 'invalid'],
+      [1, '1.5'],
+      [1, '1e0'],
+      [1, '0x1'],
+      [1, 1.5],
+      [1, NaN],
+      [1, Infinity],
+    ].map((value) => ({ value })),
+  )('rejects malformed input atomically: $value', ({ value }) => {
+    expect(accessTagsSchema.safeParse(value).success).toBe(false)
   })
 
   it('returns [] when user has no roles', () => {
     expect(getRoleIds({})).toEqual([])
     expect(getRoleIds(null)).toEqual([])
-  })
-
-  it('extracts numeric tag ids from a populated relationship value', () => {
-    expect(getAccessTagsFromValue([1, { id: 2 }, 'three'])).toEqual([1, 2, 'three'])
   })
 })
 
@@ -240,12 +271,13 @@ describe('RBAC: tag permissions', () => {
     expect(canAccessTags([role], [], 'update', true)).toBe(false)
   })
 
-  it('treats numeric and string tag ids as equivalent in lookups', () => {
+  it('matches normalized wire IDs using numeric permission sets', () => {
     const numericRole: RolePermission = {
       tagPermissions: [{ tag: 7, effect: 'allow', actions: ['update'] }],
     }
-    expect(canAccessTags([numericRole], ['7'], 'update', false)).toBe(true)
-    expect(canAccessTags([numericRole], [7], 'update', false)).toBe(true)
+    const parsed = accessTagsSchema.safeParse(['07'])
+    if (!parsed.success) throw parsed.error
+    expect(canAccessTags([numericRole], parsed.data, 'update', false)).toBe(true)
   })
 })
 

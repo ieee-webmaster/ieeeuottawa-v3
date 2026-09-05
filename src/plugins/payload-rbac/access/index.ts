@@ -1,5 +1,5 @@
 export { buildAccessTagsField, buildCollectionAccess, buildGlobalAccess } from './builders'
 export { getRoleIds, isSuperAdmin } from './identity'
 export { hasCollectionPermission } from './roles'
-export { buildTagWhere, canAccessTags, getAccessTagsFromValue } from './tags'
+export { accessTagsSchema, buildTagWhere, canAccessTags } from './tags'
 export { type PermissionAction, type RolePermission, permissionActions } from './types'
