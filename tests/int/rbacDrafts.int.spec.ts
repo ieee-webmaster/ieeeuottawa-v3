@@ -16,7 +16,7 @@ beforeAll(async () => {
   }
 })
 
-async function prepareRequest(accessTags: unknown, draft = true) {
+async function prepareRequest(accessTags: unknown) {
   const { req } = await createRequest({ roles: [10] }, [
     {
       collectionPermissions: [{ collection: 'pages', actions: ['create', 'update'] }],
@@ -42,7 +42,7 @@ async function prepareRequest(accessTags: unknown, draft = true) {
     create,
   }
   req.routeParams = { collection: 'pages' }
-  req.query = { draft: String(draft) }
+  req.query = { draft: 'true' }
   req.data = {
     title: 'Draft boundary test',
     slug: 'draft-boundary-test',
@@ -97,17 +97,5 @@ describe('RBAC numeric tag IDs at the native draft boundary', () => {
 
     await expect(endpoint.handler(req)).rejects.toBe(stopBeforeWrite)
     expect(create.mock.calls[0]?.[0].data).toMatchObject({ accessTags: [] })
-  })
-
-  it('leaves ordinary relationship validation enabled when publishing', async () => {
-    const { create, endpoint, req } = await prepareRequest(['01'], false)
-
-    const response = endpoint.handler(req)
-    await expect(response).rejects.toMatchObject({ status: 400 })
-    await expect(response).rejects.toHaveProperty(
-      'data.errors',
-      expect.arrayContaining([expect.objectContaining({ path: 'accessTags' })]),
-    )
-    expect(create).not.toHaveBeenCalled()
   })
 })

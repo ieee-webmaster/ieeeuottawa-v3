@@ -28,7 +28,7 @@ import {
 } from '@payloadcms/plugin-seo/fields'
 import { slugField } from 'payload'
 
-export const populatePostPublishedAt: FieldHook<Post, Post['publishedAt'], Post> = ({
+const populatePostPublishedAt: FieldHook<Post, Post['publishedAt'], Post> = ({
   siblingData,
   value,
   originalDoc,

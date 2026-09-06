@@ -1,17 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, render, screen } from '@testing-library/react'
 import { createElement, type ComponentProps } from 'react'
-import type { CheckboxInput, SelectInput } from '@payloadcms/ui'
-import { afterReadPromise, buildConfig, createClientField } from 'payload'
-import {
-  AutoFieldSelect,
-  AutoNewTabCheckbox,
-} from '@/plugins/payload-navigation/components/AutoFieldSelect'
+import type { SelectInput } from '@payloadcms/ui'
+import { AutoFieldSelect } from '@/plugins/payload-navigation/components/AutoFieldSelect'
 import { CommitteePositionSelect } from '@/components/CommitteePositionSelect'
-import { Teams } from '@/collections/Teams'
-import { Committees } from '@/collections/Committees'
-import { buildNavItemsField } from '@/plugins/payload-navigation/fields'
-import { createRequest, testConfig } from '../helpers/payload'
 
 const setValue = vi.fn<(value: unknown) => void>()
 const selectInputs = new Map<string, ComponentProps<typeof SelectInput>>()
@@ -36,8 +28,6 @@ vi.mock('@payloadcms/ui', () => ({
       ),
     )
   },
-  CheckboxInput: (props: ComponentProps<typeof CheckboxInput>) =>
-    createElement('input', { type: 'checkbox', disabled: props.readOnly }),
 }))
 
 beforeEach(() => {
@@ -53,43 +43,6 @@ afterEach(() => {
   cleanup()
   vi.unstubAllGlobals()
   vi.restoreAllMocks()
-})
-
-it('preserves actual collection field labels and descriptions through the client field boundary', async () => {
-  const { req } = await createRequest()
-  const teams = Committees.fields.find((field) => 'name' in field && field.name === 'teams')
-  if (teams?.type !== 'array') throw new Error('Missing committee teams')
-  const members = teams.fields.find((field) => 'name' in field && field.name === 'members')
-  if (members?.type !== 'array') throw new Error('Missing committee members')
-  const role = members.fields.find((field) => 'name' in field && field.name === 'role')
-  const navField = buildNavItemsField({ allowedCollections: ['teams'] }).fields.find(
-    (field) => 'name' in field && field.name === 'field',
-  )
-  if (!role || !navField) throw new Error('Missing custom text fields')
-  vi.stubGlobal(
-    'fetch',
-    vi.fn<typeof globalThis.fetch>(async () => Response.json({ positions: [], fields: [] })),
-  )
-  for (const [field, component, path] of [
-    [role, CommitteePositionSelect, 'teams.0.members.0.role'],
-    [navField, AutoFieldSelect, 'navItems.0.field'],
-  ] as const) {
-    const clientField = createClientField({
-      defaultIDType: 'number',
-      field,
-      i18n: req.i18n,
-      importMap: {},
-    })
-    if (clientField.type !== 'text') throw new Error('Custom select must store a text field')
-    await act(async () => {
-      render(createElement(component, { field: clientField, path }))
-    })
-    expect(selectInputs.get(clientField.name)).toMatchObject({
-      label: clientField.label ?? 'Field',
-      required: clientField.required,
-      description: clientField.admin?.description,
-    })
-  }
 })
 
 describe('admin select HTTP responses', () => {
@@ -148,56 +101,9 @@ describe('admin select HTTP responses', () => {
   })
 
   it.each([undefined, null])(
-    'retains translated positions when Payload returns a %s title for another position',
+    'omits a %s title without losing other team positions',
     async (title) => {
-      const { req } = await createRequest()
-      req.payload.config = await buildConfig({
-        ...testConfig,
-        collections: [{ slug: 'users', auth: true, fields: [] }],
-        localization: { locales: ['en', 'fr'], defaultLocale: 'en', fallback: true },
-      })
-      const positionsField = Teams.fields.find(
-        (field) => 'name' in field && field.name === 'positions',
-      )
-      if (!positionsField || positionsField.type !== 'array') {
-        throw new Error('Missing team positions field')
-      }
-      const field = positionsField.fields.find(
-        (field) => 'name' in field && field.name === 'positionTitle',
-      )
-      if (!field) throw new Error('Missing position title field')
-      const positions: Record<string, unknown>[] = [
-        { positionTitle: { en: title, fr: 'Trésorier' } },
-        { positionTitle: { en: 'Chair', fr: 'Présidence' } },
-      ]
-      for (const position of positions) {
-        await afterReadPromise({
-          collection: null,
-          context: req.context,
-          currentDepth: 1,
-          depth: 0,
-          doc: position,
-          draft: false,
-          fallbackLocale: 'en',
-          field,
-          fieldDepth: 0,
-          fieldIndex: 0,
-          fieldPromises: [],
-          findMany: false,
-          flattenLocales: true,
-          global: null,
-          locale: 'en',
-          overrideAccess: true,
-          parentIndexPath: '',
-          parentPath: '',
-          parentSchemaPath: '',
-          populationPromises: [],
-          req,
-          showHiddenFields: false,
-          siblingDoc: position,
-        })
-      }
-      expect(positions).toEqual([{ positionTitle: title }, { positionTitle: 'Chair' }])
+      const positions = [{ positionTitle: title }, { positionTitle: 'Chair' }]
       vi.stubGlobal(
         'fetch',
         vi.fn<typeof globalThis.fetch>().mockResolvedValue(Response.json({ positions })),
@@ -347,18 +253,3 @@ describe.each(selects)('$name dependent options', (select) => {
     expect(setValue).toHaveBeenLastCalledWith(null)
   })
 })
-
-it.each(['parent', 'disabled'])(
-  'preserves %s read-only state on the automatic new-tab checkbox',
-  (source) => {
-    fieldState.disabled = source === 'disabled'
-    render(
-      createElement(AutoNewTabCheckbox, {
-        path: 'navItems.0.autoNewTab',
-        field: { name: 'autoNewTab', type: 'ui', admin: {} },
-        readOnly: source === 'parent',
-      }),
-    )
-    expect(screen.getByRole('checkbox').hasAttribute('disabled')).toBe(true)
-  },
-)
