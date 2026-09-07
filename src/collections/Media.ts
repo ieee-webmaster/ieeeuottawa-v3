@@ -25,35 +25,42 @@ export const Media: CollectionConfig<'media'> = {
   },
   defaultPopulate: {
     alt: true,
+    filename: true,
     height: true,
     mimeType: true,
     sizes: {
       large: {
+        filename: true,
         height: true,
         url: true,
         width: true,
       },
       medium: {
+        filename: true,
         height: true,
         url: true,
         width: true,
       },
       og: {
+        filename: true,
         height: true,
         url: true,
         width: true,
       },
       small: {
+        filename: true,
         height: true,
         url: true,
         width: true,
       },
       thumbnail: {
+        filename: true,
         height: true,
         url: true,
         width: true,
       },
       xlarge: {
+        filename: true,
         height: true,
         url: true,
         width: true,
