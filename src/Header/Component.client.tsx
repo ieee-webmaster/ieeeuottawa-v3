@@ -67,21 +67,21 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, navItems }) =>
             : 'border-transparent bg-background',
       )}
     >
-      <div className="container flex h-20 items-center justify-between gap-4 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-6">
+      <div className="container flex h-20 items-center justify-between gap-4 xl:grid xl:grid-cols-[1fr_auto_1fr] xl:gap-6">
         <Link
           href="/"
-          className="flex shrink-0 items-center rounded-md px-1 py-3 lg:justify-self-start"
+          className="flex shrink-0 items-center rounded-md py-3 xl:justify-self-start"
           aria-label={t('home')}
           onClick={() => setMenuOpen(false)}
         >
           <Logo loading="eager" priority className="w-[7.5rem] sm:w-[8rem] md:w-[9.375rem]" />
         </Link>
 
-        <div className="hidden items-center gap-2 lg:flex lg:justify-self-center">
+        <div className="hidden items-center gap-2 xl:flex xl:justify-self-center">
           <HeaderNav items={navItems} />
         </div>
 
-        <div className="hidden items-center gap-2 lg:flex lg:justify-self-end">
+        <div className="hidden items-center gap-2 xl:flex xl:justify-self-end">
           {socialLinks.length > 0 && (
             <>
               <SocialIcons links={socialLinks} showLabels={showSocialLabels} className="gap-1" />
@@ -99,7 +99,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, navItems }) =>
           </Link>
         </div>
 
-        <div className="flex items-center gap-1 lg:hidden">
+        <div className="flex items-center gap-1 xl:hidden">
           <LocaleSwitcher className="inline-flex h-10 items-center justify-center rounded-md px-2.5 text-sm font-medium text-primary transition-colors hover:bg-card hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0" />
           <Link
             href="/search"
@@ -127,10 +127,11 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, navItems }) =>
       {/* Mobile drawer */}
       <div
         className={cn(
-          'fixed inset-0 top-20 z-30 lg:hidden',
+          'fixed inset-0 top-20 z-30 xl:hidden',
           menuOpen ? 'pointer-events-auto' : 'pointer-events-none',
         )}
         aria-hidden={!menuOpen}
+        inert={!menuOpen}
       >
         <div
           id="mobile-nav"

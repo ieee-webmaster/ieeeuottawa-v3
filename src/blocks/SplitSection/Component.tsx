@@ -6,7 +6,7 @@ import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 import { cn } from '@/utilities/ui'
-import { Eyebrow, SectionShell, themeMutedText, themeRule } from '@/blocks/_shared'
+import { Eyebrow, SectionShell, themeMutedText } from '@/blocks/_shared'
 
 const mediaAspectClasses: Record<NonNullable<SplitSectionBlockProps['mediaAspect']>, string> = {
   landscape: 'aspect-[16/9]',
@@ -30,25 +30,20 @@ export const SplitSectionBlock: React.FC<SplitSectionBlockProps> = ({
   const hasMedia = media && typeof media === 'object'
   const caption = hasMedia ? media.caption : null
 
-  // Image-less variant: editorial 5+7 split. Title sits in a tight left
-  // column with an eyebrow rail; body fills the right. Keeps the section
-  // anchored even without media.
+  // Keep text-only sections within one readable column.
   if (!hasMedia) {
     return (
       <SectionShell theme={t}>
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
-          <div className="space-y-5 lg:col-span-5">
+        <div className="max-w-3xl space-y-4">
+          <div className="space-y-3">
             {eyebrow ? <Eyebrow theme={t}>{eyebrow}</Eyebrow> : null}
-            <h2 className="text-balance text-3xl font-medium leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
-              {title}
-            </h2>
-            <div className={cn('h-px w-12', themeRule[t])} />
+            <h2 className="section-title">{title}</h2>
           </div>
 
-          <div className="space-y-6 lg:col-span-7 lg:pl-2">
+          <div className="space-y-6">
             <RichText
               className={cn(
-                'max-w-prose [&_p]:text-base [&_p]:leading-relaxed md:[&_p]:text-lg',
+                'mx-0 max-w-prose [&_p]:text-base [&_p]:leading-relaxed md:[&_p]:text-lg',
                 t === 'dark' && '[&_p]:text-white/80 [&_li]:text-white/80',
                 t !== 'dark' && '[&_p]:text-muted-foreground [&_li]:text-muted-foreground',
               )}
@@ -71,26 +66,22 @@ export const SplitSectionBlock: React.FC<SplitSectionBlockProps> = ({
 
   return (
     <SectionShell theme={t}>
-      <div className="grid gap-10 lg:grid-cols-12 lg:items-start lg:gap-16">
+      <div className="grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-16">
         {/* Copy column */}
         <div
           className={cn(
-            'flex flex-col gap-8 lg:col-span-5',
+            'flex flex-col gap-6 lg:col-span-5',
             mediaLeft ? 'lg:order-2 lg:col-start-8' : 'lg:order-1',
           )}
         >
-          <div className="space-y-5">
+          <div className="space-y-3">
             {eyebrow ? <Eyebrow theme={t}>{eyebrow}</Eyebrow> : null}
 
-            <h2 className="text-balance text-3xl font-medium leading-[1.1] tracking-tight sm:text-4xl md:text-[2.75rem]">
-              {title}
-            </h2>
-
-            <div className={cn('h-px w-12', themeRule[t])} />
+            <h2 className="section-title">{title}</h2>
 
             <RichText
               className={cn(
-                'max-w-prose [&_p]:text-base [&_p]:leading-relaxed',
+                'mx-0 max-w-prose [&_p]:text-base [&_p]:leading-relaxed',
                 t === 'dark' && '[&_p]:text-white/80 [&_li]:text-white/80',
                 t !== 'dark' && '[&_p]:text-muted-foreground [&_li]:text-muted-foreground',
               )}

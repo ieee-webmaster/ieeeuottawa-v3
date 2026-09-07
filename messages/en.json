@@ -44,7 +44,7 @@
   },
   "search": {
     "title": "Search",
-    "description": "Search IEEE uOttawa posts, events, documents, and resources.",
+    "description": "Search news and updates from IEEE uOttawa.",
     "eyebrow": "Explore the Site",
     "placeholder": "What are you looking for?",
     "submit": "Submit search",
@@ -61,12 +61,12 @@
     "action": "Return home"
   },
   "docs": {
-    "title": "Yearly Documents",
+    "title": "Documents",
     "description": "Access annual reports, meeting minutes, and other important documents from IEEE UOttawa.",
     "noDocuments": "No documents available for this year.",
     "backToDocuments": "Go back to yearly documents",
-    "landingDescription": "Explore our archive of official documents, meeting minutes, and miscellaneous documents.",
-    "landingDescriptionCont": " Select an academic year to view its specific documentation.",
+    "landingDescription": "Constitutions, budgets, and meeting minutes, organised by academic year.",
+    "landingDescriptionCont": "",
     "noYears": "No archives have been published yet.",
     "archiveLabel": "View Archives",
     "archiveEyebrow": "Archive",
@@ -78,9 +78,9 @@
   "committee": {
     "pageTitle": "Committees",
     "archiveLabel": "Committee Archive",
-    "landingDescription": "Behind every successful student association is a team of committed volunteers who share the common goal of enhancing EECS students' life on campus.",
+    "landingDescription": "Meet the students behind IEEE uOttawa, by academic year.",
     "noRecords": "No committee records found.",
-    "teamCount": "{count, plural, one {# Team} other {# Teams}}",
+    "teamCount": "{count, plural, one {# team} other {# teams}}",
     "backToCommittees": "Back to Committees",
     "title": "Committee",
     "teamSpotlightTitle": "The team behind \"{team}\"",
@@ -96,6 +96,11 @@
     "coordinator": "Coordinator",
     "executives": "Executives",
     "commissioners": "Commissioners",
-    "coordinators": "Coordinators"
+    "coordinators": "Coordinators",
+    "teams": "Teams"
+  },
+  "footer": {
+    "navigation": "Footer navigation",
+    "rights": "All rights reserved."
   }
 }

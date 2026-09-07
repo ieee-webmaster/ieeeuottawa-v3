@@ -2,11 +2,10 @@ import React from 'react'
 import { ArrowUpRight } from 'lucide-react'
 
 import type { LogoGridBlock as LogoGridBlockProps } from '@/payload-types'
-
 import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
-import { Eyebrow, SectionShell, themeMutedText, themeRule } from '@/blocks/_shared'
+import { Eyebrow, SectionShell, themeMutedText } from '@/blocks/_shared'
 
 export const LogoGridBlock: React.FC<LogoGridBlockProps> = ({
   description,
@@ -17,136 +16,91 @@ export const LogoGridBlock: React.FC<LogoGridBlockProps> = ({
   title,
 }) => {
   const t = theme ?? 'default'
+  const featured = style === 'featured'
 
   return (
-    <SectionShell theme={t}>
-      <header className="mb-10 flex flex-col gap-6 md:mb-14 md:flex-row md:items-end md:justify-between md:gap-10">
-        <div className="max-w-2xl space-y-5">
-          {eyebrow ? <Eyebrow theme={t}>{eyebrow}</Eyebrow> : null}
-          <h2 className="text-balance text-3xl font-medium leading-[1.1] tracking-tight sm:text-4xl md:text-[2.5rem]">
+    <SectionShell
+      theme={t}
+      padding={featured ? 'py-5 md:py-6' : undefined}
+      className="border-y border-border"
+    >
+      <div className={cn(featured && 'flex flex-col gap-6 md:flex-row md:items-center md:gap-12')}>
+        <header className={cn('space-y-3', featured ? 'shrink-0 md:max-w-xs' : 'mb-10')}>
+          {eyebrow && <Eyebrow theme={t}>{eyebrow}</Eyebrow>}
+          <h2
+            className={
+              featured ? 'font-mono text-xs font-medium uppercase tracking-wider' : 'section-title'
+            }
+          >
             {title}
           </h2>
-        </div>
-        {description ? (
-          <p className={cn('max-w-md text-base leading-relaxed', themeMutedText[t])}>
-            {description}
-          </p>
-        ) : null}
-      </header>
-
-      <div className={cn('h-px w-full', themeRule[t])} />
-
-      {items && items.length > 0 ? (
-        style === 'grid' ? (
-          <div
-            className={cn(
-              'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4',
-              t === 'dark' ? 'divide-white/10' : 'divide-foreground/10',
-              'divide-x divide-y',
-            )}
-          >
-            {items.map((item, index) => (
-              <div
-                key={item.id ?? index}
-                className={cn(
-                  'group relative flex aspect-[4/3] flex-col items-center justify-center gap-3 p-6 transition-colors focus-within:ring-2 focus-within:ring-inset',
-                  t === 'dark'
-                    ? 'hover:bg-white/[0.04] focus-within:ring-white/80'
-                    : 'hover:bg-foreground/[0.03] focus-within:ring-primary',
-                )}
-              >
-                {item.logo && typeof item.logo === 'object' ? (
+          {description && (
+            <p className={cn('mt-3 max-w-xl text-sm leading-relaxed', themeMutedText[t])}>
+              {description}
+            </p>
+          )}
+        </header>
+        <ul
+          className={cn(
+            featured
+              ? 'flex min-w-0 flex-1 flex-wrap items-center gap-8'
+              : 'grid gap-6 sm:grid-cols-2 lg:grid-cols-4',
+          )}
+        >
+          {items?.map((item, index) => {
+            const hasLogo = item.logo && typeof item.logo === 'object'
+            const linkLabel = item.link?.label?.trim()
+            const distinctLinkLabel =
+              linkLabel && linkLabel.toLocaleLowerCase() !== item.name.trim().toLocaleLowerCase()
+            const content = (
+              <>
+                {hasLogo ? (
                   <Media
-                    imgClassName={cn(
-                      'h-12 w-12 object-contain opacity-70 transition-all duration-500 group-hover:opacity-100',
-                      t === 'dark'
-                        ? 'invert opacity-60 group-hover:opacity-90'
-                        : 'dark:invert dark:opacity-80 dark:group-hover:opacity-100',
-                    )}
                     resource={item.logo}
-                    sizesPreset="icon"
+                    alt={item.name}
+                    sizesPreset="quarter"
+                    className="w-full bg-white px-4 py-3"
+                    pictureClassName="block"
+                    imgClassName="h-12 w-full object-contain"
                   />
-                ) : null}
-                <span
-                  className={cn(
-                    'text-center font-mono text-[0.65rem] uppercase tracking-[0.2em]',
-                    themeMutedText[t],
-                  )}
-                >
-                  {item.name}
-                </span>
+                ) : (
+                  <span className="font-display text-xl">{item.name}</span>
+                )}
+                {hasLogo && (!featured || item.description || distinctLinkLabel) && (
+                  <span className="mt-3 block font-display text-xl">{item.name}</span>
+                )}
+                {item.description && (
+                  <p className={cn('mt-3 text-sm leading-relaxed', themeMutedText[t])}>
+                    {item.description}
+                  </p>
+                )}
+                {item.enableLink && distinctLinkLabel && (
+                  <span className="mt-3 inline-flex min-h-11 items-center gap-2 font-mono text-sm text-primary">
+                    {linkLabel}
+                    <ArrowUpRight aria-hidden="true" className="h-4 w-4" />
+                  </span>
+                )}
+              </>
+            )
+            return (
+              <li key={item.id ?? index} className={cn(featured && 'w-64 max-w-full')}>
                 {item.enableLink ? (
                   <CMSLink
                     {...item.link}
                     label={undefined}
                     appearance="inline"
-                    className="absolute inset-0 z-10 focus-visible:outline-none"
+                    className="block transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
                   >
-                    <span className="sr-only">{item.link?.label ?? item.name}</span>
+                    {content}
                   </CMSLink>
-                ) : null}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <ul role="list" className="divide-y divide-foreground/10 dark:divide-white/10">
-            {items.map((item, index) => (
-              <li key={item.id ?? index}>
-                <article
-                  className={cn(
-                    'group grid gap-6 py-8 md:grid-cols-12 md:items-center md:gap-10',
-                    t === 'dark' ? 'border-white/10' : 'border-foreground/10',
-                  )}
-                >
-                  <div
-                    className={cn(
-                      'flex aspect-[4/3] items-center justify-center md:col-span-3 md:aspect-square',
-                      t === 'dark' ? 'bg-white/5' : 'bg-foreground/5',
-                    )}
-                  >
-                    {item.logo && typeof item.logo === 'object' ? (
-                      <Media
-                        imgClassName={cn(
-                          'h-16 w-16 object-contain',
-                          t === 'dark' ? 'invert opacity-90' : 'dark:invert dark:opacity-90',
-                        )}
-                        resource={item.logo}
-                        sizesPreset="icon"
-                      />
-                    ) : null}
-                  </div>
-
-                  <div className="space-y-3 md:col-span-7">
-                    <h3 className="text-balance text-xl font-medium leading-snug tracking-tight md:text-2xl">
-                      {item.name}
-                    </h3>
-                    {item.description ? (
-                      <p className={cn('text-sm leading-relaxed', themeMutedText[t])}>
-                        {item.description}
-                      </p>
-                    ) : null}
-                  </div>
-
-                  {item.enableLink ? (
-                    <div className="md:col-span-2 md:justify-self-end">
-                      <CMSLink
-                        {...item.link}
-                        appearance="inline"
-                        className={cn(
-                          'inline-flex items-center gap-2 font-mono text-[0.72rem] uppercase tracking-[0.22em] transition-all duration-300 hover:text-[hsl(var(--interactive))] group-hover:translate-x-1',
-                          t === 'dark' ? 'text-white' : 'text-primary',
-                        )}
-                      >
-                        <ArrowUpRight aria-hidden="true" className="h-4 w-4" />
-                      </CMSLink>
-                    </div>
-                  ) : null}
-                </article>
+                ) : (
+                  content
+                )}
               </li>
-            ))}
-          </ul>
-        )
-      ) : null}
+            )
+          })}
+        </ul>
+      </div>
     </SectionShell>
   )
 }

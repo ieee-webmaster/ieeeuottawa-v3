@@ -5,11 +5,12 @@ import type { Page } from '@/payload-types'
 import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
+import { SectionShell } from '@/blocks/_shared'
 
 export const AffinityGroupHero: React.FC<Page['hero']> = ({ links, media, richText, logo }) => {
   return (
-    <section className="relative bg-slate-50 py-16 text-foreground dark:bg-slate-950 md:py-20">
-      <div className="container relative z-10 grid items-start gap-8 md:grid-cols-2 md:gap-12">
+    <SectionShell theme="muted">
+      <div className="grid items-center gap-8 md:grid-cols-2 md:gap-12">
         <div className="flex flex-col items-start gap-4 md:gap-6">
           {logo && typeof logo === 'object' && (
             <div className="mb-2">
@@ -25,7 +26,7 @@ export const AffinityGroupHero: React.FC<Page['hero']> = ({ links, media, richTe
             <RichText
               data={richText}
               enableGutter={false}
-              className="text-slate-900 dark:text-white"
+              className="page-copy mx-0 space-y-4 [&_h1]:mb-4"
             />
           )}
 
@@ -47,13 +48,13 @@ export const AffinityGroupHero: React.FC<Page['hero']> = ({ links, media, richTe
             <Media
               priority
               resource={media}
-              className="w-full max-w-2xl overflow-hidden rounded-2xl border border-border bg-background"
-              imgClassName="w-full max-h-[28rem] object-contain"
+              className="w-full max-w-2xl"
+              imgClassName="block h-auto w-full max-h-[28rem] object-contain"
               sizesPreset="affinity"
             />
           </div>
         )}
       </div>
-    </section>
+    </SectionShell>
   )
 }

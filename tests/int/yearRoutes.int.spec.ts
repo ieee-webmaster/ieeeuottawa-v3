@@ -19,7 +19,10 @@ vi.mock('@/utilities/publicCms', () => ({
   getDocYears: async () => [],
   getCommitteeYears: async () => [],
 }))
-vi.mock('next-intl/server', () => ({ getTranslations: async () => (key: string) => key }))
+vi.mock('next-intl/server', () => ({
+  setRequestLocale: vi.fn(),
+  getTranslations: async () => (key: string) => key,
+}))
 vi.mock('next-intl', async (importOriginal) => ({
   ...(await importOriginal<typeof import('next-intl')>()),
   useTranslations: () => (key: string) => key,
@@ -56,7 +59,7 @@ describe('academic year URL segments', () => {
       getCommittee.mockResolvedValue(committee)
 
       render(await DocumentsPage({ params: Promise.resolve({ locale: 'en' }) }))
-      render(createElement(CommitteeCard, { committee, index: 0, total: 1 }))
+      render(createElement(CommitteeCard, { committee }))
 
       const links = screen.getAllByRole('link', { name: year })
       expect(links.map((link) => link.getAttribute('href'))).toEqual([

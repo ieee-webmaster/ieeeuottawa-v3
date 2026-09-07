@@ -8,6 +8,7 @@ import { Link } from '@/i18n/navigation'
 
 type FooterNavProps = {
   items: ResolvedNavItem[]
+  ariaLabel: string
 }
 
 const FooterLink = ({ item }: { item: ResolvedLeafLink }) => (
@@ -37,8 +38,8 @@ const FooterDropdown = ({ item }: { item: ResolvedDropdownRow }) => {
   )
 }
 
-export const FooterNav = ({ items }: FooterNavProps) => (
-  <nav className="flex flex-wrap gap-x-8 gap-y-4 md:justify-end" aria-label="Footer navigation">
+export const FooterNav = ({ items, ariaLabel }: FooterNavProps) => (
+  <nav className="flex flex-wrap gap-x-8 gap-y-4 md:justify-end" aria-label={ariaLabel}>
     {items.map((item, index) => {
       const key = item.id ?? `${item.kind}-${index}`
 

@@ -1,7 +1,7 @@
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import { resolveLocale } from '@/i18n/routing'
 import { Link } from '@/i18n/navigation'
-import { getLocale } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import type { Footer } from '@/payload-types'
@@ -15,6 +15,7 @@ const currentYear = new Date().getFullYear()
 
 export async function Footer() {
   const locale = resolveLocale(await getLocale())
+  const t = await getTranslations({ locale, namespace: 'footer' })
   const footerData: Footer = await getCachedGlobal('footer', 2, locale)()
   const payload = await getPayload({ config: configPromise })
 
@@ -35,7 +36,7 @@ export async function Footer() {
           </Link>
 
           <div className="flex flex-col gap-4 md:items-end">
-            <FooterNav items={navItems} />
+            <FooterNav items={navItems} ariaLabel={t('navigation')} />
 
             {socialLinks.length > 0 && (
               <SocialIcons
@@ -57,7 +58,7 @@ export async function Footer() {
 
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
           <p className="text-xs opacity-70 text-center md:text-left">
-            &copy; {currentYear} IEEE UOttawa. All rights reserved.
+            &copy; {currentYear} IEEE uOttawa. {t('rights')}
           </p>
 
           <ThemeSelector className="text-white focus-visible:ring-white" />

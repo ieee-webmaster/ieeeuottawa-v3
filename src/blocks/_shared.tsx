@@ -7,30 +7,29 @@ export type { BlockTheme } from '@/blocks/theme'
 
 const sectionShellClasses: Record<BlockTheme, string> = {
   default: 'bg-transparent text-foreground',
-  muted: 'bg-muted/40 text-foreground',
-  accent:
-    'text-foreground bg-[radial-gradient(120%_120%_at_0%_0%,hsl(var(--secondary)/0.18),transparent_55%),linear-gradient(180deg,hsl(var(--primary)/0.14),hsl(var(--primary)/0.06))]',
+  muted: 'bg-muted/50 text-foreground',
+  accent: 'bg-background text-foreground',
   dark: 'bg-background text-white [--rule:theme(colors.white/15)] [--mute:theme(colors.white/65)]',
 }
 
 export const themeRule: Record<BlockTheme, string> = {
   default: 'bg-foreground/25',
   muted: 'bg-foreground/25',
-  accent: 'bg-primary/25',
+  accent: 'bg-white/25',
   dark: 'bg-white/25',
 }
 
 export const themeMutedText: Record<BlockTheme, string> = {
-  default: 'text-foreground',
-  muted: 'text-foreground',
-  accent: 'text-foreground/70',
+  default: 'text-muted-foreground',
+  muted: 'text-muted-foreground',
+  accent: 'text-white/80',
   dark: 'text-white/65',
 }
 
 export const themeKickerText: Record<BlockTheme, string> = {
   default: 'text-primary',
   muted: 'text-primary',
-  accent: 'text-primary',
+  accent: 'text-white/80',
   dark: 'text-[hsl(208,80%,72%)]',
 }
 
@@ -52,13 +51,13 @@ export const SectionShell: React.FC<SectionShellProps> = ({
   className,
   innerClassName,
   bare = false,
-  padding = 'py-16 md:py-24',
+  padding = 'py-12 md:py-16',
   as: As = 'section',
 }) => {
   return (
     <As
       data-block-theme={theme}
-      data-theme={theme === 'dark' ? 'dark' : undefined}
+      data-theme={theme === 'dark' || theme === 'accent' ? 'dark' : undefined}
       className={cn('relative w-full', sectionShellClasses[theme], padding, className)}
     >
       {bare ? children : <div className={cn('container', innerClassName)}>{children}</div>}
@@ -89,27 +88,6 @@ export const Eyebrow: React.FC<EyebrowProps> = ({
     >
       {withRule ? <span aria-hidden="true" className={cn('h-px w-8', themeRule[theme])} /> : null}
       {children}
-    </span>
-  )
-}
-
-type IndexNumberProps = {
-  value: number
-  total?: number
-  theme: BlockTheme
-  className?: string
-}
-
-export const IndexNumber: React.FC<IndexNumberProps> = ({ value, total, theme, className }) => {
-  const formatted = String(value).padStart(2, '0')
-  const totalFormatted = total ? `/${String(total).padStart(2, '0')}` : ''
-
-  return (
-    <span
-      className={cn('font-mono text-[0.7rem] tracking-[0.18em]', themeKickerText[theme], className)}
-    >
-      {formatted}
-      {totalFormatted ? <span className={cn('opacity-50')}>{totalFormatted}</span> : null}
     </span>
   )
 }

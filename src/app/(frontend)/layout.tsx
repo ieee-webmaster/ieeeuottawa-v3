@@ -3,8 +3,9 @@ import type { Metadata } from 'next'
 import { cn } from '@/utilities/ui'
 import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
+import localFont from 'next/font/local'
 import React from 'react'
-import { getLocale } from 'next-intl/server'
+import { headers } from 'next/headers'
 
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { resolveLocale } from '@/i18n/routing'
@@ -17,12 +18,20 @@ type Props = {
   children: React.ReactNode
 }
 
+const displayFont = localFont({
+  src: '../../fonts/SpaceGrotesk.ttf',
+  weight: '300 700',
+  variable: '--font-display',
+  display: 'swap',
+})
+
 export default async function FrontendRootLayout({ children }: Props) {
-  const locale = resolveLocale(await getLocale())
+  // Avoid initializing next-intl before [locale] establishes its static rendering context.
+  const locale = resolveLocale((await headers()).get('x-next-intl-locale'))
 
   return (
     <html
-      className={cn(GeistSans.variable, GeistMono.variable)}
+      className={cn(GeistSans.variable, GeistMono.variable, displayFont.variable)}
       lang={locale}
       suppressHydrationWarning
     >

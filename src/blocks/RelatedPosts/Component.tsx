@@ -15,7 +15,6 @@ export type RelatedPostsProps = {
 
 export const RelatedPosts: React.FC<RelatedPostsProps> = (props) => {
   const { className, docs, introContent } = props
-  const total = docs?.length ?? 0
 
   return (
     <div className={clsx(className)}>
@@ -28,9 +27,7 @@ export const RelatedPosts: React.FC<RelatedPostsProps> = (props) => {
               key={doc.id || index}
               doc={doc}
               href={`/posts/${encodeURIComponent(doc.slug)}`}
-              index={index}
               showCategories
-              total={total}
             />
           )
         })}

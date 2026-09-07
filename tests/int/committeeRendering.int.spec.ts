@@ -15,6 +15,7 @@ vi.mock('@/utilities/publicCms', () => ({
   getCommitteeYears: async () => [],
 }))
 vi.mock('next-intl/server', () => ({
+  setRequestLocale: vi.fn(),
   getLocale: async () => 'en',
   getTranslations: async () => (key: string) => key,
 }))
@@ -54,8 +55,22 @@ describe('committee relationship rendering', () => {
   ] as const)(
     'renders populated members in the %s alongside unpopulated relationships',
     async (_name, component) => {
-      const team: Team = { id: 12, name: 'Robotics', positions: [], createdAt: '', updatedAt: '' }
-      const person: Person = { id: 4, fullName: 'Surviving member', createdAt: '', updatedAt: '' }
+      const team: Team = {
+        id: 12,
+        name: 'Robotics',
+        positions: [
+          { positionTitle: 'Workshop Lead', role: 'coord', positionEmail: 'team@example.test' },
+        ],
+        createdAt: '',
+        updatedAt: '',
+      }
+      const person: Person = {
+        id: 4,
+        fullName: 'Surviving member',
+        'Linkedin Profile': 'https://example.test/profile',
+        createdAt: '',
+        updatedAt: '',
+      }
       const committee: Committee = {
         id: 8,
         Year: '2026',
@@ -67,7 +82,7 @@ describe('committee relationship rendering', () => {
             team,
             members: [
               { id: 'unpopulated', role: 'Unpopulated member role', person: 3 },
-              { id: 'surviving', role: 'Coordinator', person },
+              { id: 'surviving', role: 'Workshop Lead', person },
             ],
           },
         ],
@@ -79,7 +94,15 @@ describe('committee relationship rendering', () => {
       render(await component())
 
       expect(screen.getByText('Surviving member')).toBeDefined()
+      expect(screen.getByText('Workshop Lead')).toBeDefined()
+      if (_name === 'committee archive') expect(screen.getByText('coordinator')).toBeDefined()
       expect(screen.queryByText('Unpopulated member role')).toBeNull()
+      expect(screen.getByRole('link', { name: 'emailMember' }).getAttribute('href')).toBe(
+        'mailto:team@example.test',
+      )
+      expect(screen.getByRole('link', { name: 'linkedinProfile' }).getAttribute('href')).toBe(
+        'https://example.test/profile',
+      )
       expect(committee).toEqual(storedRows)
     },
   )

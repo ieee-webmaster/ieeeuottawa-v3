@@ -1,4 +1,4 @@
-import clsx from 'clsx'
+import { cn } from '@/utilities/ui'
 import Image from 'next/image'
 
 interface Props {
@@ -34,7 +34,7 @@ export const Logo = ({
           : 'hidden dark:block'
 
   return (
-    <div className={clsx('relative w-[9.375rem] shrink-0', className)}>
+    <div className={cn('relative w-[9.375rem] shrink-0', className)}>
       <Image
         src="/ieeelogo_dark.svg"
         alt="IEEE Logo"
@@ -42,7 +42,7 @@ export const Logo = ({
         height={34 * 1.5}
         priority={priority}
         loading={loading}
-        className={clsx('h-auto w-full', darkLogoClass)}
+        className={cn('h-auto w-full', darkLogoClass)}
       />
 
       <Image
@@ -52,7 +52,7 @@ export const Logo = ({
         height={34 * 1.5}
         priority={priority}
         loading={loading}
-        className={clsx('h-auto w-full', lightLogoClass)}
+        className={cn('h-auto w-full', lightLogoClass)}
       />
     </div>
   )

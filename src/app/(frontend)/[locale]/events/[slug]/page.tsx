@@ -1,9 +1,10 @@
+import { formatEventLocation } from '@/utilities/formatEventLocation'
 import type { Metadata } from 'next'
 import { Link } from '@/i18n/navigation'
 import { LinkButton } from '../_components/LinkButton'
 
 import { PayloadRedirects } from '@/components/PayloadRedirects'
-import { Eyebrow, SectionShell, themeRule } from '@/blocks/_shared'
+import { SectionShell } from '@/blocks/_shared'
 import { draftMode } from 'next/headers'
 import { cache } from 'react'
 import { getTranslations } from 'next-intl/server'
@@ -57,91 +58,69 @@ export default async function EventPage({ params: paramsPromise }: Args) {
 
       {draft && <LivePreviewListener />}
 
-      <SectionShell theme="default" padding="pt-20 pb-12 md:pt-28 md:pb-16">
-        <Link
-          href="/events"
-          className="group mb-10 inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-primary transition-colors hover:text-[hsl(var(--interactive))] md:mb-14"
-        >
-          <ArrowLeft
-            aria-hidden="true"
-            className="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
-          />
+      <SectionShell theme="default">
+        <Link href="/events" className="back-link mb-4">
+          <ArrowLeft aria-hidden="true" className="h-4 w-4" />
           {t('backToEvents')}
         </Link>
-
-        <header className="grid gap-8 md:grid-cols-12 md:items-end md:gap-10">
-          <div className="space-y-5 md:col-span-9">
-            <div className="flex flex-wrap items-center gap-4">
-              <Eyebrow theme="default">{t('label')}</Eyebrow>
-              {isPastEvent ? (
-                <span className="border border-foreground/20 px-2 py-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-                  {t('past')}
-                </span>
-              ) : null}
-            </div>
-            <h1 className="max-w-5xl text-balance text-4xl font-medium leading-[1.02] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-              {event.title}
-            </h1>
-          </div>
+        <header className="mb-8 space-y-3">
+          {isPastEvent && <p className="font-mono text-xs text-muted-foreground">{t('past')}</p>}
+          <h1 className="page-title max-w-4xl">{event.title}</h1>
         </header>
-
-        <div className={`my-10 h-px w-full md:my-14 ${themeRule.default}`} />
-
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
-          {event.date && (
-            <div className="space-y-2">
-              <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-                {t('date')}
-              </p>
-              <time className="block text-base leading-relaxed" dateTime={event.date}>
-                {formatDateTime(event.date, locale)}
-              </time>
-            </div>
-          )}
-          <div className="space-y-2">
-            <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-              {t('location')}
-            </p>
-            <p className="text-base leading-relaxed">{event.location}</p>
+        <div className="grid items-start gap-10 lg:grid-cols-[1.2fr_1fr] lg:gap-12">
+          <div>
+            <dl className="grid gap-x-8 gap-y-5 border-y border-border py-6 sm:grid-cols-2">
+              {event.date && (
+                <div className="space-y-1">
+                  <dt className="font-mono text-xs text-muted-foreground">{t('date')}</dt>
+                  <dd>
+                    <time dateTime={event.date}>{formatDateTime(event.date, locale)}</time>
+                  </dd>
+                </div>
+              )}
+              {event.location && (
+                <div className="space-y-1">
+                  <dt className="font-mono text-xs text-muted-foreground">{t('location')}</dt>
+                  <dd className="break-words text-base leading-relaxed">
+                    {formatEventLocation(event.location)}
+                  </dd>
+                </div>
+              )}
+              <div className="space-y-1">
+                <dt className="font-mono text-xs text-muted-foreground">{t('hostedBy')}</dt>
+                <dd>{hostedByLabel}</dd>
+              </div>
+            </dl>
+            {((!isPastEvent && event.SignupLink) || (isPastEvent && event.MediaLink)) && (
+              <div className="mt-6">
+                {!isPastEvent && event.SignupLink && (
+                  <LinkButton href={event.SignupLink} innerText={t('signUp')} />
+                )}
+                {isPastEvent && event.MediaLink && (
+                  <LinkButton href={event.MediaLink} innerText={t('viewMedia')} />
+                )}
+              </div>
+            )}
+            {event.content && (
+              <RichText className="mt-8 max-w-prose" data={event.content} enableGutter={false} />
+            )}
+            {!isPastEvent && event.SignupLink && eventContentLength > 1000 && (
+              <div className="mt-8">
+                <LinkButton href={event.SignupLink} innerText={t('signUp')} />
+              </div>
+            )}
           </div>
-          <div className="space-y-2">
-            <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-              {t('hostedBy')}
-            </p>
-            <p className="text-base leading-relaxed">{hostedByLabel}</p>
-          </div>
-          <div className="flex items-end lg:justify-end">
-            {!isPastEvent && event.SignupLink ? (
-              <LinkButton href={event.SignupLink} innerText={t('signUp')} />
-            ) : null}
-            {isPastEvent && event.MediaLink ? (
-              <LinkButton href={event.MediaLink} innerText={t('viewMedia')} />
-            ) : null}
-          </div>
-        </div>
-
-        {event.heroImage && typeof event.heroImage !== 'number' ? (
-          <div className="relative mt-12 aspect-[4/3] overflow-hidden bg-foreground/[0.04] sm:aspect-video md:mt-16 lg:aspect-[21/9]">
+          {event.heroImage && typeof event.heroImage !== 'number' && (
             <PayloadMedia
-              fill
               priority
-              imgClassName="object-cover"
-              pictureClassName="absolute inset-0"
               resource={event.heroImage}
+              alt={event.heroImage.alt || event.title}
+              imgClassName="block h-auto w-full"
+              pictureClassName="block"
+              sizesPreset="half"
             />
-          </div>
-        ) : null}
-      </SectionShell>
-
-      <SectionShell theme="default" padding="py-12 md:py-20">
-        {event.content && (
-          <RichText className="mx-auto max-w-3xl" data={event.content} enableGutter={false} />
-        )}
-        {!isPastEvent && event.SignupLink && eventContentLength > 1000 ? (
-          <div className="mx-auto mt-12 flex max-w-3xl justify-start">
-            <LinkButton href={event.SignupLink} innerText={t('signUp')} />
-          </div>
-        ) : null}
+          )}
+        </div>
       </SectionShell>
     </article>
   )

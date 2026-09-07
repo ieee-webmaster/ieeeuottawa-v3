@@ -1,12 +1,13 @@
 import type { Metadata } from 'next'
 
 import { notFound } from 'next/navigation'
-import { ArrowLeft, Mail, Linkedin, UserRound } from 'lucide-react'
-import { getTranslations } from 'next-intl/server'
-import type { Committee, Team, Person, Config } from '@/payload-types'
+import { ArrowLeft, UserRound } from 'lucide-react'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
+import type { Committee, Person, Team, Config } from '@/payload-types'
 import { generateStaticMeta } from '@/utilities/generateMeta'
 import { Link } from '@/i18n/navigation'
-import { Eyebrow, SectionShell, themeRule } from '@/blocks/_shared'
+import { SectionShell } from '@/blocks/_shared'
+import { PersonCard } from '@/components/PersonCard'
 import { Media as MediaComponent } from '@/components/Media'
 import { hasRenderableMediaSource } from '@/components/Media/hasRenderableMediaSource'
 import { getCachedCommitteeByYear, getCommitteeYears } from '@/utilities/publicCms'
@@ -23,16 +24,15 @@ type Args = {
 }
 
 type CommitteeMember = NonNullable<NonNullable<Committee['teams']>[number]['members']>[number]
-type PositionRole = NonNullable<NonNullable<Team['positions']>[number]['role']>
 type ResolvedCommitteeMember = Omit<CommitteeMember, 'person'> & {
   person: Person
   positionEmail?: string | null
   rank?: string
-  teamName: string
 }
 
 export default async function CommitteePage({ params }: Args) {
   const { year, locale } = await params
+  setRequestLocale(locale)
   const t = await getTranslations({
     locale: locale ?? 'en',
     namespace: 'committee',
@@ -47,12 +47,11 @@ export default async function CommitteePage({ params }: Args) {
     hasRenderableMediaSource(committee.coverImage)
       ? committee.coverImage
       : null
-  const rankLabels: { [Role in PositionRole]: string } = {
+  const rankLabels: Record<NonNullable<NonNullable<Team['positions']>[number]['role']>, string> = {
     exec: t('executive'),
     commish: t('commissioner'),
     coord: t('coordinator'),
   }
-
   const sections = (committee.teams ?? []).flatMap((teamEntry) => {
     if (typeof teamEntry.team === 'number') {
       return []
@@ -66,15 +65,13 @@ export default async function CommitteePage({ params }: Args) {
 
       const person = member.person
       const positionDef = team.positions?.find((p) => p.positionTitle === member.role)
-      const level = positionDef?.role
 
       return [
         {
           ...member,
           person,
-          teamName: team.name,
           positionEmail: positionDef?.positionEmail,
-          rank: level ? rankLabels[level] : undefined,
+          rank: positionDef?.role ? rankLabels[positionDef.role] : undefined,
         },
       ]
     })
@@ -84,145 +81,72 @@ export default async function CommitteePage({ params }: Args) {
 
   const hasNoData = sections.length === 0
   return (
-    <SectionShell theme="default" padding="pt-20 pb-20 md:pt-28 md:pb-28">
-      <header className="mb-10 grid gap-8 md:mb-14 md:grid-cols-12 md:items-end md:gap-10">
-        <div className="space-y-5 md:col-span-8">
-          <Eyebrow theme="default">{t('archiveLabel')}</Eyebrow>
-          <h1 className="text-balance text-4xl font-medium leading-[1.02] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            {committee.Year} {t('title')}
-          </h1>
-        </div>
-        <div className="md:col-span-4 md:flex md:justify-end">
-          <Link
-            href="/committee"
-            className="group inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-primary transition-colors hover:text-[hsl(var(--interactive))]"
-          >
-            <ArrowLeft
-              aria-hidden="true"
-              className="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
-            />
+    <SectionShell theme="default">
+      <header className="mb-12 grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
+        <div>
+          <Link href="/committee" className="back-link mb-4">
+            <ArrowLeft aria-hidden="true" className="h-4 w-4" />
             {t('backToCommittees')}
           </Link>
+          <h1 className="page-title">
+            {committee.Year} {t('title')}
+          </h1>
+          {sections.length > 1 && (
+            <nav aria-label={t('teams')} className="mt-6 flex flex-wrap gap-2">
+              {sections.map((section, index) => (
+                <a
+                  key={section.title}
+                  href={`#team-${index + 1}`}
+                  className="inline-flex min-h-11 items-center border border-border px-4 font-mono text-sm transition-colors hover:bg-muted focus-visible:outline focus-visible:outline-2"
+                >
+                  {section.title}
+                </a>
+              ))}
+            </nav>
+          )}
         </div>
+        {coverImage && (
+          <MediaComponent
+            resource={coverImage}
+            alt={coverImage.alt || `${committee.Year} ${t('title')}`}
+            priority
+            imgClassName="block h-auto w-full"
+            pictureClassName="block"
+            sizesPreset="half"
+          />
+        )}
       </header>
 
-      {coverImage ? (
-        <div className="relative mb-16 aspect-[4/3] overflow-hidden bg-foreground/[0.04] sm:aspect-video md:mb-24 lg:aspect-[21/9]">
-          <MediaComponent
-            fill
-            htmlElement={null}
-            resource={coverImage}
-            alt={coverImage?.alt || `${committee.Year} ${t('title')}`}
-            priority
-            imgClassName="object-cover"
-            pictureClassName="absolute inset-0"
-            sizesPreset="content"
-          />
-        </div>
-      ) : (
-        <div className={`mb-16 h-px w-full md:mb-24 ${themeRule.default}`} />
-      )}
-
       {hasNoData ? (
-        <div className="border-y border-foreground/20 py-20 text-center md:py-28">
-          <UserRound className="mx-auto mb-6 h-9 w-9 text-primary" aria-hidden="true" />
-          <h2 className="text-2xl font-medium tracking-tight md:text-3xl">
-            {t('teamDataPending')}
-          </h2>
-          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
+        <div className="border-t border-border py-10">
+          <UserRound className="mb-4 h-8 w-8 text-muted-foreground" aria-hidden="true" />
+          <h2 className="text-2xl font-medium">{t('teamDataPending')}</h2>
+          <p className="mt-3 max-w-lg text-base leading-relaxed text-muted-foreground">
             {t('teamNotFinalized', { year: committee.Year })}
           </p>
         </div>
       ) : (
-        <div className="space-y-20 md:space-y-28">
-          {sections.map((section) => (
-            <section key={section.title}>
-              <header className="mb-8 grid gap-4 md:grid-cols-12 md:items-end">
-                <div className="md:col-span-8">
-                  <Eyebrow theme="default">{section.title}</Eyebrow>
-                  <h2 className="mt-4 text-3xl font-medium leading-[1.05] tracking-tight md:text-5xl">
-                    {section.title}
-                  </h2>
-                </div>
-                <div className="md:col-span-4 md:text-right">
-                  <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-muted-foreground">
-                    {t('memberCount', { count: section.data.length })}
-                  </span>
-                </div>
+        <div className="space-y-12 md:space-y-16">
+          {sections.map((section, index) => (
+            <section key={section.title} id={`team-${index + 1}`} className="scroll-mt-28">
+              <header className="mb-6 flex items-baseline justify-between gap-4 border-b border-border pb-4">
+                <h2 className="font-display text-2xl font-medium md:text-3xl">{section.title}</h2>
+                <span className="font-mono text-xs text-muted-foreground">
+                  {t('memberCount', { count: section.data.length })}
+                </span>
               </header>
-
-              <div className={`mb-10 h-px w-full md:mb-14 ${themeRule.default}`} />
-
-              <div className="grid grid-cols-2 gap-x-4 gap-y-12 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
-                {section.data.map((member) => {
-                  const { person } = member
-                  const headshot =
-                    person.headshot &&
-                    typeof person.headshot !== 'number' &&
-                    hasRenderableMediaSource(person.headshot)
-                      ? person.headshot
-                      : null
-
-                  return (
-                    <article key={member.id} className="group min-w-0">
-                      <div className="relative aspect-[4/5] overflow-hidden bg-foreground/[0.04]">
-                        {headshot ? (
-                          <MediaComponent
-                            fill
-                            htmlElement={null}
-                            resource={headshot}
-                            alt={person.fullName}
-                            imgClassName="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
-                            pictureClassName="absolute inset-0"
-                            sizesPreset="portraitGrid"
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center">
-                            <UserRound
-                              className="h-10 w-10 text-foreground/25 md:h-12 md:w-12"
-                              aria-hidden="true"
-                            />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="mt-4 space-y-1.5">
-                        <p className="font-mono text-[0.62rem] uppercase leading-relaxed tracking-[0.18em] text-primary md:text-[0.68rem]">
-                          {member.role}
-                        </p>
-                        <h3 className="text-base font-medium leading-tight tracking-tight transition-colors group-hover:text-primary md:text-xl">
-                          {person.fullName}
-                        </h3>
-                        {member.rank && (
-                          <p className="text-xs text-muted-foreground md:text-sm">{member.rank}</p>
-                        )}
-                      </div>
-
-                      <div className="mt-3 flex items-center gap-3 text-muted-foreground">
-                        {member.positionEmail && (
-                          <a
-                            href={`mailto:${member.positionEmail}`}
-                            aria-label={t('emailMember', { name: person.fullName })}
-                            className="transition-colors hover:text-primary"
-                          >
-                            <Mail className="h-4 w-4" aria-hidden="true" />
-                          </a>
-                        )}
-                        {person['Linkedin Profile'] && (
-                          <a
-                            href={person['Linkedin Profile']}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label={t('linkedinProfile', { name: person.fullName })}
-                            className="transition-colors hover:text-primary"
-                          >
-                            <Linkedin className="h-4 w-4" aria-hidden="true" />
-                          </a>
-                        )}
-                      </div>
-                    </article>
-                  )
-                })}
+              <div className="member-grid">
+                {section.data.map((member) => (
+                  <PersonCard
+                    key={member.id}
+                    person={member.person}
+                    role={member.role}
+                    rank={member.rank}
+                    positionEmail={member.positionEmail}
+                    emailLabel={t('emailMember', { name: member.person.fullName })}
+                    linkedinLabel={t('linkedinProfile', { name: member.person.fullName })}
+                  />
+                ))}
               </div>
             </section>
           ))}

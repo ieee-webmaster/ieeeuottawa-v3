@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
-import { Eyebrow, SectionShell, themeRule } from '@/blocks/_shared'
+import { SectionShell, themeRule } from '@/blocks/_shared'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import { draftMode } from 'next/headers'
 import { cache } from 'react'
@@ -55,7 +55,6 @@ export default async function Post({ params: paramsPromise }: Args) {
       {post.relatedPosts && post.relatedPosts.length > 0 ? (
         <SectionShell theme="muted" padding="py-14 md:py-20">
           <header className="mb-8">
-            <Eyebrow theme="muted">{t('related')}</Eyebrow>
             <h2 className="mt-4 text-3xl font-medium tracking-tight md:text-4xl">{t('related')}</h2>
           </header>
           <div className={`h-px w-full ${themeRule.muted}`} />
