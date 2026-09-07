@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import type { Page, User } from '@/payload-types'
 import { fieldAffectsData } from 'payload/shared'
 import { createRequest, testConfig } from '../helpers/payload'
@@ -331,9 +331,29 @@ describe('RBAC: ensureFirstUserIsSuperAdmin', () => {
     user: Partial<User> | null = null,
   ) => {
     const { req, find } = await createRequest(user, [], totalDocs)
+    await req.payload.init({
+      config: {
+        ...req.payload.config,
+        telemetry: false,
+        typescript: { ...req.payload.config.typescript, autoGenerate: false },
+      },
+      disableDBConnect: true,
+      disableOnInit: true,
+    })
+    req.transactionID = 'test'
+    req.payload.db.sessions.test = {
+      db: req.payload.db.drizzle,
+      resolve: async () => {},
+      reject: async () => {},
+    }
+    // Only the transaction executor is mocked; these cases do not connect to a database.
+    const execute = vi.spyOn(req.payload.db, 'execute').mockImplementation(async () => {
+      expect(find).not.toHaveBeenCalled()
+      return { command: 'SELECT', fields: [], oid: 0, rowCount: 1, rows: [] }
+    })
     const collection = req.payload.config.collections.find(({ slug }) => slug === 'users')
     if (!collection) throw new Error('Missing users collection')
-    return { args: { collection, context: req.context, data, operation, req }, find }
+    return { args: { collection, context: req.context, data, operation, req }, find, execute }
   }
 
   it('promotes when no users exist', async () => {
@@ -346,12 +366,34 @@ describe('RBAC: ensureFirstUserIsSuperAdmin', () => {
     expect(await ensureFirstUserIsSuperAdmin(args)).not.toMatchObject({ superAdmin: true })
   })
 
-  it('counts all users in the same request transaction (prevents privilege escalation)', async () => {
-    const { args, find } = await buildArgs(1, { email: 'attacker@example.com' }, 'create', {})
+  it('locks before counting all users in the same request transaction', async () => {
+    const { args, find, execute } = await buildArgs(
+      1,
+      { email: 'attacker@example.com' },
+      'create',
+      {},
+    )
     await ensureFirstUserIsSuperAdmin(args)
+    expect(execute).toHaveBeenCalledOnce()
     expect(find).toHaveBeenCalledWith(
       expect.objectContaining({ collection: 'users', overrideAccess: true, req: args.req }),
     )
+  })
+
+  it('rejects a competing anonymous registration even when it supplies superAdmin', async () => {
+    const { args } = await buildArgs(1, { email: 'attacker@example.com', superAdmin: true })
+    args.req.payloadAPI = 'REST'
+    await expect(ensureFirstUserIsSuperAdmin(args)).rejects.toMatchObject({ status: 403 })
+  })
+
+  it('refuses to promote without a transaction', async () => {
+    const { args, find, execute } = await buildArgs(0, { email: 'first@example.com' })
+    delete args.req.transactionID
+    await expect(ensureFirstUserIsSuperAdmin(args)).rejects.toThrow(
+      'requires a database transaction',
+    )
+    expect(find).not.toHaveBeenCalled()
+    expect(execute).not.toHaveBeenCalled()
   })
 
   it('skips on non-create operations', async () => {
