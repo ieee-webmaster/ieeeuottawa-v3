@@ -14,12 +14,10 @@ export const Card: React.FC<{
   className?: string
   doc?: CardPostData
   href: string
-  index?: number
   showCategories?: boolean
   title?: string
-  total?: number
 }> = (props) => {
-  const { className, doc, href, index, showCategories, title: titleFromProps, total } = props
+  const { className, doc, href, showCategories, title: titleFromProps } = props
 
   const { categories, meta, title } = doc || {}
   const { description, image: metaImage } = meta || {}
@@ -33,26 +31,21 @@ export const Card: React.FC<{
   return (
     <article className={cn('group flex h-full flex-col hover:cursor-pointer', className)}>
       <Link href={href} className="flex h-full flex-col gap-5">
-        <div className="relative aspect-[4/3] w-full overflow-hidden bg-foreground/[0.04]">
-          {metaImage && typeof metaImage !== 'number' ? (
+        {metaImage && typeof metaImage !== 'number' && (
+          <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
             <Media
               fill
-              imgClassName="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+              imgClassName="object-cover"
               pictureClassName="absolute inset-0"
               resource={metaImage}
               sizesPreset="third"
             />
-          ) : null}
-          {typeof index === 'number' && typeof total === 'number' ? (
-            <span className="absolute left-3 top-3 bg-black/55 px-2 py-1 font-mono text-[0.68rem] tracking-[0.18em] text-white backdrop-blur-sm">
-              {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
-            </span>
-          ) : null}
-        </div>
+          </div>
+        )}
 
         <div className="flex flex-1 flex-col gap-3">
           {showCategories && !!categoryTitles?.length && (
-            <div className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-primary">
+            <div className="font-mono text-xs text-primary">
               <div>{categoryTitles.join(', \u00a0')}</div>
             </div>
           )}

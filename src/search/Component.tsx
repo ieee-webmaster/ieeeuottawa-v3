@@ -36,7 +36,7 @@ export const Search: React.FC<Props> = ({ initialValue = '' }) => {
 
   return (
     <form
-      className="group flex min-h-16 items-center gap-4 border border-[hsl(var(--interactive)/0.3)] bg-[hsl(var(--interactive)/0.055)] px-4 transition-[border-color,box-shadow,background-color] focus-within:border-[hsl(var(--interactive))] focus-within:bg-[hsl(var(--interactive)/0.09)] focus-within:ring-1 focus-within:ring-[hsl(var(--interactive))] md:min-h-20 md:px-6"
+      className="group flex min-h-14 items-center gap-4 border border-[hsl(var(--interactive)/0.3)] bg-[hsl(var(--interactive)/0.055)] px-4 transition-[border-color,box-shadow,background-color] focus-within:border-[hsl(var(--interactive))] focus-within:bg-[hsl(var(--interactive)/0.09)] focus-within:ring-1 focus-within:ring-[hsl(var(--interactive))] md:px-5"
       role="search"
       onSubmit={(event) => {
         event.preventDefault()
@@ -61,7 +61,7 @@ export const Search: React.FC<Props> = ({ initialValue = '' }) => {
             setValue(event.target.value)
           }}
           placeholder={t('placeholder')}
-          className="h-16 rounded-none border-0 bg-transparent px-0 text-lg shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 md:h-20 md:text-xl [&::-webkit-search-cancel-button]:appearance-none"
+          className="h-14 rounded-none border-0 bg-transparent px-0 text-base shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-search-cancel-button]:appearance-none"
         />
       </div>
 
@@ -69,7 +69,10 @@ export const Search: React.FC<Props> = ({ initialValue = '' }) => {
         <button
           type="button"
           aria-label={t('clear')}
-          onClick={() => setValue('')}
+          onClick={() => {
+            setValue('')
+            updateRoute('')
+          }}
           className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--interactive))]"
         >
           <XIcon aria-hidden="true" className="h-4 w-4" />

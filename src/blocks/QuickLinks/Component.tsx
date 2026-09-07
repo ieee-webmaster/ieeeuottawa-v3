@@ -5,14 +5,7 @@ import type { QuickLinksBlock as QuickLinksBlockProps } from '@/payload-types'
 
 import { CMSLink } from '@/components/Link'
 import { cn } from '@/utilities/ui'
-import {
-  Eyebrow,
-  IndexNumber,
-  SectionShell,
-  themeKickerText,
-  themeMutedText,
-  themeRule,
-} from '@/blocks/_shared'
+import { Eyebrow, SectionShell, themeKickerText, themeMutedText, themeRule } from '@/blocks/_shared'
 
 export const QuickLinksBlock: React.FC<QuickLinksBlockProps> = ({
   description,
@@ -23,22 +16,15 @@ export const QuickLinksBlock: React.FC<QuickLinksBlockProps> = ({
   title,
 }) => {
   const t = theme ?? 'default'
-  const total = links?.length ?? 0
 
   return (
     <SectionShell theme={t}>
-      <header className="mb-10 grid gap-6 md:mb-14 md:grid-cols-12 md:items-end md:gap-10">
-        <div className="space-y-5 md:col-span-7">
-          {eyebrow ? <Eyebrow theme={t}>{eyebrow}</Eyebrow> : null}
-          <h2 className="text-balance text-3xl font-medium leading-[1.1] tracking-tight sm:text-4xl md:text-[2.5rem]">
-            {title}
-          </h2>
-        </div>
-        <div className="md:col-span-5">
-          {description ? (
-            <p className={cn('text-base leading-relaxed', themeMutedText[t])}>{description}</p>
-          ) : null}
-        </div>
+      <header className="mb-8 max-w-3xl space-y-3">
+        {eyebrow && <Eyebrow theme={t}>{eyebrow}</Eyebrow>}
+        <h2 className="section-title">{title}</h2>
+        {description && (
+          <p className={cn('text-base leading-relaxed', themeMutedText[t])}>{description}</p>
+        )}
       </header>
 
       <div className={cn('h-px w-full', themeRule[t])} />
@@ -50,7 +36,7 @@ export const QuickLinksBlock: React.FC<QuickLinksBlockProps> = ({
               <article
                 key={item.id ?? index}
                 className={cn(
-                  'group relative flex flex-col gap-6 p-7 transition-colors duration-300 focus-within:ring-2 focus-within:ring-inset md:p-8',
+                  'group relative flex flex-col gap-3 p-7 transition-colors duration-300 focus-within:ring-2 focus-within:ring-inset md:p-8',
                   // Use theme bg as tile bg so the gap-px reads as hairlines
                   t === 'dark' && 'bg-[#03164f] hover:bg-[#04205f] focus-within:ring-white/80',
                   t === 'accent' && 'bg-background hover:bg-primary/5 focus-within:ring-primary',
@@ -61,26 +47,23 @@ export const QuickLinksBlock: React.FC<QuickLinksBlockProps> = ({
                 )}
               >
                 <div className="flex items-start justify-between gap-4">
-                  <IndexNumber value={index + 1} total={total} theme={t} />
+                  <h3 className="text-balance text-xl font-medium leading-tight tracking-tight transition-colors duration-300 group-hover:text-primary md:text-2xl">
+                    {item.title}
+                  </h3>
                   <ArrowUpRight
                     aria-hidden="true"
                     className={cn(
-                      'h-5 w-5 -translate-y-0 translate-x-0 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5',
+                      'h-5 w-5 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5',
                       themeKickerText[t],
                     )}
                   />
                 </div>
 
-                <div className="flex flex-1 flex-col justify-end gap-3">
-                  <h3 className="text-balance text-xl font-medium leading-tight tracking-tight transition-colors duration-300 group-hover:text-primary md:text-2xl">
-                    {item.title}
-                  </h3>
-                  {item.description ? (
-                    <p className={cn('text-sm leading-relaxed', themeMutedText[t])}>
-                      {item.description}
-                    </p>
-                  ) : null}
-                </div>
+                {item.description ? (
+                  <p className={cn('text-sm leading-relaxed', themeMutedText[t])}>
+                    {item.description}
+                  </p>
+                ) : null}
 
                 <CMSLink
                   {...item.link}
@@ -116,15 +99,14 @@ export const QuickLinksBlock: React.FC<QuickLinksBlockProps> = ({
                 </CMSLink>
                 <div
                   className={cn(
-                    'grid grid-cols-[auto_1fr_auto] items-baseline gap-x-6 gap-y-2 py-7 transition-all duration-300 group-hover:pl-3',
+                    'grid grid-cols-[1fr_auto] items-baseline gap-x-6 gap-y-2 py-5 transition-colors',
                     t === 'dark'
                       ? 'group-hover:bg-white/[0.03]'
                       : 'group-hover:bg-foreground/[0.025]',
                   )}
                 >
-                  <IndexNumber value={index + 1} total={total} theme={t} className="self-center" />
                   <div className="space-y-1.5">
-                    <h3 className="text-balance text-xl font-medium leading-snug tracking-tight transition-colors group-hover:text-primary md:text-2xl">
+                    <h3 className="text-balance text-lg font-medium leading-snug transition-colors group-hover:text-primary md:text-xl">
                       {item.title}
                     </h3>
                     {item.description ? (

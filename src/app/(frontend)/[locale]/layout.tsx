@@ -1,6 +1,6 @@
 import React from 'react'
 import { hasLocale, NextIntlClientProvider } from 'next-intl'
-import { getMessages } from 'next-intl/server'
+import { getMessages, setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 
 import { AdminBar } from '@/components/AdminBar'
@@ -27,8 +27,10 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   if (!hasLocale(routing.locales, locale)) notFound()
 
+  setRequestLocale(locale)
+
   const { isEnabled } = await draftMode()
-  const messages = await getMessages()
+  const messages = await getMessages({ locale })
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>

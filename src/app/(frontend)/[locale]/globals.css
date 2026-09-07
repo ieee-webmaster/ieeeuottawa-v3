@@ -9,6 +9,7 @@
   h4,
   h5,
   h6 {
+    @apply font-display;
     font-size: unset;
     font-weight: unset;
   }
@@ -50,13 +51,15 @@
     --error: 10 100% 86%;
 
     --ieee-blue: #03164f;
+    --brand-blue: 202 100% 30%;
+    --brand-garnet: 349 100% 28%;
   }
 
   [data-theme='dark'] {
-    --background: 0 0% 0%;
+    --background: 222 35% 7%;
     --foreground: 210 40% 98%;
 
-    --card: 0 0% 4%;
+    --card: 222 30% 11%;
     --card-foreground: 210 40% 98%;
 
     --popover: 222.2 84% 4.9%;
@@ -101,6 +104,18 @@
     --border: 0, 0%, 100%, 0.2;
     --input: 225 60% 24%;
   }
+
+  [data-block-theme='accent'] {
+    --background: var(--brand-blue);
+    --card: 202 100% 25%;
+    --primary-foreground: var(--brand-blue);
+    --border: 0, 0%, 100%, 0.25;
+  }
+
+  [data-block-theme='accent'].cta-band {
+    --background: var(--brand-garnet);
+    --primary-foreground: var(--brand-garnet);
+  }
 }
 
 @layer base {
@@ -115,6 +130,64 @@
 body[data-scroll-locked]:has([data-theme-selector-content][data-state='open']) {
   margin-right: 0 !important;
   overflow: auto !important;
+}
+
+@layer components {
+  .page-title,
+  .page-copy h1 {
+    @apply font-display text-balance text-4xl font-medium leading-[1.1] tracking-tight sm:text-5xl md:text-[3.5rem];
+  }
+
+  .page-intro,
+  .page-copy p {
+    @apply max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg;
+  }
+
+  .back-link {
+    @apply inline-flex min-h-10 items-center gap-2 font-mono text-sm text-primary underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4;
+  }
+
+  .member-grid {
+    @apply grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:grid-cols-5;
+  }
+
+  .section-title {
+    @apply font-display text-balance text-3xl font-medium leading-[1.1] tracking-tight sm:text-4xl md:text-[2.75rem];
+  }
+
+  .page-heading {
+    @apply border-b border-border;
+    padding-block: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .hero-copy {
+    @apply max-w-2xl;
+  }
+
+  .hero-copy h1 {
+    @apply m-0 font-display font-medium tracking-normal text-balance;
+    font-size: clamp(2.5rem, 4.5vw, 4.25rem);
+    line-height: 1.1;
+  }
+
+  .hero-copy p {
+    @apply mt-4 max-w-xl font-mono text-sm leading-relaxed text-white/80 md:text-base;
+  }
+
+  .hero-copy > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 html {

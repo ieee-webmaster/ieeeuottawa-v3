@@ -20,14 +20,7 @@ export const CollectionArchive: React.FC<Props> = (props) => {
 
           return (
             <div className="col-span-4" key={result.slug || index}>
-              <Card
-                className="h-full"
-                doc={result}
-                href={href}
-                index={index}
-                showCategories
-                total={posts.length}
-              />
+              <Card className="h-full" doc={result} href={href} showCategories />
             </div>
           )
         })}

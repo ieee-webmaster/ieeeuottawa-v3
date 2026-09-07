@@ -30,54 +30,33 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = ({
   title,
 }) => {
   const t = theme ?? 'default'
-  const total = cards?.length ?? 0
-  // Detect homogeneity so we can pick a layout that fits the content type:
-  //   - all photo cards          → original aspect-[4/3] hero treatment
-  //   - all SVG / icon cards     → small square chip + text (icons get lost in 4:3)
-  //   - all text-only cards      → editorial list with mono index rail
+  // Keep icons compact; reserve the larger image area for photos.
   const hasAnyMedia = (cards ?? []).some((c) => c.media && typeof c.media === 'object')
   const allSvgMedia = hasAnyMedia && (cards ?? []).every((c) => isSvgMedia(c.media))
   const variant: 'photo' | 'icon' | 'text' = !hasAnyMedia ? 'text' : allSvgMedia ? 'icon' : 'photo'
 
   const mediaSizesPreset = columns === '2' ? 'half' : columns === '4' ? 'quarter' : 'third'
 
-  const indexLabel = (i: number) => (
-    <span
-      className={cn(
-        'font-mono text-[0.7rem] uppercase tracking-[0.22em]',
-        t === 'dark' ? 'text-white/55' : 'text-foreground/45',
-      )}
-    >
-      {String(i + 1).padStart(2, '0')}
-      <span className="opacity-60">{` / ${String(total).padStart(2, '0')}`}</span>
-    </span>
-  )
-
   return (
     <SectionShell theme={t}>
-      <header className="mb-12 grid gap-6 md:mb-16 md:grid-cols-12 md:items-end md:gap-10">
-        <div className="space-y-5 md:col-span-7">
+      <header className="mb-8 max-w-3xl space-y-3">
+        <div className="space-y-5">
           {eyebrow ? <Eyebrow theme={t}>{eyebrow}</Eyebrow> : null}
-          <h2 className="text-balance text-3xl font-medium leading-[1.1] tracking-tight sm:text-4xl md:text-[2.75rem]">
-            {title}
-          </h2>
+          <h2 className="section-title">{title}</h2>
         </div>
-        <div className="md:col-span-5">
-          {description ? (
-            <p className={cn('text-base leading-relaxed', themeMutedText[t])}>{description}</p>
-          ) : null}
-        </div>
+        {description ? (
+          <p className={cn('text-base leading-relaxed', themeMutedText[t])}>{description}</p>
+        ) : null}
       </header>
 
-      <div className={cn('h-px w-full', themeRule[t])} />
+      {variant !== 'text' && <div className={cn('h-px w-full', themeRule[t])} />}
 
       {cards && cards.length > 0 ? (
         <div
           className={cn(
-            'grid pt-10 md:pt-14',
-            variant === 'text'
-              ? 'gap-x-10 gap-y-12 md:grid-cols-2 lg:grid-cols-3'
-              : cn('gap-x-8 gap-y-14', gridColumnClasses[columns]),
+            'grid gap-x-8 gap-y-10',
+            variant !== 'text' && 'pt-7',
+            gridColumnClasses[columns],
           )}
         >
           {cards.map((card, index) => (
@@ -87,10 +66,10 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = ({
                 'group flex h-full flex-col',
                 variant === 'text'
                   ? cn(
-                      'gap-4 border-l pl-6 pt-1',
+                      'gap-4 border-t pt-6',
                       t === 'dark' ? 'border-white/15' : 'border-foreground/15',
                     )
-                  : 'gap-5',
+                  : 'gap-3',
               )}
             >
               {variant === 'photo' && card.media && typeof card.media === 'object' ? (
@@ -98,44 +77,28 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = ({
                   <Media
                     fill
                     className={cn(
-                      'relative aspect-[4/3] overflow-hidden bg-foreground/5 transition-transform duration-700 ease-out group-hover:scale-[1.04]',
+                      'relative aspect-square overflow-hidden bg-foreground/5',
                       t === 'dark' && 'bg-white/5',
                     )}
-                    imgClassName="object-cover"
+                    imgClassName="object-cover object-top"
                     pictureClassName="relative block h-full w-full"
                     resource={card.media}
                     sizesPreset={mediaSizesPreset}
                   />
-                  <span className="absolute left-3 top-3 rounded-sm bg-black/55 px-2 py-1 font-mono text-[0.7rem] tracking-[0.2em] text-white backdrop-blur-sm">
-                    {String(index + 1).padStart(2, '0')}
-                    <span className="opacity-50">{`/${String(total).padStart(2, '0')}`}</span>
-                  </span>
                 </div>
               ) : null}
 
               {variant === 'icon' && card.media && typeof card.media === 'object' ? (
-                <div className="flex items-center justify-between gap-4">
-                  <div
-                    className={cn(
-                      'relative flex h-14 w-14 items-center justify-center rounded-sm border',
-                      t === 'dark'
-                        ? 'border-white/15 bg-white/5'
-                        : 'border-foreground/15 bg-foreground/[0.03]',
-                    )}
-                  >
-                    <Media
-                      className="h-8 w-8"
-                      imgClassName="h-8 w-8 object-contain"
-                      pictureClassName="relative block h-8 w-8"
-                      resource={card.media}
-                      sizesPreset="icon"
-                    />
-                  </div>
-                  {indexLabel(index)}
+                <div className="flex h-12 w-12 items-center">
+                  <Media
+                    className="h-10 w-10"
+                    imgClassName="h-10 w-10 object-contain dark:invert"
+                    pictureClassName="block h-10 w-10"
+                    resource={card.media}
+                    sizesPreset="icon"
+                  />
                 </div>
               ) : null}
-
-              {variant === 'text' ? <div className="-ml-px">{indexLabel(index)}</div> : null}
 
               <div className="flex flex-1 flex-col gap-3">
                 {card.kicker ? (
@@ -149,7 +112,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = ({
                   </p>
                 ) : null}
 
-                <h3 className="text-balance text-xl font-medium leading-tight tracking-tight transition-colors duration-300 group-hover:text-primary md:text-2xl">
+                <h3 className="text-balance font-display text-xl font-medium leading-tight tracking-tight md:text-2xl">
                   {card.title}
                 </h3>
 
@@ -165,7 +128,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = ({
                       {...card.link}
                       appearance="inline"
                       className={cn(
-                        'inline-flex items-center gap-2 font-mono text-[0.72rem] uppercase tracking-[0.22em] transition-colors hover:text-[hsl(var(--interactive))]',
+                        'inline-flex min-h-11 items-center gap-2 font-mono text-sm transition-colors hover:text-[hsl(var(--interactive))]',
                         t === 'dark' ? 'text-white' : 'text-primary',
                       )}
                     >

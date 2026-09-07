@@ -1,95 +1,53 @@
+import { formatEventLocation } from '@/utilities/formatEventLocation'
 import { Link } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
-import { cn } from '@/utilities/ui'
+import { formatDateTime } from '@/utilities/formatDateTime'
 import { Media } from '@/components/Media'
 import type { EventListItem } from '@/utilities/publicCms'
 
 type Props = {
   event: EventListItem
   locale: Locale
-  index?: number
-  total?: number
 }
 
-export const EventCard = ({ event, locale, index, total }: Props) => {
+export const EventCard = ({ event, locale }: Props) => {
   const heroMedia = event.heroImage && typeof event.heroImage !== 'number' ? event.heroImage : null
   const eventDate = new Date(event.date)
   const validDate = !Number.isNaN(eventDate.valueOf())
-  const month = validDate
-    ? new Intl.DateTimeFormat(locale, { month: 'short', timeZone: 'UTC' })
-        .format(eventDate)
-        .toLocaleUpperCase(locale)
-    : ''
-  const day = validDate
-    ? new Intl.DateTimeFormat(locale, { day: 'numeric', timeZone: 'UTC' }).format(eventDate)
-    : ''
-  const year = validDate
-    ? new Intl.DateTimeFormat(locale, { year: 'numeric', timeZone: 'UTC' }).format(eventDate)
-    : ''
-
-  const indexLabel =
-    typeof index === 'number' && typeof total === 'number'
-      ? `${String(index + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`
-      : null
 
   return (
-    <article className="group flex h-full flex-col gap-5">
+    <article className="min-w-0">
       <Link
         href={`/events/${encodeURIComponent(event.slug)}`}
-        className="flex h-full flex-col gap-5"
+        className="group flex h-full flex-col gap-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
       >
-        <div className="relative aspect-[4/3] overflow-hidden bg-foreground/5">
-          {heroMedia ? (
+        {heroMedia && (
+          <div className="relative aspect-square overflow-hidden bg-muted">
             <Media
               fill
               htmlElement={null}
               resource={heroMedia}
-              alt={heroMedia?.alt || event.title || 'Event image'}
-              imgClassName={cn(
-                'object-cover',
-                'transition-transform duration-700 ease-out group-hover:scale-[1.04]',
-              )}
+              alt={heroMedia.alt || event.title}
+              imgClassName="object-contain"
               pictureClassName="absolute inset-0"
               sizesPreset="third"
             />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-foreground/[0.04]">
-              <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-foreground/40">
-                No image
-              </span>
-            </div>
+          </div>
+        )}
+        <div className="space-y-2">
+          {validDate && (
+            <time dateTime={event.date} className="font-mono text-xs text-muted-foreground">
+              {formatDateTime(event.date, locale)}
+            </time>
           )}
-
-          {indexLabel ? (
-            <span className="absolute left-3 top-3 rounded-sm bg-black/55 px-2 py-1 font-mono text-[0.7rem] tracking-[0.2em] text-white backdrop-blur-sm">
-              {indexLabel}
-            </span>
-          ) : null}
-
-          {validDate ? (
-            <div className="absolute bottom-3 right-3 flex items-end gap-2 rounded-sm bg-background/85 px-2.5 py-1.5 backdrop-blur-sm">
-              <span className="font-mono text-[0.65rem] uppercase tracking-[0.22em] text-foreground/65">
-                {month}
-              </span>
-              <span className="text-2xl font-medium leading-none tracking-tight text-foreground">
-                {day}
-              </span>
-              <span className="font-mono text-[0.65rem] uppercase tracking-[0.18em] text-foreground/55">
-                {year}
-              </span>
-            </div>
-          ) : null}
-        </div>
-
-        <div className="flex flex-1 flex-col gap-2">
-          {event.location ? (
-            <p className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-primary">
-              {event.location}
-            </p>
-          ) : null}
-          <h3 className="text-balance text-xl font-medium leading-tight tracking-tight transition-colors duration-300 group-hover:text-primary md:text-2xl">
+          <h3 className="font-display text-xl font-medium leading-snug group-hover:underline underline-offset-4">
             {event.title}
           </h3>
+          {event.location && (
+            <p className="break-words text-sm leading-relaxed text-muted-foreground">
+              {formatEventLocation(event.location)}
+            </p>
+          )}
         </div>
       </Link>
     </article>

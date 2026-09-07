@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import { notFound } from 'next/navigation'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import type { Config } from '@/payload-types'
 import { YearlyDocument } from '../_components/YearlyDocument'
 import { generateStaticMeta } from '@/utilities/generateMeta'
@@ -23,6 +23,7 @@ type Args = {
 
 export default async function DocsPage({ params: paramsPromise }: Args) {
   const { locale, year = '' } = await paramsPromise
+  setRequestLocale(locale)
 
   const doc = await getCachedDocByYear(year, locale)
 

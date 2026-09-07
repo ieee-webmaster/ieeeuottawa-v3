@@ -16,7 +16,10 @@ vi.mock('@/utilities/publicCms', () => ({
   getPublishedEventSlugs: async () => [],
 }))
 vi.mock('next/headers', () => ({ draftMode: async () => ({ isEnabled: true }) }))
-vi.mock('next-intl/server', () => ({ getTranslations: async () => (key: string) => key }))
+vi.mock('next-intl/server', () => ({
+  setRequestLocale: vi.fn(),
+  getTranslations: async () => (key: string) => key,
+}))
 vi.mock('@/i18n/navigation', () => ({
   Link: (props: AnchorHTMLAttributes<HTMLAnchorElement>) => createElement('a', props),
 }))
@@ -47,6 +50,16 @@ describe('event rendering', () => {
     expect(screen.getByText('IEEE uOttawa')).toBeDefined()
   })
 
+  it('shows the readable location without imported Markdown URLs', async () => {
+    getEvent.mockResolvedValue({
+      ...draft,
+      location: '[Zoom](https://example.test/meeting) or STE 4026',
+    })
+    render(await EventPage({ params }))
+    expect(screen.getByText('Zoom or STE 4026')).toBeDefined()
+    expect(screen.queryByText(/https:\/\/example/)).toBeNull()
+  })
+
   it('omits an unpopulated hero image', async () => {
     getEvent.mockResolvedValue({ ...draft, heroImage: 7 })
     render(await EventPage({ params }))
@@ -63,6 +76,7 @@ describe('event rendering', () => {
     render(await EventPage({ params }))
     expect(screen.getByText('Robotics team')).toBeDefined()
     expect(media.mock.calls[0]?.[0].resource).toEqual(event.heroImage)
+    expect(media.mock.calls[0]?.[0].alt).toBe('Workshop')
   })
 
   it.each([1000, 1001])(

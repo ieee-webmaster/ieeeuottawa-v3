@@ -44,7 +44,7 @@
   },
   "search": {
     "title": "Rechercher",
-    "description": "Recherchez les articles, événements, documents et ressources d'IEEE uOttawa.",
+    "description": "Recherchez les nouvelles et les mises à jour de l’IEEE uOttawa.",
     "eyebrow": "Explorer le site",
     "placeholder": "Que recherchez-vous?",
     "submit": "Lancer la recherche",
@@ -60,14 +60,13 @@
     "description": "La page que vous recherchez a peut-être été déplacée ou n'existe plus.",
     "action": "Retour à l'accueil"
   },
-
   "docs": {
-    "title": "Documents Annuels",
+    "title": "Documents",
     "description": "Accédez aux rapports annuels, aux procès-verbaux de réunions et à d'autres documents importants d'IEEE UOttawa.",
     "noDocuments": "Aucun document disponible pour cette année.",
     "backToDocuments": "Retour aux documents annuels",
-    "landingDescription": "Explorez notre archive de documents officiels, les procès-verbaux de réunions et les documents divers.",
-    "landingDescriptionCont": " Sélectionnez une année académique pour voir sa documentation spécifique.",
+    "landingDescription": "Constitutions, budgets et procès-verbaux, regroupés par année universitaire.",
+    "landingDescriptionCont": "",
     "noYears": "Aucune archive n'a encore été publiée.",
     "archiveLabel": "Voir les Archives",
     "archiveEyebrow": "Archive",
@@ -79,9 +78,9 @@
   "committee": {
     "pageTitle": "Comités",
     "archiveLabel": "Archives des comités",
-    "landingDescription": "Derrière chaque association étudiante prospère se trouve une équipe de bénévoles dévoués qui partagent l'objectif commun d'améliorer la vie des étudiants du programme EECS sur le campus.",
+    "landingDescription": "Découvrez les équipes étudiantes de l’IEEE uOttawa, par année universitaire.",
     "noRecords": "Aucun enregistrement de comité trouvé.",
-    "teamCount": "{count, plural, one {# Équipe} other {# Équipes}}",
+    "teamCount": "{count, plural, one {# équipe} other {# équipes}}",
     "backToCommittees": "Retour aux comités",
     "title": "Comité",
     "teamSpotlightTitle": "L'équipe derrière \"{team}\"",
@@ -97,6 +96,11 @@
     "coordinator": "Coordonnateur ou coordonnatrice",
     "executives": "Cadres",
     "commissioners": "Commissaires",
-    "coordinators": "Coordinateurs"
+    "coordinators": "Coordinateurs",
+    "teams": "Équipes"
+  },
+  "footer": {
+    "navigation": "Navigation de bas de page",
+    "rights": "Tous droits réservés."
   }
 }

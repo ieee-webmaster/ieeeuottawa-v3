@@ -18,41 +18,22 @@ export const CTABandBlock: React.FC<CTABandBlockProps> = ({
   const centered = alignment === 'center'
 
   return (
-    <SectionShell
-      theme={t}
-      padding="py-20 md:py-28"
-      className="overflow-hidden"
-      innerClassName="relative"
-    >
-      {/* Decorative oversized arrow glyph */}
-      <span
-        aria-hidden="true"
-        className={cn(
-          'pointer-events-none absolute select-none font-mono text-[14rem] font-light leading-none md:text-[20rem]',
-          centered ? 'right-2 top-2 md:right-6 md:top-6' : '-right-8 -top-12 md:-right-4 md:-top-8',
-          t === 'dark' ? 'text-white/[0.04]' : 'text-primary/[0.06]',
-        )}
-      >
-        →
-      </span>
-
+    <SectionShell theme={t} padding="py-12 md:py-16" className="cta-band border-y border-border">
       <div
         className={cn(
           'relative grid gap-10',
-          centered ? 'place-items-center text-center' : 'md:grid-cols-12 md:items-end md:gap-12',
+          centered ? 'place-items-center text-center' : 'md:grid-cols-12 md:items-center md:gap-12',
         )}
       >
-        <div className={cn('space-y-6', centered ? 'max-w-2xl' : 'md:col-span-7 lg:col-span-8')}>
+        <div className={cn('space-y-4', centered ? 'max-w-2xl' : 'md:col-span-7 lg:col-span-8')}>
           {eyebrow ? <Eyebrow theme={t}>{eyebrow}</Eyebrow> : null}
 
-          <h2 className="text-balance text-4xl font-medium leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
-            {title}
-          </h2>
+          <h2 className="section-title">{title}</h2>
 
           {description ? (
             <p
               className={cn(
-                'max-w-2xl text-base leading-relaxed md:text-lg',
+                'max-w-xl text-base leading-relaxed',
                 themeMutedText[t],
                 centered && 'mx-auto',
               )}
@@ -75,11 +56,6 @@ export const CTABandBlock: React.FC<CTABandBlockProps> = ({
           </div>
         ) : null}
       </div>
-
-      {/* Bottom hairline rule for the default theme to anchor the band */}
-      {t === 'default' ? (
-        <div className="absolute inset-x-0 bottom-0 h-px bg-foreground/10" />
-      ) : null}
     </SectionShell>
   )
 }
