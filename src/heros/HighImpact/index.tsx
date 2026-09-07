@@ -12,11 +12,16 @@ import styles from './index.module.css'
 type ImageFramingStyle = CSSProperties &
   Record<`--hero-${'desktop' | 'mobile'}-${'x' | 'y' | 'zoom'}`, string | number>
 
-export const HighImpactHero: React.FC<Page['hero']> = ({
+type HighImpactHeroProps = Page['hero'] & {
+  imageLayout?: 'offset' | 'background'
+}
+
+export const HighImpactHero: React.FC<HighImpactHeroProps> = ({
   links,
   media,
   richText,
   imagePosition,
+  imageLayout = 'offset',
 }) => {
   const image = media && typeof media === 'object' ? media : null
   const framing: ImageFramingStyle = {
@@ -33,7 +38,11 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
       theme="dark"
       padding=""
       bare
-      className={cn(styles.hero, image && styles.withMedia)}
+      className={cn(
+        styles.hero,
+        image && styles.withMedia,
+        imageLayout === 'background' && styles.backgroundImage,
+      )}
     >
       {image && (
         <div className={styles.media} style={framing}>
@@ -44,7 +53,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
             videoClassName={styles.imageElement}
             priority
             resource={image}
-            sizes="(min-width: 1024px) 75vw, 100vw"
+            sizes={imageLayout === 'background' ? '100vw' : '(min-width: 1024px) 75vw, 100vw'}
           />
         </div>
       )}

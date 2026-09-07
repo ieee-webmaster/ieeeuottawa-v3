@@ -14,10 +14,17 @@ const heroes = {
   affinityGroup: AffinityGroupHero,
 }
 
-export const RenderHero: React.FC<Page['hero']> = (props) => {
-  const { type } = props || {}
+export const RenderHero: React.FC<Page['hero'] & { isHomePage?: boolean }> = ({
+  isHomePage = false,
+  ...props
+}) => {
+  const { type } = props
 
   if (!type || type === 'none') return null
+
+  if (type === 'highImpact') {
+    return <HighImpactHero {...props} imageLayout={isHomePage ? 'offset' : 'background'} />
+  }
 
   const HeroToRender = heroes[type]
 

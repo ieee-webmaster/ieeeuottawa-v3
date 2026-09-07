@@ -20,7 +20,13 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(0deg, hsl(var(--background)), transparent 28%);
+  background: linear-gradient(
+    0deg,
+    hsl(var(--background)),
+    hsl(var(--background) / 0.72) 5%,
+    hsl(var(--background) / 0.25) 11%,
+    transparent 20%
+  );
 }
 
 .image,
@@ -132,9 +138,23 @@
     background: linear-gradient(
       90deg,
       hsl(var(--background)),
-      hsl(var(--background) / 0.87) 12%,
-      hsl(var(--background) / 0.35) 30%,
-      transparent 52%
+      hsl(var(--background) / 0.75) 10%,
+      hsl(var(--background) / 0.28) 25%,
+      transparent 46%
+    );
+  }
+
+  .backgroundImage .media {
+    left: 0;
+  }
+
+  .backgroundImage .media::after {
+    background: linear-gradient(
+      90deg,
+      rgb(0 0 0 / 0.76),
+      rgb(0 0 0 / 0.65) 34%,
+      rgb(0 0 0 / 0.24) 64%,
+      transparent 88%
     );
   }
 
