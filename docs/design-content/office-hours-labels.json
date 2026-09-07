@@ -1,0 +1,20 @@
+{
+  "environment": "local development",
+  "scope": "Homepage hero office link labels only; footer already correct.",
+  "changes": [
+    {
+      "locale": "en",
+      "slug": "home",
+      "field": "hero.links[1].link.label",
+      "before": "Visit the office",
+      "after": "Office Hours"
+    },
+    {
+      "locale": "fr",
+      "slug": "home",
+      "field": "hero.links[1].link.label",
+      "before": "Visitez notre bureau",
+      "after": "Heures de bureau"
+    }
+  ]
+}
