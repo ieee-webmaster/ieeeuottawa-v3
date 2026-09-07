@@ -114,6 +114,10 @@ describe('legacy page extraction', () => {
     const docs = extractDocs(
       pageHtml({
         sections: [
+          null,
+          'invalid section',
+          42,
+          { type: 42 },
           { type: 'HeroSection', items: 42 },
           {
             type: 'FeaturedItemsSection',
