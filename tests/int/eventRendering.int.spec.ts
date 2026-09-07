@@ -50,14 +50,19 @@ describe('event rendering', () => {
     expect(screen.getByText('IEEE uOttawa')).toBeDefined()
   })
 
-  it('shows the readable location without imported Markdown URLs', async () => {
-    getEvent.mockResolvedValue({
-      ...draft,
-      location: '[Zoom](https://example.test/meeting) or STE 4026',
-    })
+  it.each([
+    ['[Zoom](https://example.test/meeting) or STE 4026', 'Zoom or STE 4026'],
+    ['[Map](https://maps.example/?q=(45,-75))', 'Map'],
+    ['[Map](https://maps.example/?q=((45),(-75)))', 'Map'],
+    ['([Map](https://maps.example/?q=(45,-75)))', '(Map)'],
+    ['[Map](https://maps.example/?q=(45,-75))[Zoom](http://example.test/meeting)', 'MapZoom'],
+    ['[Map](https://maps.example/?q=45\\),-75)', 'Map'],
+    ['[Map](https://maps.example/?q=(45,-75)', '[Map](https://maps.example/?q=(45,-75)'],
+    ['STE 4026 (fourth floor)', 'STE 4026 (fourth floor)'],
+  ])('shows the readable location for %s', async (location, expected) => {
+    getEvent.mockResolvedValue({ ...draft, location })
     render(await EventPage({ params }))
-    expect(screen.getByText('Zoom or STE 4026')).toBeDefined()
-    expect(screen.queryByText(/https:\/\/example/)).toBeNull()
+    expect(screen.getByText(expected)).toBeDefined()
   })
 
   it('omits an unpopulated hero image', async () => {
