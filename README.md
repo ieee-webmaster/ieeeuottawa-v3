@@ -42,7 +42,7 @@ Contact:
 
 ### Prequisites
 
-1. [Node.js](https://nodejs.org/en/download) (v18 or higher)
+1. [Node.js](https://nodejs.org/en/download) (v20.9.0 or higher)
 2. [Docker](https://www.docker.com/get-started) to run a local instance of the Postgres database
 3. [Pnpm](https://pnpm.io/installation) - like npm but better. `npm install -g pnpm`
 

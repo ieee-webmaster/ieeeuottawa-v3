@@ -56,7 +56,8 @@ export function extractDocs(html: string): DocsData {
   let currentYear: DocsData['years'][number] | undefined
 
   for (const rawSection of page.sections ?? []) {
-    if (sectionTypeSchema.parse(rawSection).type !== 'FeaturedItemsSection') continue
+    const sectionType = sectionTypeSchema.safeParse(rawSection)
+    if (!sectionType.success || sectionType.data.type !== 'FeaturedItemsSection') continue
     const section = oldSectionSchema.parse(rawSection)
 
     const title = section.title || ''
