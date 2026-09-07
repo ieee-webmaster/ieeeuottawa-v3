@@ -62,7 +62,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, navItems }) =>
       data-scrolled={scrolled}
       data-menu-open={menuOpen}
       className={cn(
-        'sticky top-0 z-40 w-full border-b transition-colors duration-200',
+        'sticky top-0 z-40 w-full transition-colors duration-200',
         styles.header,
         menuOpen
           ? 'border-border bg-background'

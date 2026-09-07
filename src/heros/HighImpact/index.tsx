@@ -79,7 +79,11 @@ export const HighImpactHero: React.FC<HighImpactHeroProps> = ({
                 <CMSLink
                   {...link}
                   size="lg"
-                  className={cn(styles.action, link.appearance === 'default' && styles.primary)}
+                  className={cn(
+                    styles.action,
+                    link.appearance === 'default' && styles.primary,
+                    link.appearance === 'outline' && styles.outline,
+                  )}
                 >
                   {index === 0 && link.appearance === 'default' && (
                     <ArrowRight aria-hidden="true" className="size-4 shrink-0" />
