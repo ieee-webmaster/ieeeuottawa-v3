@@ -159,24 +159,6 @@ body[data-scroll-locked]:has([data-theme-selector-content][data-state='open']) {
     @apply border-b border-border;
     padding-block: clamp(2.5rem, 5vw, 4rem);
   }
-
-  .hero-copy {
-    @apply max-w-2xl;
-  }
-
-  .hero-copy h1 {
-    @apply m-0 font-display font-medium tracking-normal text-balance;
-    font-size: clamp(2.5rem, 4.5vw, 4.25rem);
-    line-height: 1.1;
-  }
-
-  .hero-copy p {
-    @apply mt-4 max-w-xl font-mono text-sm leading-relaxed text-white/80 md:text-base;
-  }
-
-  .hero-copy > :last-child {
-    margin-bottom: 0;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
