@@ -127,6 +127,16 @@ export const hero: Field = {
       required: true,
     },
     {
+      name: 'showCircuits',
+      type: 'checkbox',
+      label: 'Show circuit decoration',
+      defaultValue: true,
+      admin: {
+        condition: (_, siblingData) => siblingData?.type === 'highImpact',
+        description: 'Show the circuit pattern and its brief animation on this hero.',
+      },
+    },
+    {
       name: 'imagePosition',
       type: 'group',
       label: 'Image framing',

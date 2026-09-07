@@ -14,6 +14,7 @@ import { LocaleSwitcher } from '@/components/LocaleSwitcher'
 import { SocialIcons } from '@/components/SocialIcons'
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { HeaderNav } from './Nav'
+import styles from './index.module.css'
 
 interface HeaderClientProps {
   data: Header
@@ -33,7 +34,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, navItems }) =>
   }, [pathname])
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 4)
+    const onScroll = () => setScrolled(window.scrollY > 24)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -58,8 +59,11 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, navItems }) =>
 
   return (
     <header
+      data-scrolled={scrolled}
+      data-menu-open={menuOpen}
       className={cn(
         'sticky top-0 z-40 w-full border-b transition-colors duration-200',
+        styles.header,
         menuOpen
           ? 'border-border bg-background'
           : scrolled
@@ -67,14 +71,18 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, navItems }) =>
             : 'border-transparent bg-background',
       )}
     >
-      <div className="container flex h-20 items-center justify-between gap-4 xl:grid xl:grid-cols-[1fr_auto_1fr] xl:gap-6">
+      <div className="container flex h-full items-center justify-between gap-4 xl:grid xl:grid-cols-[1fr_auto_1fr] xl:gap-6">
         <Link
           href="/"
           className="flex shrink-0 items-center rounded-md py-3 xl:justify-self-start"
           aria-label={t('home')}
           onClick={() => setMenuOpen(false)}
         >
-          <Logo loading="eager" priority className="w-[7.5rem] sm:w-[8rem] md:w-[9.375rem]" />
+          <Logo
+            loading="eager"
+            priority
+            className={cn(styles.logo, 'w-[7.5rem] sm:w-[8rem] md:w-[9.375rem]')}
+          />
         </Link>
 
         <div className="hidden items-center gap-2 xl:flex xl:justify-self-center">
@@ -84,7 +92,11 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, navItems }) =>
         <div className="hidden items-center gap-2 xl:flex xl:justify-self-end">
           {socialLinks.length > 0 && (
             <>
-              <SocialIcons links={socialLinks} showLabels={showSocialLabels} className="gap-1" />
+              <SocialIcons
+                links={socialLinks}
+                showLabels={showSocialLabels}
+                className={cn(styles.socialIcons, 'gap-1')}
+              />
               <span aria-hidden="true" className="mx-1 h-5 w-px bg-border" />
             </>
           )}

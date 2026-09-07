@@ -36,6 +36,32 @@ const links: Page['hero']['links'] = [
 
 afterEach(cleanup)
 
+describe('High impact hero circuit decoration', () => {
+  it.each([undefined, null, true])(
+    'keeps circuits enabled for new and older pages (%s)',
+    (showCircuits) => {
+      const { container } = render(
+        createElement(HighImpactHero, { type: 'highImpact', media, showCircuits }),
+      )
+      expect(container.querySelectorAll(`.${styles.circuit}`)).toHaveLength(2)
+    },
+  )
+
+  it('removes the decoration and animation when disabled, preserving the image and links', () => {
+    const { container } = render(
+      createElement(HighImpactHero, { type: 'highImpact', media, links, showCircuits: false }),
+    )
+    expect(container.querySelector(`.${styles.circuit}`)).toBeNull()
+    expect(container.querySelector(`.${styles.signal}`)).toBeNull()
+    expect(screen.getByRole('img', { name: 'Our student branch' }).getAttribute('src')).toBe(
+      '/team.jpg',
+    )
+    expect(screen.getByRole('link', { name: 'Explore the branch' }).getAttribute('href')).toBe(
+      '/about',
+    )
+  })
+})
+
 describe('High impact hero image framing', () => {
   it('renders older pages without framing settings using the original media', () => {
     const { container } = render(createElement(HighImpactHero, { type: 'highImpact', media }))
