@@ -76,8 +76,7 @@
 }
 
 .circuitTop {
-  top: -0.75rem;
-  left: -0.5rem;
+  display: none;
 }
 
 .circuitBottom {
@@ -197,6 +196,17 @@
   --primary-foreground: 0 0% 100%;
 }
 
+.action.outline {
+  border-color: #f4f7fb;
+  background-color: #f4f7fb;
+  color: var(--ieee-blue);
+}
+
+.action.outline:hover {
+  border-color: #fff;
+  background-color: #fff;
+}
+
 @media (min-width: 640px) {
   .trace:nth-child(n + 4) {
     display: inline;
@@ -233,8 +243,10 @@
   }
 
   .circuitTop {
-    top: 0;
+    display: block;
+    top: calc(var(--site-header-height) + 1rem);
     left: 0;
+    width: min(32vw, 34rem, 30svh);
   }
 
   .circuitBottom {
