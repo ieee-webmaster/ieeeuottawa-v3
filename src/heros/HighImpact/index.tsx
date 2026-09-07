@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { type CSSProperties } from 'react'
+import { ArrowRight } from 'lucide-react'
 
 import type { Page } from '@/payload-types'
 import { CMSLink } from '@/components/Link'
@@ -6,39 +7,67 @@ import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 import { SectionShell } from '@/blocks/_shared'
 import { cn } from '@/utilities/ui'
+import styles from './index.module.css'
 
-export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText }) => (
-  <SectionShell theme="dark" padding="py-10 md:py-14 lg:py-16" className="overflow-hidden">
-    <div
-      className={cn(
-        'grid items-center gap-10 lg:gap-12',
-        media && typeof media === 'object' && 'lg:grid-cols-[1.25fr_1fr]',
-      )}
+type ImageFramingStyle = CSSProperties &
+  Record<`--hero-${'desktop' | 'mobile'}-${'x' | 'y' | 'zoom'}`, string | number>
+
+export const HighImpactHero: React.FC<Page['hero']> = ({
+  links,
+  media,
+  richText,
+  imagePosition,
+}) => {
+  const image = media && typeof media === 'object' ? media : null
+  const framing: ImageFramingStyle = {
+    '--hero-desktop-x': `${imagePosition?.desktop?.x ?? 50}%`,
+    '--hero-desktop-y': `${imagePosition?.desktop?.y ?? 50}%`,
+    '--hero-desktop-zoom': (imagePosition?.desktop?.zoom ?? 100) / 100,
+    '--hero-mobile-x': `${imagePosition?.mobile?.x ?? 50}%`,
+    '--hero-mobile-y': `${imagePosition?.mobile?.y ?? 50}%`,
+    '--hero-mobile-zoom': (imagePosition?.mobile?.zoom ?? 100) / 100,
+  }
+
+  return (
+    <SectionShell
+      theme="dark"
+      padding=""
+      bare
+      className={cn(styles.hero, image && styles.withMedia)}
     >
-      <div>
-        {richText && <RichText className="hero-copy mx-0" data={richText} enableGutter={false} />}
+      {image && (
+        <div className={styles.media} style={framing}>
+          <Media
+            className={styles.image}
+            imgClassName={styles.imageElement}
+            pictureClassName={styles.picture}
+            videoClassName={styles.imageElement}
+            priority
+            resource={image}
+            sizes="(min-width: 1024px) 75vw, 100vw"
+          />
+        </div>
+      )}
+      <div className={cn('container', styles.content)}>
+        {richText && <RichText className={styles.copy} data={richText} enableGutter={false} />}
         {links && links.length > 0 && (
-          <ul className="mt-6 grid gap-3 sm:flex sm:flex-wrap">
+          <ul className={styles.actions}>
             {links.map(({ id, link }, index) => (
               <li key={id ?? index}>
-                <CMSLink {...link} size="lg" className="w-full sm:w-auto" />
+                <CMSLink
+                  {...link}
+                  size="lg"
+                  className={cn(styles.action, link.appearance === 'default' && styles.primary)}
+                >
+                  {index === 0 && link.appearance === 'default' && (
+                    <ArrowRight aria-hidden="true" className="size-4 shrink-0" />
+                  )}
+                </CMSLink>
               </li>
             ))}
           </ul>
         )}
       </div>
-      {media && typeof media === 'object' && (
-        <div className="min-w-0">
-          <Media
-            className="relative"
-            imgClassName="block h-auto w-full"
-            pictureClassName="block"
-            priority
-            resource={media}
-            sizesPreset="half"
-          />
-        </div>
-      )}
-    </div>
-  </SectionShell>
-)
+    </SectionShell>
+  )
+}

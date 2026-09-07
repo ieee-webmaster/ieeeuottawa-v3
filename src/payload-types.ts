@@ -222,6 +222,39 @@ export interface Page {
       | null;
     logo?: (number | null) | Media;
     media?: (number | null) | Media;
+    /**
+     * Adjust this hero without changing the original media. Check both Desktop and Mobile in Live Preview; positioning moves the part of the image that is cropped.
+     */
+    imagePosition?: {
+      desktop?: {
+        /**
+         * 0 = left, 50 = centre, 100 = right.
+         */
+        x?: number | null;
+        /**
+         * 0 = top, 50 = centre, 100 = bottom.
+         */
+        y?: number | null;
+        /**
+         * 100 = fill the frame. Zoom in to give positioning more room.
+         */
+        zoom?: number | null;
+      };
+      mobile?: {
+        /**
+         * 0 = left, 50 = centre, 100 = right.
+         */
+        x?: number | null;
+        /**
+         * 0 = top, 50 = centre, 100 = bottom.
+         */
+        y?: number | null;
+        /**
+         * 100 = fill the frame. Zoom in to give positioning more room.
+         */
+        zoom?: number | null;
+      };
+    };
   };
   layout: (
     | CallToActionBlock
@@ -1794,6 +1827,24 @@ export interface PagesSelect<T extends boolean = true> {
             };
         logo?: T;
         media?: T;
+        imagePosition?:
+          | T
+          | {
+              desktop?:
+                | T
+                | {
+                    x?: T;
+                    y?: T;
+                    zoom?: T;
+                  };
+              mobile?:
+                | T
+                | {
+                    x?: T;
+                    y?: T;
+                    zoom?: T;
+                  };
+            };
       };
   layout?:
     | T
