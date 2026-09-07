@@ -7,6 +7,7 @@ import type {
   GlobalConfig,
   Plugin,
 } from 'payload'
+import { Forbidden } from 'payload'
 import type { User } from '@/payload-types'
 
 import {
@@ -80,6 +81,16 @@ export const ensureFirstUserIsSuperAdmin: CollectionBeforeChangeHook<User> = asy
     return data
   }
 
+  const transactionID = await req.transactionID
+  const session = transactionID ? req.payload.db.sessions[transactionID] : undefined
+  if (!session) throw new Error('User creation requires a database transaction')
+
+  // Hold the bootstrap lock until Payload commits or rolls back the user creation.
+  await req.payload.db.execute({
+    db: session.db,
+    raw: "SELECT pg_advisory_xact_lock(hashtext('payload-rbac:first-user'))",
+  })
+
   const existingUsers = await req.payload.find({
     collection: 'users',
     limit: 1,
@@ -89,6 +100,8 @@ export const ensureFirstUserIsSuperAdmin: CollectionBeforeChangeHook<User> = asy
   })
 
   if (existingUsers.totalDocs > 0) {
+    // A concurrent first-register request may have passed Payload's earlier empty-user check.
+    if (!req.user && req.payloadAPI !== 'local') throw new Forbidden(req.t)
     return data
   }
 
