@@ -4,6 +4,7 @@ import * as migration_20260429_000837 from './20260429_000837';
 import * as migration_20260506_180357_rbac from './20260506_180357_rbac';
 import * as migration_20260509_214951_genendpoint from './20260509_214951_genendpoint';
 import * as migration_20260907_164637_hero_image_framing from './20260907_164637_hero_image_framing';
+import * as migration_20260907_204839_hero_circuits from './20260907_204839_hero_circuits';
 
 export const migrations = [
   {
@@ -34,6 +35,11 @@ export const migrations = [
   {
     up: migration_20260907_164637_hero_image_framing.up,
     down: migration_20260907_164637_hero_image_framing.down,
-    name: '20260907_164637_hero_image_framing'
+    name: '20260907_164637_hero_image_framing',
+  },
+  {
+    up: migration_20260907_204839_hero_circuits.up,
+    down: migration_20260907_204839_hero_circuits.down,
+    name: '20260907_204839_hero_circuits'
   },
 ];

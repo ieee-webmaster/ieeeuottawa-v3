@@ -223,6 +223,10 @@ export interface Page {
     logo?: (number | null) | Media;
     media?: (number | null) | Media;
     /**
+     * Show the circuit pattern and its brief animation on this hero.
+     */
+    showCircuits?: boolean | null;
+    /**
      * Adjust this hero without changing the original media. Check both Desktop and Mobile in Live Preview; positioning moves the part of the image that is cropped.
      */
     imagePosition?: {
@@ -1827,6 +1831,7 @@ export interface PagesSelect<T extends boolean = true> {
             };
         logo?: T;
         media?: T;
+        showCircuits?: T;
         imagePosition?:
           | T
           | {

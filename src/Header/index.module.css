@@ -1,0 +1,35 @@
+.header {
+  height: var(--site-header-height);
+}
+
+/* Follow the current page's hero directly, including during client navigation. */
+.header[data-scrolled='false'][data-menu-open='false']:has(
+    ~ article > :global(.hero-header-overlay)
+  ) {
+  --background: 225 93% 16%;
+  --foreground: 0 0% 100%;
+  --primary: 0 0% 100%;
+  --card: 225 70% 22%;
+  --border: 225 30% 40%;
+  --ring: 0 0% 100%;
+  /* The hero supplies the fade; a flat tint here creates a seam at the header's edge. */
+  background-color: transparent;
+  border-color: transparent;
+  backdrop-filter: none;
+}
+
+.header[data-scrolled='false'][data-menu-open='false']:has(
+    ~ article > :global(.hero-header-overlay)
+  )
+  :is(.logo, .socialIcons a)
+  > img:first-of-type {
+  display: none;
+}
+
+.header[data-scrolled='false'][data-menu-open='false']:has(
+    ~ article > :global(.hero-header-overlay)
+  )
+  :is(.logo, .socialIcons a)
+  > img:last-of-type {
+  display: block;
+}

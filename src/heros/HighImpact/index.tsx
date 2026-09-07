@@ -7,6 +7,7 @@ import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 import { SectionShell } from '@/blocks/_shared'
 import { cn } from '@/utilities/ui'
+import { CircuitAccent } from './CircuitAccent'
 import styles from './index.module.css'
 
 type ImageFramingStyle = CSSProperties &
@@ -21,6 +22,7 @@ export const HighImpactHero: React.FC<HighImpactHeroProps> = ({
   media,
   richText,
   imagePosition,
+  showCircuits,
   imageLayout = 'offset',
 }) => {
   const image = media && typeof media === 'object' ? media : null
@@ -40,6 +42,7 @@ export const HighImpactHero: React.FC<HighImpactHeroProps> = ({
       bare
       className={cn(
         styles.hero,
+        image && 'hero-header-overlay',
         image && styles.withMedia,
         imageLayout === 'background' && styles.backgroundImage,
       )}
@@ -53,9 +56,19 @@ export const HighImpactHero: React.FC<HighImpactHeroProps> = ({
             videoClassName={styles.imageElement}
             priority
             resource={image}
-            sizes={imageLayout === 'background' ? '100vw' : '(min-width: 1024px) 75vw, 100vw'}
+            sizes={
+              imageLayout === 'background'
+                ? '100vw'
+                : '(min-width: 1024px) and (min-aspect-ratio: 4/3) 75vw, 100vw'
+            }
           />
         </div>
+      )}
+      {showCircuits !== false && (
+        <>
+          <CircuitAccent className={cn(styles.circuit, styles.circuitTop)} />
+          <CircuitAccent className={cn(styles.circuit, styles.circuitBottom)} />
+        </>
       )}
       <div className={cn('container', styles.content)}>
         {richText && <RichText className={styles.copy} data={richText} enableGutter={false} />}
