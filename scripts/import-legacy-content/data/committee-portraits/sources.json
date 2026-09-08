@@ -1,0 +1,24 @@
+{
+  "retrievedAt": "2026-09-08",
+  "notes": "Original 800x800 profile images retrieved through the personal Chrome LinkedIn session. No image editing. Ines photo includes the original OpenToWork frame.",
+  "photos": [
+    {
+      "name": "Mohamed Boustta",
+      "profile": "https://www.linkedin.com/in/mohamed-boustta/",
+      "file": "mohamed-boustta-linkedin.png",
+      "sha256": "aaaf76b4464bcb2af111e74cad6acdc635b6104f048bc17147ded52c4561e376"
+    },
+    {
+      "name": "Inès Bouchama",
+      "profile": "https://www.linkedin.com/in/inesbouchama-creative-software-engineer/",
+      "file": "ines-bouchama-linkedin.jpg",
+      "sha256": "a7c3d7d730df9dfbc4f7649bceb6c73d31afe34b543f3abd88b6c87b3cc8a699"
+    },
+    {
+      "name": "Waaberi Ibrahim",
+      "profile": "https://www.linkedin.com/in/waaberi/",
+      "file": "waaberi-ibrahim-linkedin.png",
+      "sha256": "53185c2b3376e53d794e30f11d9c820bd56c8cfef39cfe83ff5d868bf802120f"
+    }
+  ]
+}
