@@ -11,8 +11,10 @@ const projectProductionURL = process.env.VERCEL_PROJECT_PRODUCTION_URL
   ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
   : undefined
 
+/** @type {NodeJS.ProcessEnv} */
 const env = {
   ...process.env,
+  NODE_ENV: 'production',
   NEXT_PUBLIC_SERVER_URL:
     process.env.STATIC_SITE_URL ||
     process.env.NEXT_PUBLIC_SERVER_URL ||
@@ -25,6 +27,7 @@ const env = {
   STATIC_EXPORT: '1',
 }
 
+/** @type {(command: string, args: string[]) => Promise<void>} */
 const run = (command, args) =>
   new Promise((resolve, reject) => {
     const child = spawn(command, args, { env, stdio: 'inherit' })
@@ -37,6 +40,12 @@ const run = (command, args) =>
     })
   })
 
+// Deployment builds must apply the committed schema before reading CMS content.
+if (process.argv.includes('--migrate')) {
+  await run('pnpm', ['exec', 'payload', 'migrate'])
+}
+
 await run('pnpm', ['exec', 'next', 'build'])
 await run('node', ['--import', 'tsx', 'scripts/build-static-media.ts'])
 await run('pnpm', ['exec', 'next-sitemap', '--config', 'next-sitemap.config.cjs'])
+await run('node', ['--import', 'tsx', 'scripts/verify-static-media.ts'])

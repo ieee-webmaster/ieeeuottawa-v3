@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "buildCommand": "pnpm build:static",
+  "buildCommand": "pnpm build:static --migrate",
   "outputDirectory": "out",
   "redirects": [
     {
