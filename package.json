@@ -56,7 +56,7 @@
     "next": "16.3.4",
     "next-intl": "^4.12.0",
     "next-sitemap": "^4.2.3",
-    "payload": "3.88.0",
+    "payload": "3.89.0",
     "prism-react-renderer": "^2.4.1",
     "react": "19.2.5",
     "react-dom": "19.2.5",
@@ -85,7 +85,7 @@
     "tsx": "^4.22.0",
     "typescript": "5.7.3",
     "vite-tsconfig-paths": "5.1.4",
-    "vitest": "3.2.6"
+    "vitest": "5.0.0"
   },
   "packageManager": "pnpm@10.28.0+sha512.05df71d1421f21399e053fde567cea34d446fa02c76571441bfc1c7956e98e363088982d940465fd34480d4d90a0668bc12362f8aa88000a64e83d0b0e47be48",
   "engines": {
