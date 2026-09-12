@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "*.js", "*.mjs", "*.cjs", ".next/types/**/*.ts"],
+  "exclude": ["node_modules", ".production-editor", ".next/dev", ".next-static"]
+}

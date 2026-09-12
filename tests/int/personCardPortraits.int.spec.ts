@@ -6,8 +6,7 @@ import type { ImageProps } from 'next/image'
 import type { Media, Person } from '@/payload-types'
 import { PersonCard } from '@/components/PersonCard'
 
-// Vite imports local images as URLs. Next's production build turns the same imports
-// into StaticImageData and copies them to the export; keep this test about card selection.
+// Keep this regression focused on CMS relationship selection in both build modes.
 vi.mock('next/image', () => ({
   default: ({ src, alt }: Pick<ImageProps, 'src' | 'alt'>) =>
     createElement('img', {
@@ -52,85 +51,54 @@ afterEach(() => {
   vi.unstubAllEnvs()
 })
 
-describe('static committee portraits', () => {
+describe('CMS-owned committee portraits', () => {
+  it.each(['1', '0'])('reflects CMS replacement and removal (STATIC_EXPORT=%s)', (mode) => {
+    vi.stubEnv('STATIC_EXPORT', mode)
+    const person = createPerson()
+    const view = renderPerson(person)
+    expect(screen.getByRole('img', { name: person.fullName }).getAttribute('src')).toBe(
+      oldHeadshot.url,
+    )
+
+    const replacement: Media = {
+      ...oldHeadshot,
+      id: 200,
+      filename: 'new-headshot.png',
+      url: '/media/new-headshot.png',
+    }
+    view.rerender(
+      createElement(PersonCard, {
+        person: { ...person, headshot: replacement },
+        role: 'Technical Coordinator',
+        emailLabel: 'Email member',
+        linkedinLabel: 'LinkedIn profile',
+      }),
+    )
+    expect(screen.getByRole('img', { name: person.fullName }).getAttribute('src')).toBe(
+      replacement.url,
+    )
+    view.rerender(
+      createElement(PersonCard, {
+        person: { ...person, headshot: null },
+        role: 'Technical Coordinator',
+        emailLabel: 'Email member',
+        linkedinLabel: 'LinkedIn profile',
+      }),
+    )
+    expect(screen.queryByRole('img')).toBeNull()
+    expect(person.headshot).toEqual(oldHeadshot)
+  })
+
   it.each([
-    {
-      fullName: 'Inès Bouchama',
-      profile: 'https://www.linkedin.com/in/inesbouchama-creative-software-engineer/',
-      role: 'Design Coordinator',
-      filename: 'ines-bouchama-linkedin.jpg',
-    },
-    {
-      fullName: 'Waaberi Ibrahim',
-      profile: 'https://www.linkedin.com/in/waaberi/',
-      role: 'Software Technical Coordinator',
-      filename: 'waaberi-ibrahim-linkedin.png',
-    },
-  ])('renders $fullName with no CMS headshot', ({ fullName, profile, role, filename }) => {
+    ['Inès Bouchama', 'https://www.linkedin.com/in/inesbouchama-creative-software-engineer/'],
+    ['Waaberi Ibrahim', 'https://www.linkedin.com/in/waaberi/'],
+    ['Mohamed Boustta', 'https://www.linkedin.com/in/mohamed-boustta/'],
+  ])('never overrides %s based on their profile URL', (fullName, profile) => {
     vi.stubEnv('STATIC_EXPORT', '1')
-    const person = createPerson({ fullName, 'Linkedin Profile': profile, headshot: null })
-    const before = structuredClone(person)
-
-    renderPerson(person, role)
-
-    expect(screen.getByRole('img', { name: fullName }).getAttribute('src')).toContain(filename)
-    expect(screen.getByText(role)).toBeDefined()
+    renderPerson(createPerson({ fullName, 'Linkedin Profile': profile, headshot: null }))
+    expect(screen.queryByRole('img')).toBeNull()
     expect(screen.getByRole('link', { name: 'LinkedIn profile' }).getAttribute('href')).toBe(
       profile,
     )
-    expect(person).toEqual(before)
-  })
-
-  it('replaces Mohamed’s populated old photo without mutating its CMS record', () => {
-    vi.stubEnv('STATIC_EXPORT', '1')
-    const person = createPerson()
-    const before = structuredClone(person)
-
-    renderPerson(person)
-
-    expect(screen.getByRole('img', { name: person.fullName }).getAttribute('src')).toContain(
-      'mohamed-boustta-linkedin.png',
-    )
-    expect(person).toEqual(before)
-  })
-
-  it('normalizes LinkedIn host, trailing slashes, and query parameters', () => {
-    vi.stubEnv('STATIC_EXPORT', '1')
-    const person = createPerson({
-      'Linkedin Profile': 'https://linkedin.com/in/mohamed-boustta?trk=profile#about',
-    })
-    renderPerson(person)
-    expect(screen.getByRole('img', { name: person.fullName }).getAttribute('src')).toContain(
-      'mohamed-boustta-linkedin.png',
-    )
-  })
-
-  it.each([
-    null,
-    'not a URL',
-    'https://example.test/in/mohamed-boustta/',
-    'https://www.linkedin.com/in/someone-else/',
-  ])('keeps the CMS photo when the profile does not match (%s)', (profile) => {
-    vi.stubEnv('STATIC_EXPORT', '1')
-    const person = createPerson({ 'Linkedin Profile': profile })
-    renderPerson(person)
-    expect(screen.getByRole('img', { name: person.fullName }).getAttribute('src')).toBe(
-      oldHeadshot.url,
-    )
-  })
-
-  it.each([undefined, '0'])('preserves normal CMS photo rendering (STATIC_EXPORT=%s)', (value) => {
-    vi.stubEnv('STATIC_EXPORT', value)
-    const person = createPerson()
-    renderPerson(person)
-    expect(screen.getByRole('img', { name: person.fullName }).getAttribute('src')).toBe(
-      oldHeadshot.url,
-    )
-  })
-
-  it('preserves the normal CMS placeholder when a mapped person has no headshot', () => {
-    vi.stubEnv('STATIC_EXPORT', '0')
-    renderPerson(createPerson({ headshot: null }))
-    expect(screen.queryByRole('img')).toBeNull()
   })
 })

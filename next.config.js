@@ -39,6 +39,10 @@ const remotePatterns = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  typescript: { tsconfigPath: isStaticExport ? 'tsconfig.static.json' : 'tsconfig.json' },
+  pageExtensions: isStaticExport
+    ? ['tsx', 'ts', 'jsx', 'js']
+    : ['cms.tsx', 'cms.ts', 'tsx', 'ts', 'jsx', 'js'],
   images: {
     unoptimized: isStaticExport,
     localPatterns: [

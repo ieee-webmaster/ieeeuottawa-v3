@@ -50,7 +50,7 @@ const eslintConfig = [
     },
   },
   {
-    ignores: ['.next/'],
+    ignores: ['.next/', '.next-static/', '.production-editor/'],
   },
 ]
 

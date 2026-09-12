@@ -1,19 +1,26 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import { pathToFileURL } from 'node:url'
 
-import { getPayload } from 'payload'
+import type { ImageSize } from 'payload'
 import sharp, { type Sharp } from 'sharp'
 
-import { MEDIA_IMAGE_SIZES } from '@/collections/Media'
-import config from '@/payload.config'
 import type { Media } from '@/payload-types'
+import { readArchivedOriginal, validateMediaFilename } from '@/utilities/staticMediaArchive'
 
 const ASSETS_ROOT = path.resolve(process.cwd(), 'scripts/import-legacy-content/data')
 const OUTPUT_ROOT = path.resolve(process.cwd(), 'out/media')
+const mediaOutputRoot = () => path.resolve(process.env.STATIC_MEDIA_OUTPUT_DIR || OUTPUT_ROOT)
 const LEGACY_PREFIX = /^legacy-[a-f0-9]{10}-/
 const SUPPORTED_EXTENSIONS = new Set(['.avif', '.gif', '.jpeg', '.jpg', '.png', '.svg', '.webp'])
 const ANIMATED_MIME_TYPES = new Set(['image/gif', 'image/webp'])
-const RASTER_MIME_TYPES = new Set(['image/gif', 'image/jpeg', 'image/png', 'image/webp'])
+const RASTER_MIME_TYPES = new Set([
+  'image/avif',
+  'image/gif',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+])
 
 sharp.cache(false)
 
@@ -39,7 +46,7 @@ const walkFiles = async (directory: string): Promise<string[]> => {
   return nested.flat().sort()
 }
 
-class LocalAssetIndex {
+export class LocalAssetIndex {
   readonly #byFilename = new Map<string, string[]>()
   readonly #bySlug = new Map<string, string[]>()
 
@@ -56,6 +63,7 @@ class LocalAssetIndex {
 
   match(media: Media): string {
     if (!media.filename) throw new Error(`Media ${media.id} has no filename`)
+    validateMediaFilename(media.filename)
 
     const exact = this.#byFilename.get(media.filename.toLowerCase()) ?? []
     if (exact.length === 1 && exact[0] !== undefined) return exact[0]
@@ -82,10 +90,21 @@ class LocalAssetIndex {
   }
 }
 
-const shouldUseFocalResize = (
-  source: { height: number; width: number },
-  size: (typeof MEDIA_IMAGE_SIZES)[number],
-) => {
+export const resolveMediaOriginal = async (
+  media: Media,
+  assetIndex: LocalAssetIndex,
+  archiveRoot?: string,
+): Promise<Buffer> => {
+  if (!media.filename) throw new Error(`Media ${media.id} has no filename`)
+  const managed = await readArchivedOriginal({
+    root: archiveRoot ?? (process.env.STATIC_MEDIA_ARCHIVE_DIR || undefined),
+    collection: 'media',
+    filename: media.filename,
+  })
+  return managed ?? fs.readFile(assetIndex.match(media))
+}
+
+const shouldUseFocalResize = (source: { height: number; width: number }, size: ImageSize) => {
   if (!('height' in size) || !size.height || !size.width) return false
   if (source.width / source.height === size.width / size.height) return false
   if (size.withoutEnlargement && (source.width < size.width || source.height < size.height)) {
@@ -136,30 +155,58 @@ const resizeWithFocalPoint = async (
 const extensionForFormat = (format: string, fallback: string) => {
   if (format === 'jpeg') return 'jpg'
   if (format === 'gif' || format === 'png' || format === 'webp') return format
+  if (format === 'heif' && fallback.toLowerCase() === '.avif') return 'avif'
   return fallback.replace(/^\./, '')
 }
 
-const outputPath = (filename: string) => {
-  if (filename !== path.basename(filename)) {
-    throw new Error(`Unsafe Media filename: ${filename}`)
-  }
-
-  return path.join(OUTPUT_ROOT, filename)
+const outputPath = (filename: string, root: string) => {
+  validateMediaFilename(filename)
+  return path.join(root, filename)
 }
 
-const materializeMedia = async (media: Media, sourcePath: string) => {
+export const materializeMedia = async (
+  media: Media,
+  source: Buffer | string,
+  {
+    outputRoot = mediaOutputRoot(),
+    imageSizes,
+  }: { outputRoot?: string; imageSizes?: ImageSize[] } = {},
+) => {
   if (!media.filename) throw new Error(`Media ${media.id} has no filename`)
 
-  const bytes = await fs.readFile(sourcePath)
-  await fs.writeFile(outputPath(media.filename), bytes)
+  const bytes = typeof source === 'string' ? await fs.readFile(source) : source
+  const originalPath = outputPath(media.filename, outputRoot)
+  const referencedSizes = Object.entries(media.sizes ?? {}).filter(([, size]) => size?.filename)
+  for (const [, size] of referencedSizes) {
+    if (!size?.filename) continue
+    const destination = outputPath(size.filename, outputRoot)
+    if (destination === originalPath)
+      throw new Error(`Duplicate Media output filename: ${size.filename}`)
+  }
 
-  if (!media.mimeType || !RASTER_MIME_TYPES.has(media.mimeType)) return 1
+  if (!media.mimeType || !RASTER_MIME_TYPES.has(media.mimeType)) {
+    if (referencedSizes.length) {
+      throw new Error(
+        `Cannot generate referenced renditions for Media ${media.id} (${media.mimeType})`,
+      )
+    }
+    await fs.writeFile(originalPath, bytes)
+    return 1
+  }
+
+  const sizes: readonly ImageSize[] =
+    imageSizes ?? (await import('@/collections/Media')).MEDIA_IMAGE_SIZES
+  for (const [name] of referencedSizes) {
+    if (!sizes.some((size) => size.name === name)) {
+      throw new Error(`Media ${media.id} references an unconfigured rendition: ${name}`)
+    }
+  }
 
   const animated = ANIMATED_MIME_TYPES.has(media.mimeType)
   const sharpBase = sharp(bytes, animated ? { animated: true } : undefined).rotate()
   const metadata = await sharpBase.metadata()
   if (!metadata.width || !metadata.height) {
-    throw new Error(`Unable to read image dimensions for ${sourcePath}`)
+    throw new Error(`Unable to read image dimensions for Media ${media.id} (${media.filename})`)
   }
 
   const sourceDimensions = [5, 6, 7, 8].includes(metadata.orientation ?? 0)
@@ -172,15 +219,35 @@ const materializeMedia = async (media: Media, sourcePath: string) => {
   }
   const parsedFilename = path.parse(media.filename)
   const focalPoint = { x: media.focalX ?? 50, y: media.focalY ?? 50 }
+  await fs.writeFile(originalPath, bytes)
 
   let writtenSizes = 0
+  const writtenRenditions = new Set<string>()
 
-  for (const size of MEDIA_IMAGE_SIZES) {
-    const storedSize = media.sizes?.[size.name]
+  for (const [name, storedSize] of referencedSizes) {
     if (!storedSize?.filename) continue
+    const configuredSize = sizes.find((candidate) => candidate.name === name)
+    if (!configuredSize)
+      throw new Error(`Media ${media.id} references an unconfigured rendition: ${name}`)
+    for (const dimension of [storedSize.width, storedSize.height]) {
+      if (dimension != null && (!Number.isInteger(dimension) || dimension <= 0)) {
+        throw new Error(`Media ${media.id} ${name} has invalid stored rendition dimensions`)
+      }
+    }
+    // Existing filenames refer to the renditions generated when the CMS saved them.
+    // Today's size defaults must not change those dimensions or prevent historical enlargement.
+    const size: ImageSize = {
+      ...configuredSize,
+      width: storedSize.width ?? configuredSize.width,
+      height: storedSize.height ?? configuredSize.height,
+      withoutEnlargement:
+        storedSize.width != null || storedSize.height != null
+          ? false
+          : configuredSize.withoutEnlargement,
+    }
 
     const resized =
-      shouldUseFocalResize(sourceDimensions, size) && 'height' in size && size.height
+      shouldUseFocalResize(sourceDimensions, size) && size.height && size.width
         ? await resizeWithFocalPoint(
             sharpBase.clone(),
             sourceDimensions,
@@ -197,7 +264,23 @@ const materializeMedia = async (media: Media, sourcePath: string) => {
         `Media ${media.id} ${size.name} generated .${extension}, expected .${storedExtension}`,
       )
     }
-    await fs.writeFile(outputPath(storedSize.filename), data)
+    if (
+      (storedSize.width != null && storedSize.width !== info.width) ||
+      (storedSize.height != null && storedSize.height !== info.height)
+    ) {
+      throw new Error(
+        `Media ${media.id} ${size.name} generated ${info.width}x${info.height}, expected ${storedSize.width}x${storedSize.height}`,
+      )
+    }
+    const destination = outputPath(storedSize.filename, outputRoot)
+    if (writtenRenditions.has(storedSize.filename)) {
+      if (!(await fs.readFile(destination)).equals(data)) {
+        throw new Error(`Conflicting Media renditions share filename: ${storedSize.filename}`)
+      }
+      continue
+    }
+    await fs.writeFile(destination, data)
+    writtenRenditions.add(storedSize.filename)
     writtenSizes += 1
   }
 
@@ -205,9 +288,14 @@ const materializeMedia = async (media: Media, sourcePath: string) => {
 }
 
 const main = async () => {
+  const [{ getPayload }, { default: config }] = await Promise.all([
+    import('payload'),
+    import('@/payload.config'),
+  ])
   const assetIndex = new LocalAssetIndex(await walkFiles(ASSETS_ROOT))
-  await fs.rm(OUTPUT_ROOT, { force: true, recursive: true })
-  await fs.mkdir(OUTPUT_ROOT, { recursive: true })
+  const outputRoot = mediaOutputRoot()
+  await fs.rm(outputRoot, { force: true, recursive: true })
+  await fs.mkdir(outputRoot, { recursive: true })
 
   const payload = await getPayload({ config })
 
@@ -224,7 +312,9 @@ const main = async () => {
     let fileCount = 0
 
     for (const media of result.docs) {
-      fileCount += await materializeMedia(media, assetIndex.match(media))
+      fileCount += await materializeMedia(media, await resolveMediaOriginal(media, assetIndex), {
+        outputRoot,
+      })
     }
 
     console.log(`Static media: wrote ${fileCount} files for ${result.docs.length} Media documents`)
@@ -233,4 +323,6 @@ const main = async () => {
   }
 }
 
-await main()
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  await main()
+}

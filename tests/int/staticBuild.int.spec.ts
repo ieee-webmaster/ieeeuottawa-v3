@@ -10,6 +10,7 @@ vi.mock('node:fs', () => ({
   existsSync: () => false,
   readFileSync: vi.fn(),
 }))
+vi.mock('node:fs/promises', () => ({ rm: vi.fn() }))
 
 const originalArgv = process.argv
 const exportCommands = [
@@ -52,6 +53,7 @@ describe('static build migrations', () => {
 
     expect(vi.mocked(spawn).mock.calls.map(([command, args]) => [command, args])).toEqual([
       ['pnpm', ['exec', 'payload', 'migrate']],
+      ['node', ['--import', 'tsx', 'scripts/verify-migrations.ts']],
       ...exportCommands,
     ])
     for (const [, , options] of vi.mocked(spawn).mock.calls) {

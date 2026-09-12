@@ -3,7 +3,6 @@ import { Linkedin, Mail, UserRound } from 'lucide-react'
 import type { Person } from '@/payload-types'
 import { Media } from '@/components/Media'
 import { hasRenderableMediaSource } from '@/components/Media/hasRenderableMediaSource'
-import { getStaticPortrait } from './staticPortraits'
 
 type Props = {
   person: Person
@@ -22,7 +21,6 @@ export function PersonCard({
   emailLabel,
   linkedinLabel,
 }: Props) {
-  const staticPortrait = getStaticPortrait(person['Linkedin Profile'])
   const headshot =
     person.headshot &&
     typeof person.headshot !== 'number' &&
@@ -33,12 +31,11 @@ export function PersonCard({
   return (
     <article className="min-w-0">
       <div className="relative aspect-square overflow-hidden bg-muted">
-        {staticPortrait || headshot ? (
+        {headshot ? (
           <Media
             fill
             htmlElement={null}
-            resource={staticPortrait ? undefined : headshot}
-            src={staticPortrait}
+            resource={headshot}
             alt={person.fullName}
             imgClassName="object-cover object-top"
             pictureClassName="absolute inset-0"

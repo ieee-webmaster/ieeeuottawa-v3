@@ -1,4 +1,5 @@
 import type { CollectionConfig, ImageSize } from 'payload'
+import path from 'node:path'
 
 import {
   FixedToolbarFeature,
@@ -138,7 +139,11 @@ export const Media: CollectionConfig<'media'> = {
     afterRead: [populateStaticMediaURLs],
   },
   upload: {
-    disableLocalStorage: true,
+    disableLocalStorage: process.env.PRODUCTION_EDITOR !== '1',
+    staticDir:
+      process.env.PRODUCTION_EDITOR === '1'
+        ? process.env.STATIC_MEDIA_RUNTIME_DIR || path.resolve('.production-editor/media')
+        : undefined,
     adminThumbnail: 'thumbnail',
     focalPoint: true,
     imageSizes: MEDIA_IMAGE_SIZES,

@@ -26,8 +26,9 @@
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "test": "pnpm run test:int",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts",
-    "typecheck": "tsc --noEmit",
-    "knip": "cross-env NODE_OPTIONS=\"--no-deprecation -r tsconfig-paths/register\" knip"
+    "typecheck": "next typegen && tsc --noEmit",
+    "knip": "cross-env NODE_OPTIONS=\"--no-deprecation -r tsconfig-paths/register\" knip",
+    "cms:production": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/production-editor.ts"
   },
   "dependencies": {
     "@payloadcms/admin-bar": "3.88.0",
@@ -58,6 +59,7 @@
     "next-intl": "^4.12.0",
     "next-sitemap": "^4.2.3",
     "payload": "3.88.0",
+    "pg": "8.16.3",
     "prism-react-renderer": "^2.4.1",
     "react": "19.2.5",
     "react-dom": "19.2.5",
@@ -71,6 +73,7 @@
     "@tailwindcss/typography": "^0.5.19",
     "@testing-library/react": "16.3.0",
     "@types/node": "^22.19.19",
+    "@types/pg": "8.15.5",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "4.5.2",

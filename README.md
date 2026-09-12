@@ -7,7 +7,7 @@ This is the official website of the IEEE uOttawa Student Branch. It serves as a 
 ## General info 📌
 
 - The [repository](https://github.com/ieee-webmaster/ieeeuottawa-v3) is owned by the IEEE uOttawa Webmaster account ([@ieee-webmaster](https://github.com/ieee-webmaster)). _This is done to get the free Vercel plan for the project._ The current webmaster is the official maintainer of the project and holds authority over the repo, but anyone is welcome to contribute. If you would like to contribute, please read the [contribution guidelines](#contribution-guidelines-external) and then submit a pull request with your changes.
-- To make changes to the content of the production website, use the Payload admin panel https://ieeeuottawa-v3.vercel.app/admin. Since we are using a CMS (Content Management System), there is no need to make content changes through code. **Caution: any changes made here will be reflected on the live website immediately, so please ensure that you have the proper permissions and that you are making intentional changes.**
+- During static publishing, use the local production editor described below. Production `/admin` is absent; ordinary `pnpm dev` edits only the local development database.
 - The website is [deployed serverless on Vercel](https://vercel.com/ieee-uottawa-webmaster/ieeeuottawa-v3). Only the webmaster account has modification permissions, but any contributor can view deployments and their logs. Please reach out to the webmaster if you would like to be added as a viewer to the project on Vercel.
 - In production, Payload uses Neon (a Postgres-based cloud database) to store all of the content for the website, and Vercel Blob Storage to store all of the media assets. Both of these services are integrated into Vercel and were automatically set up when the project was deployed. **Please ensure a proper backup exists before making any destructive changes to the production database or blob storage, as data loss can occur.**
 - For local development, every developer can run their own instance of the database and the [Vercel Blob Emulator](https://github.com/payloadcms/vercel-blob-emulator) using Docker. This creates a distinct environment where changes won't affect what is currently deployed. Setup instructions are explained in [Getting Started](#getting-started).
@@ -27,7 +27,7 @@ Vercel:
 
 Admin:
 
-- Payload admin panel (production): https://ieeeuottawa-v3.vercel.app/admin
+- Payload production editor: http://localhost:3010/admin (start with `pnpm cms:production`)
 - Neon console (production database): https://console.neon.tech/app/projects/wild-butterfly-74995532
 
 Contact:
@@ -39,6 +39,20 @@ Contact:
 - View the [Contributors List](docs/humans.md)
 
 ## Development 🛠️
+
+### Temporary static production publishing
+
+Run `pnpm cms:production` when editing production content. This requires repository write access through the authenticated GitHub CLI (`gh`), the authenticated Vercel CLI, and primary production credentials in `.env.vercel.production.local`. Open **http://localhost:3010/admin** with the Webmaster browser profile. Keep the publisher running until the release completes; stop it with Ctrl+C when finished. Automatic content commits are signed by GitHub, so publishing does not require repeated local GPG unlocks.
+
+The editor uses primary Neon with schema push disabled, and saves uploads to an isolated local directory plus a durable archive. Saves queue a publication in the same database transaction. About every 30 seconds the publisher commits changed original media and a content revision to `infra/static-compilation`; Vercel then applies committed migrations, exports the site, and verifies its media. No production Blob writes are needed. New fields and blocks using the existing Media collection follow this same path.
+
+Code changes still deploy through normal pushes/merges to `infra/static-compilation`, even when the local editor is stopped. Include generated Payload types, import-map changes, and database migrations with schema/component changes. The editor follows successful releases in its own `.production-editor/editor` checkout; your development checkout is never switched or committed by the publisher. Do not edit its managed checkouts directly.
+
+Edits pause during migrations/export, and incompatible or failed releases keep writes paused with a status message. A failed build keeps the previous static website live; **applied database migrations are not automatically undone**. Fix the migration/build and push a follow-up release. Request-time server features still require a separate supported runtime.
+
+`public-cms-media` contains only public upload originals, immutable objects, and filename manifests; it is not a database export. Keep `.production-editor/archive` until pending saves have reached Git. Deletion removes a media reference from subsequent exports but intentionally retains old Git objects for rollback. Use a separate storage design for private uploads. When Blob is available again, the newly archived originals must be imported into it before switching back to the normal Blob-backed deployment.
+
+Run the opt-in transaction tests with `STATIC_PUBLISHING_DB_TESTS=1 pnpm exec vitest run tests/int/staticPublishing.int.spec.ts`; they create and remove their own local fixture database, never the development or production database.
 
 ### Prequisites
 

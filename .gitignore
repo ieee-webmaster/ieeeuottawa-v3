@@ -26,6 +26,11 @@ node_modules/
 
 # TypeScript stuff
 tsconfig.tsbuildinfo
+tsconfig.static.tsbuildinfo
 next-env.d.ts
 
 out/
+# Isolated released production editor and durable local upload spool
+.production-editor/
+.next-static/
+public-cms-media/**/.*.tmp

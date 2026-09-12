@@ -23,12 +23,16 @@ import { Teams } from './collections/Teams'
 import { Docs } from './collections/Docs'
 import { rbacPlugin } from './plugins/payload-rbac'
 import { autoArrayRowLabelsPlugin } from './plugins/payload-row-labels'
+import { staticPublishingPlugin } from './plugins/staticPublishing'
 import { navigationPlugin } from './plugins/payload-navigation'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+if (process.env.PRODUCTION_EDITOR === '1' && process.env.PAYLOAD_DROP_DATABASE) {
+  throw new Error('PAYLOAD_DROP_DATABASE is forbidden in the production editor')
+}
 const storagePlugins =
-  process.env.STATIC_EXPORT === '1'
+  process.env.STATIC_EXPORT === '1' || process.env.PRODUCTION_EDITOR === '1'
     ? []
     : [
         vercelBlobStorage({
@@ -50,6 +54,7 @@ const storagePlugins =
 export default buildConfig({
   admin: {
     components: {
+      header: ['@/components/ProductionEditorNotice'],
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
       // Feel free to delete this at any time. Simply remove the line below.
       beforeLogin: ['@/components/BeforeLogin'],
@@ -84,6 +89,12 @@ export default buildConfig({
   // This config helps us configure global or default features that the other editors can inherit
   editor: defaultLexical,
   db: vercelPostgresAdapter({
+    push:
+      process.env.PRODUCTION_EDITOR === '1' || process.env.STATIC_EXPORT === '1'
+        ? false
+        : undefined,
+    disableCreateDatabase:
+      process.env.PRODUCTION_EDITOR === '1' || process.env.STATIC_EXPORT === '1',
     pool: {
       connectionString: process.env.POSTGRES_URL || '',
     },
@@ -164,6 +175,7 @@ export default buildConfig({
     autoArrayRowLabelsPlugin({
       excludePaths: ['header.navItems', 'footer.navItems'],
     }),
+    staticPublishingPlugin,
   ],
   globals: [Header, Footer],
   secret: process.env.PAYLOAD_SECRET ?? '',
