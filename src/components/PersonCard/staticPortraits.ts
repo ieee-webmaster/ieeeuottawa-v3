@@ -4,11 +4,13 @@ import ines from '../../../scripts/import-legacy-content/data/committee-portrait
 import mohamed from '../../../scripts/import-legacy-content/data/committee-portraits/mohamed-boustta-linkedin.png'
 import rory from '../../../scripts/import-legacy-content/data/committee-portraits/rory-mcculloch-linkedin.png'
 import waaberi from '../../../scripts/import-legacy-content/data/committee-portraits/waaberi-ibrahim-linkedin.png'
+import victoria from '../../../scripts/import-legacy-content/data/headshots/victoria-hough.jpg'
 
 const portraits = new Map<string, StaticImageData>([
   ['/in/inesbouchama-creative-software-engineer', ines],
   ['/in/mohamed-boustta', mohamed],
   ['/in/rory-mcculloch', rory],
+  ['/in/victoriahough', victoria],
   ['/in/waaberi', waaberi],
 ])
 
