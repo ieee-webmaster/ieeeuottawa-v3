@@ -38,8 +38,12 @@ export default async function CommitteePage({ params }: Args) {
     namespace: 'committee',
   })
 
-  const committee = await getCachedCommitteeByYear(year, locale)
+  const [committee, committeeYears] = await Promise.all([
+    getCachedCommitteeByYear(year, locale),
+    getCommitteeYears(),
+  ])
   if (!committee) notFound()
+  const isCurrentCommittee = !committeeYears.some(({ year }) => year > committee.Year)
 
   const coverImage =
     committee.coverImage &&
@@ -142,7 +146,7 @@ export default async function CommitteePage({ params }: Args) {
                     person={member.person}
                     role={member.role}
                     rank={member.rank}
-                    positionEmail={member.positionEmail}
+                    positionEmail={isCurrentCommittee ? member.positionEmail : undefined}
                     emailLabel={t('emailMember', { name: member.person.fullName })}
                     linkedinLabel={t('linkedinProfile', { name: member.person.fullName })}
                   />
