@@ -37,6 +37,7 @@
     "empty": "No posts have been published yet.",
     "postCount": "{count, plural, one {# post} other {# posts}}",
     "page": "Page {page}",
+    "pageTitle": "Posts - Page {page}",
     "backToPosts": "Back to posts",
     "related": "Related posts",
     "author": "Author",
@@ -62,6 +63,7 @@
   },
   "docs": {
     "title": "Documents",
+    "titleWithYear": "{year} Documents",
     "description": "Access annual reports, meeting minutes, and other important documents from IEEE UOttawa.",
     "noDocuments": "No documents available for this year.",
     "backToDocuments": "Go back to yearly documents",
@@ -83,6 +85,7 @@
     "teamCount": "{count, plural, one {# team} other {# teams}}",
     "backToCommittees": "Back to Committees",
     "title": "Committee",
+    "titleWithYear": "{year} Committee",
     "teamSpotlightTitle": "The team behind \"{team}\"",
     "teamSpotlightSubtitle": "Meet the volunteers powering {team} for the {year} committee year.",
     "members": "Members",
@@ -101,6 +104,6 @@
   },
   "footer": {
     "navigation": "Footer navigation",
-    "rights": "All rights reserved."
+    "copyright": "© {year} IEEE uOttawa. All rights reserved."
   }
 }

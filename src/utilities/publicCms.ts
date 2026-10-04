@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import { unstable_cache } from 'next/cache'
 
 import type { Config } from '@/payload-types'
+import { teamPositionsSchema } from '@/utilities/committeePositions'
 import {
   EVENTS_REVALIDATE_SECONDS,
   POSTS_PER_PAGE,
@@ -480,6 +481,28 @@ export const getCachedTeamByID = (id: DocID | string, locale: Locale) =>
     {
       revalidate: STATIC_CONTENT_REVALIDATE_SECONDS,
       tags: publicCacheTags(PUBLIC_CACHE_TAGS.committee, PUBLIC_CACHE_TAGS.media),
+    },
+  )()
+
+export const getCachedTeamPositions = (id: DocID | string) =>
+  unstable_cache(
+    async () => {
+      const payload = await getPayloadClient()
+      const team = await payload.findByID({
+        collection: 'teams',
+        depth: 0,
+        id,
+        locale: 'all',
+        overrideAccess: false,
+        select: { positions: true },
+      })
+
+      return teamPositionsSchema.parse(team).positions ?? []
+    },
+    [PUBLIC_CACHE_VERSION, 'team-positions', idKey(id)],
+    {
+      revalidate: STATIC_CONTENT_REVALIDATE_SECONDS,
+      tags: publicCacheTags(PUBLIC_CACHE_TAGS.committee),
     },
   )()
 

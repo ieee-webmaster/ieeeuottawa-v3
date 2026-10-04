@@ -3,15 +3,17 @@ import { cleanup, render, screen } from '@testing-library/react'
 import { createElement, type AnchorHTMLAttributes } from 'react'
 import type { Committee, Person, Team } from '@/payload-types'
 
-const { getCommittee, getTeam } = vi.hoisted(() => ({
+const { getCommittee, getTeam, getPositions } = vi.hoisted(() => ({
   getCommittee: vi.fn<() => Promise<Committee>>(),
   getTeam: vi.fn<() => Promise<Team>>(),
+  getPositions: vi.fn<() => Promise<NonNullable<Team['positions']>>>(),
 }))
 
 vi.mock('@/utilities/publicCms', () => ({
   getCachedCommitteeByID: getCommittee,
   getCachedCommitteeByYear: getCommittee,
   getCachedTeamByID: getTeam,
+  getCachedTeamPositions: getPositions,
   getCommitteeYears: async () => [],
 }))
 vi.mock('next-intl/server', () => ({
@@ -90,6 +92,7 @@ describe('committee relationship rendering', () => {
       const storedRows = structuredClone(committee)
       getCommittee.mockResolvedValue(committee)
       getTeam.mockResolvedValue(team)
+      getPositions.mockResolvedValue(team.positions ?? [])
 
       render(await component())
 

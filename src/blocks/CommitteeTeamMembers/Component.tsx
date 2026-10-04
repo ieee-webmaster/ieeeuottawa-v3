@@ -6,7 +6,12 @@ import { resolveLocale } from '@/i18n/routing'
 import { getTranslations } from 'next-intl/server'
 import { SectionShell } from '@/blocks/_shared'
 import { PersonCard } from '@/components/PersonCard'
-import { getCachedCommitteeByID, getCachedTeamByID } from '@/utilities/publicCms'
+import {
+  getCachedCommitteeByID,
+  getCachedTeamByID,
+  getCachedTeamPositions,
+} from '@/utilities/publicCms'
+import { getPositionTitle, resolveCommitteePosition } from '@/utilities/committeePositions'
 
 type Props = Omit<CommitteeTeamMembersBlockProps, 'committee' | 'team'> & {
   committee?: CommitteeTeamMembersBlockProps['committee'] | null
@@ -22,8 +27,11 @@ export const CommitteeTeamMembersBlock: React.FC<Props> = async ({ committee, id
   const committeeId = typeof committee === 'number' ? committee : committee.id
   const teamId = typeof team === 'number' ? team : team.id
 
-  const committeeDoc = await getCachedCommitteeByID(committeeId, locale)
-  const teamDoc = await getCachedTeamByID(teamId, locale)
+  const [committeeDoc, teamDoc, positions] = await Promise.all([
+    getCachedCommitteeByID(committeeId, locale),
+    getCachedTeamByID(teamId, locale),
+    getCachedTeamPositions(teamId),
+  ])
 
   const committeeTeamEntry = committeeDoc.teams?.find((entry) => {
     const entryTeamId = typeof entry.team === 'number' ? entry.team : entry.team.id
@@ -36,9 +44,7 @@ export const CommitteeTeamMembersBlock: React.FC<Props> = async ({ committee, id
     }
 
     const person = member.person
-    const positionDef = teamDoc.positions?.find((position) => {
-      return position.positionTitle === member.role
-    })
+    const positionDef = resolveCommitteePosition(positions, member.role)
 
     const level = positionDef?.role
 
@@ -46,6 +52,7 @@ export const CommitteeTeamMembersBlock: React.FC<Props> = async ({ committee, id
       {
         ...member,
         person,
+        role: (positionDef && getPositionTitle(positionDef, locale)) || member.role,
         positionEmail: positionDef?.positionEmail,
         level,
       },

@@ -10,7 +10,12 @@ import { SectionShell } from '@/blocks/_shared'
 import { PersonCard } from '@/components/PersonCard'
 import { Media as MediaComponent } from '@/components/Media'
 import { hasRenderableMediaSource } from '@/components/Media/hasRenderableMediaSource'
-import { getCachedCommitteeByYear, getCommitteeYears } from '@/utilities/publicCms'
+import {
+  getCachedCommitteeByYear,
+  getCachedTeamPositions,
+  getCommitteeYears,
+} from '@/utilities/publicCms'
+import { getPositionTitle, resolveCommitteePosition } from '@/utilities/committeePositions'
 
 export const dynamic = 'force-static'
 export const revalidate = 86400
@@ -56,32 +61,38 @@ export default async function CommitteePage({ params }: Args) {
     commish: t('commissioner'),
     coord: t('coordinator'),
   }
-  const sections = (committee.teams ?? []).flatMap((teamEntry) => {
-    if (typeof teamEntry.team === 'number') {
-      return []
-    }
+  const sections = (
+    await Promise.all(
+      (committee.teams ?? []).map(async (teamEntry) => {
+        if (typeof teamEntry.team === 'number') {
+          return []
+        }
 
-    const team = teamEntry.team
-    const data = (teamEntry.members ?? []).flatMap((member): ResolvedCommitteeMember[] => {
-      if (typeof member.person === 'number') {
-        return []
-      }
+        const team = teamEntry.team
+        const positions = await getCachedTeamPositions(team.id)
+        const data = (teamEntry.members ?? []).flatMap((member): ResolvedCommitteeMember[] => {
+          if (typeof member.person === 'number') {
+            return []
+          }
 
-      const person = member.person
-      const positionDef = team.positions?.find((p) => p.positionTitle === member.role)
+          const person = member.person
+          const positionDef = resolveCommitteePosition(positions, member.role)
 
-      return [
-        {
-          ...member,
-          person,
-          positionEmail: positionDef?.positionEmail,
-          rank: positionDef?.role ? rankLabels[positionDef.role] : undefined,
-        },
-      ]
-    })
+          return [
+            {
+              ...member,
+              person,
+              role: (positionDef && getPositionTitle(positionDef, locale)) || member.role,
+              positionEmail: positionDef?.positionEmail,
+              rank: positionDef?.role ? rankLabels[positionDef.role] : undefined,
+            },
+          ]
+        })
 
-    return data.length > 0 ? [{ title: team.name, data }] : []
-  })
+        return data.length > 0 ? [{ title: team.name, data }] : []
+      }),
+    )
+  ).flat()
 
   const hasNoData = sections.length === 0
   return (
@@ -92,9 +103,7 @@ export default async function CommitteePage({ params }: Args) {
             <ArrowLeft aria-hidden="true" className="h-4 w-4" />
             {t('backToCommittees')}
           </Link>
-          <h1 className="page-title">
-            {committee.Year} {t('title')}
-          </h1>
+          <h1 className="page-title">{t('titleWithYear', { year: committee.Year })}</h1>
           {sections.length > 1 && (
             <nav aria-label={t('teams')} className="mt-6 flex flex-wrap gap-2">
               {sections.map((section, index) => (
@@ -112,7 +121,7 @@ export default async function CommitteePage({ params }: Args) {
         {coverImage && (
           <MediaComponent
             resource={coverImage}
-            alt={coverImage.alt || `${committee.Year} ${t('title')}`}
+            alt={coverImage.alt || t('titleWithYear', { year: committee.Year })}
             priority
             imgClassName="block h-auto w-full"
             pictureClassName="block"
@@ -171,6 +180,6 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
     description: t('landingDescription'),
     locale,
     path: `/committee/${encodeURIComponent(year)}`,
-    title: `${year} ${t('title')}`,
+    title: t('titleWithYear', { year }),
   })
 }

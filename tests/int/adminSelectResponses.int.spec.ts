@@ -5,6 +5,7 @@ import type { SelectInput } from '@payloadcms/ui'
 import { AutoFieldSelect } from '@/plugins/payload-navigation/components/AutoFieldSelect'
 import { CommitteePositionSelect } from '@/components/CommitteePositionSelect'
 
+const localeState = { code: 'en' }
 const setValue = vi.fn<(value: unknown) => void>()
 const selectInputs = new Map<string, ComponentProps<typeof SelectInput>>()
 const fieldState: { disabled: boolean; value: string | null } = { disabled: false, value: null }
@@ -15,6 +16,7 @@ const fields: Record<string, { value: unknown }> = {
 }
 
 vi.mock('@payloadcms/ui', () => ({
+  useLocale: () => localeState,
   useConfig: () => ({ config: { routes: { api: '/api' } } }),
   useField: () => ({ ...fieldState, setValue }),
   useFormFields: (selector: (state: [typeof fields]) => unknown) => selector([fields]),
@@ -33,6 +35,7 @@ vi.mock('@payloadcms/ui', () => ({
 beforeEach(() => {
   fields['navItems.0.collection'] = { value: 'teams' }
   fields['teams.0.team'] = { value: 1 }
+  localeState.code = 'en'
   setValue.mockClear()
   fieldState.disabled = false
   fieldState.value = null
@@ -82,7 +85,7 @@ describe('admin select HTTP responses', () => {
     ],
     ['absent positions', '{}', []],
     ['null positions', '{"positions":null}', []],
-    ['a malformed position title', '{"positions":[{"positionTitle":{"en":"Chair"}}]}', []],
+    ['a malformed position title', '{"positions":[{"positionTitle":42}]}', []],
     ['a missing position title', '{"positions":[{"role":"exec"}]}', []],
     ['null', 'null', []],
     ['invalid JSON', '<html>Bad gateway</html>', []],
@@ -103,7 +106,10 @@ describe('admin select HTTP responses', () => {
   it.each([undefined, null])(
     'omits a %s title without losing other team positions',
     async (title) => {
-      const positions = [{ positionTitle: title }, { positionTitle: 'Chair' }]
+      const positions = [
+        { id: 'empty', positionTitle: title },
+        { id: 'chair', positionTitle: 'Chair' },
+      ]
       vi.stubGlobal(
         'fetch',
         vi.fn<typeof globalThis.fetch>().mockResolvedValue(Response.json({ positions })),
@@ -120,6 +126,40 @@ describe('admin select HTTP responses', () => {
       expect(console.error).not.toHaveBeenCalled()
     },
   )
+})
+
+describe('localized committee position choices', () => {
+  it('shows translated choices, preserves legacy selections, and stores row IDs on explicit changes', async () => {
+    fieldState.value = 'Chair'
+    localeState.code = 'fr'
+    const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(
+      Response.json({
+        positions: [
+          { id: 'chair-id', positionTitle: { en: 'Chair', fr: 'Président(e)' }, role: 'exec' },
+        ],
+      }),
+    )
+    vi.stubGlobal('fetch', fetch)
+    const component = () =>
+      createElement(CommitteePositionSelect, {
+        path: 'teams.0.members.0.role',
+        field: { name: 'role', type: 'text' },
+      })
+    const view = render(component())
+    await act(async () => {})
+
+    expect(fetch).toHaveBeenCalledWith('/api/teams/1?depth=0&locale=all')
+    expect(screen.getByRole('option').textContent).toBe('Président(e)')
+    expect(selectInputs.get('role')?.value).toBe('chair-id')
+    expect(setValue).not.toHaveBeenCalled()
+
+    localeState.code = 'en'
+    view.rerender(component())
+    expect(screen.getByRole('option').textContent).toBe('Chair')
+    expect(fetch).toHaveBeenCalledTimes(1)
+    selectInputs.get('role')?.onChange?.({ value: 'chair-id' })
+    expect(setValue).toHaveBeenLastCalledWith('chair-id')
+  })
 })
 
 const selects = [
@@ -154,10 +194,10 @@ const selects = [
     sibling: 'teams.0.team',
     input: 'role',
     next: 2,
-    firstBody: { positions: [{ positionTitle: 'Old' }] },
-    nextBody: { positions: [{ positionTitle: 'New' }] },
+    firstBody: { positions: [{ id: 'old-position', positionTitle: 'Old' }] },
+    nextBody: { positions: [{ id: 'new-position', positionTitle: 'New' }] },
     nextLabel: 'New',
-    selected: 'New',
+    selected: 'new-position',
   },
 ]
 
@@ -183,12 +223,14 @@ describe.each(selects)('$name dependent options', (select) => {
     'does not fetch for an invalid sibling %j',
     async (value) => {
       fields[select.sibling] = { value }
+      fieldState.value = 'Saved value'
       const fetch = vi.fn<typeof globalThis.fetch>()
       vi.stubGlobal('fetch', fetch)
       await act(async () => {
         render(select.render())
       })
       expect(fetch).not.toHaveBeenCalled()
+      expect(screen.queryAllByRole('option')).toEqual([])
       expect(screen.getByRole('combobox').hasAttribute('disabled')).toBe(true)
     },
   )
