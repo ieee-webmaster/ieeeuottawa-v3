@@ -56,6 +56,7 @@ export const Committees: CollectionConfig = {
           },
           fields: [
             {
+              // New selections store a team position row ID; older records contain a title.
               name: 'role',
               type: 'text',
               required: true,

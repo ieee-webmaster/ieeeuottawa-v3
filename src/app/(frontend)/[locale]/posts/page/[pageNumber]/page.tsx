@@ -62,7 +62,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
     description: t('description'),
     locale,
     path: `/posts/page/${pageNumber}`,
-    title: `${t('title')} - Page ${pageNumber}`,
+    title: t('pageTitle', { page: pageNumber }),
   })
 }
 

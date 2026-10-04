@@ -1,22 +1,25 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { SelectInput, useField, useFormFields } from '@payloadcms/ui'
+import { SelectInput, useField, useFormFields, useLocale } from '@payloadcms/ui'
 import type { TextFieldClientComponent } from 'payload'
-import { z } from 'zod'
-
-const teamPositionsResponseSchema = z.object({
-  positions: z.array(z.object({ positionTitle: z.string().nullish() })).nullish(),
-})
+import { resolveLocale } from '@/i18n/routing'
+import {
+  type CommitteePosition,
+  getPositionTitle,
+  resolveCommitteePosition,
+  teamPositionsSchema,
+} from '@/utilities/committeePositions'
 
 export const CommitteePositionSelect: TextFieldClientComponent = (props) => {
   const { path, field } = props
+  const locale = resolveLocale(useLocale().code)
   const { disabled, value, setValue } = useField<string | null>({ path })
   const readOnly = Boolean(props.readOnly || field.admin?.readOnly || disabled)
 
   const [loaded, setLoaded] = useState<{
     teamId: string
-    options: { label: string; value: string }[]
+    positions: CommitteePosition[]
   } | null>(null)
 
   // Watch the sibling 'team' field (one level up from members array)
@@ -25,7 +28,22 @@ export const CommitteePositionSelect: TextFieldClientComponent = (props) => {
     const value = fields[teamPath]?.value
     return typeof value === 'number' || typeof value === 'string' ? String(value) : undefined
   })
-  const options = loaded && loaded.teamId === teamId ? loaded.options : []
+  const positions = loaded && loaded.teamId === teamId ? loaded.positions : []
+  const options = positions.flatMap((position) => {
+    const label = getPositionTitle(position, locale)
+    return label && position.id ? [{ label, value: position.id }] : []
+  })
+  const selectedPosition = value ? resolveCommitteePosition(positions, value) : undefined
+  // Display legacy selections without rewriting documents merely by opening the editor.
+  const selectedValue = selectedPosition?.id || value || ''
+  if (
+    selectedValue &&
+    loaded &&
+    loaded.teamId === teamId &&
+    !options.some(({ value }) => value === selectedValue)
+  ) {
+    options.push({ label: value || selectedValue, value: selectedValue })
+  }
   const loading = Boolean(teamId && loaded?.teamId !== teamId)
 
   useEffect(() => {
@@ -34,22 +52,19 @@ export const CommitteePositionSelect: TextFieldClientComponent = (props) => {
 
     const loadPositions = async () => {
       try {
-        const response = await fetch(`/api/teams/${encodeURIComponent(teamId)}?depth=0`)
+        const response = await fetch(`/api/teams/${encodeURIComponent(teamId)}?depth=0&locale=all`)
 
         if (!response.ok) {
           throw new Error('Failed to fetch team')
         }
 
-        const result = teamPositionsResponseSchema.safeParse(await response.json())
+        const result = teamPositionsSchema.safeParse(await response.json())
         if (!result.success) throw result.error
-        const positionOptions = (result.data.positions ?? []).flatMap(({ positionTitle }) =>
-          positionTitle ? [{ label: positionTitle, value: positionTitle }] : [],
-        )
 
-        if (!cancelled) setLoaded({ teamId, options: positionOptions })
+        if (!cancelled) setLoaded({ teamId, positions: result.data.positions ?? [] })
       } catch (error) {
         console.error('Error loading positions:', error)
-        if (!cancelled) setLoaded({ teamId, options: [] })
+        if (!cancelled) setLoaded({ teamId, positions: [] })
       }
     }
 
@@ -68,7 +83,7 @@ export const CommitteePositionSelect: TextFieldClientComponent = (props) => {
       localized={field.localized}
       description={field.admin?.description}
       options={options}
-      value={value ?? ''}
+      value={selectedValue}
       onChange={(next) =>
         setValue(next && !Array.isArray(next) && typeof next.value === 'string' ? next.value : null)
       }

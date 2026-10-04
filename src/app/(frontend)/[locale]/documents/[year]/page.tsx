@@ -45,6 +45,6 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
     description: t('description'),
     locale,
     path: `/documents/${encodeURIComponent(year)}`,
-    title: `${year} ${t('title')}`,
+    title: t('titleWithYear', { year }),
   })
 }

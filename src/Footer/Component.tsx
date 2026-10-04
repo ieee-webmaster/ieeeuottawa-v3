@@ -58,7 +58,7 @@ export async function Footer() {
 
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
           <p className="text-xs opacity-70 text-center md:text-left">
-            &copy; {currentYear} IEEE uOttawa. {t('rights')}
+            {t('copyright', { year: currentYear })}
           </p>
 
           <ThemeSelector className="text-white focus-visible:ring-white" />

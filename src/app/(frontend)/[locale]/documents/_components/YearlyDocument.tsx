@@ -81,9 +81,7 @@ export async function YearlyDocument(docs: Doc, locale: Config['locale']) {
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           {t('allYears')}
         </Link>
-        <h1 className="page-title">
-          {docs.year} {t('title')}
-        </h1>
+        <h1 className="page-title">{t('titleWithYear', { year: docs.year })}</h1>
       </header>
 
       {isEmpty ? (
