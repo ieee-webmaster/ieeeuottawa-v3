@@ -57,9 +57,12 @@
     "noResults": "No results found for “{query}”."
   },
   "notFound": {
+    "eyebrow": "Signal lost",
     "title": "Page not found",
-    "description": "The page you were looking for may have moved or no longer exists.",
-    "action": "Return home"
+    "description": "This connection leads nowhere. The page may have moved, or the link might be broken. Let's get you back to the branch.",
+    "action": "Return home",
+    "events": "Explore events",
+    "caption": "An open circuit. A way back."
   },
   "docs": {
     "title": "Documents",

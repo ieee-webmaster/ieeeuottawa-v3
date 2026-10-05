@@ -1,0 +1,128 @@
+.page {
+  display: flex;
+  align-items: center;
+  min-height: calc(100svh - var(--site-header-height) - 6rem);
+  overflow: hidden;
+  border-top: 1px solid hsl(var(--border));
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  align-items: center;
+  gap: clamp(2rem, 5vw, 5rem);
+  padding-block: 5rem;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+  color: hsl(var(--muted-foreground));
+  font-family: var(--font-geist-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.eyebrow span {
+  width: 1.75rem;
+  height: 2px;
+  background: hsl(var(--brand-garnet));
+}
+
+.title {
+  max-width: 8em;
+  color: hsl(var(--primary));
+  font-size: clamp(3rem, 5.5vw, 5rem);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+  text-wrap: balance;
+}
+
+.description {
+  max-width: 26rem;
+  margin-top: 1.5rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.illustration {
+  position: relative;
+  color: hsl(var(--brand-blue));
+  background-image: radial-gradient(currentColor 0.6px, transparent 0.6px);
+  background-size: 20px 20px;
+  background-color: hsl(var(--background));
+}
+
+.circuit {
+  position: relative;
+  width: 100%;
+  background: radial-gradient(
+    ellipse,
+    hsl(var(--background) / 0.8) 35%,
+    hsl(var(--background)) 72%
+  );
+}
+
+.digits {
+  fill: hsl(var(--brand-blue) / 0.06);
+  stroke: hsl(var(--brand-blue) / 0.35);
+  stroke-width: 1.5;
+  fill-rule: evenodd;
+}
+
+.trace {
+  stroke: hsl(var(--brand-blue) / 0.55);
+  stroke-width: 1.5;
+}
+
+.break {
+  stroke: hsl(var(--brand-garnet));
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.caption {
+  padding-top: 0.5rem;
+  background: hsl(var(--background));
+  color: hsl(var(--muted-foreground));
+  font-family: var(--font-geist-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+:global([data-theme='dark']) .illustration {
+  --brand-blue: 208 80% 72%;
+  --brand-garnet: 349 80% 70%;
+}
+
+@media (max-width: 767px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding-block: 3rem;
+  }
+
+  .illustration {
+    width: min(100%, 28rem);
+    justify-self: center;
+  }
+
+  .actions {
+    max-width: 26rem;
+    flex-direction: column;
+  }
+}
