@@ -85,6 +85,9 @@ importers:
       graphql:
         specifier: ^16.14.0
         version: 16.14.0
+      jose:
+        specifier: 5.10.0
+        version: 5.10.0
       lucide-react:
         specifier: ^0.475.0
         version: 0.475.0(react@19.2.5)
@@ -100,6 +103,9 @@ importers:
       payload:
         specifier: 3.89.0
         version: 3.89.0(bufferutil@4.1.0)(graphql@16.14.0)(typescript@5.7.3)(utf-8-validate@6.0.6)
+      payload-oauth2:
+        specifier: link:vendor/payload-oauth2
+        version: link:vendor/payload-oauth2
       prism-react-renderer:
         specifier: ^2.4.1
         version: 2.4.1(react@19.2.5)

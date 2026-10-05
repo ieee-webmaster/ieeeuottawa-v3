@@ -9,6 +9,7 @@
 **/build
 **/dist/**
 **/node_modules
+vendor/
 **/temp
 **/docs/**
 tsconfig.json

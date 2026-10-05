@@ -1,0 +1,3 @@
+[submodule "vendor/payload-oauth2"]
+	path = vendor/payload-oauth2
+	url = https://github.com/WilsonLe/payload-oauth2.git
