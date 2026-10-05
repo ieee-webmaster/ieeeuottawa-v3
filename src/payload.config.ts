@@ -24,6 +24,7 @@ import { Docs } from './collections/Docs'
 import { rbacPlugin } from './plugins/payload-rbac'
 import { autoArrayRowLabelsPlugin } from './plugins/payload-row-labels'
 import { navigationPlugin } from './plugins/payload-navigation'
+import { googleOAuthPlugin } from './auth/google'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -31,9 +32,12 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   admin: {
     components: {
-      // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
-      // Feel free to delete this at any time. Simply remove the line below.
-      beforeLogin: ['@/components/BeforeLogin'],
+      views: {
+        login: { Component: '@/components/GoogleLogin' },
+        createFirstUser: { Component: '@/components/GoogleLogin' },
+        forgot: { Component: '@/components/GoogleLogin' },
+        reset: { Component: '@/components/GoogleLogin' },
+      },
     },
     importMap: {
       baseDir: path.resolve(dirname),
@@ -98,6 +102,7 @@ export default buildConfig({
   },
   plugins: [
     ...plugins,
+    googleOAuthPlugin(getServerSideURL()),
     vercelBlobStorage({
       collections: {
         // Media is publicly readable, so serve files directly from Vercel Blob

@@ -101,7 +101,9 @@ export const ensureFirstUserIsSuperAdmin: CollectionBeforeChangeHook<User> = asy
 
   if (existingUsers.totalDocs > 0) {
     // A concurrent first-register request may have passed Payload's earlier empty-user check.
-    if (!req.user && req.payloadAPI !== 'local') throw new Forbidden(req.t)
+    if (!req.user && req.payloadAPI !== 'local' && !req.context.googleOAuth) {
+      throw new Forbidden(req.t)
+    }
     return data
   }
 
