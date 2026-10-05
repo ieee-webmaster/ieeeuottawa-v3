@@ -98,7 +98,7 @@ describe('committee relationship rendering', () => {
 
       expect(screen.getByText('Surviving member')).toBeDefined()
       expect(screen.getByText('Workshop Lead')).toBeDefined()
-      if (_name === 'committee archive') expect(screen.getByText('coordinator')).toBeDefined()
+      expect(screen.queryByText('coordinator')).toBeNull()
       expect(screen.queryByText('Unpopulated member role')).toBeNull()
       expect(screen.getByRole('link', { name: 'emailMember' }).getAttribute('href')).toBe(
         'mailto:team@example.test',
