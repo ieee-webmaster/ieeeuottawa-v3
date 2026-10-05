@@ -28,8 +28,8 @@ import { AutoFieldSelect as AutoFieldSelect_fa5562ae2978ff683956ff6e65fe8256 } f
 import { UrlInferenceDescription as UrlInferenceDescription_708afe9b4e0ebe6a1d02aa398dfd40d1 } from '@/plugins/payload-navigation/components/UrlInferenceHint'
 import { AutoNewTabCheckbox as AutoNewTabCheckbox_fa5562ae2978ff683956ff6e65fe8256 } from '@/plugins/payload-navigation/components/AutoFieldSelect'
 import { NavItemRowLabel as NavItemRowLabel_2f8f38abc0067e767ea1fbbeccca237a } from '@/plugins/payload-navigation/components/NavItemRowLabel'
-import { default as default_8a7ab0eb7ab5c511aba12e68480bfe5e } from '@/components/BeforeLogin'
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
+import { default as default_748beb091c49d8f4b7b5a8bb77abcadf } from '@/components/GoogleLogin'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -64,7 +64,7 @@ export const importMap = {
   "@/plugins/payload-navigation/components/UrlInferenceHint#UrlInferenceDescription": UrlInferenceDescription_708afe9b4e0ebe6a1d02aa398dfd40d1,
   "@/plugins/payload-navigation/components/AutoFieldSelect#AutoNewTabCheckbox": AutoNewTabCheckbox_fa5562ae2978ff683956ff6e65fe8256,
   "@/plugins/payload-navigation/components/NavItemRowLabel#NavItemRowLabel": NavItemRowLabel_2f8f38abc0067e767ea1fbbeccca237a,
-  "@/components/BeforeLogin#default": default_8a7ab0eb7ab5c511aba12e68480bfe5e,
   "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e,
+  "@/components/GoogleLogin#default": default_748beb091c49d8f4b7b5a8bb77abcadf,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

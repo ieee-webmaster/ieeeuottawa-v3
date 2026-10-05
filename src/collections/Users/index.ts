@@ -1,6 +1,18 @@
-import type { CollectionConfig } from 'payload'
+import { APIError, type CollectionBeforeChangeHook, type CollectionConfig } from 'payload'
+import type { User } from '@/payload-types'
 
 import { authenticated } from '@/access/authenticated'
+
+const protectGoogleIdentity: CollectionBeforeChangeHook<User> = ({ data, originalDoc }) => {
+  if (
+    originalDoc?.googleId &&
+    data.googleId !== undefined &&
+    data.googleId !== originalDoc.googleId
+  ) {
+    throw new APIError('A linked Google identity cannot be replaced.', 403)
+  }
+  return data
+}
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -15,7 +27,21 @@ export const Users: CollectionConfig = {
     defaultColumns: ['name', 'email'],
     useAsTitle: 'name',
   },
-  auth: true,
+  // Keep Payload's session storage, refresh and revocation. Password operations are denied below.
+  auth: { useSessions: true },
+  hooks: {
+    beforeOperation: [
+      ({ operation, req }) => {
+        if (
+          ['login', 'forgotPassword', 'resetPassword'].includes(operation) ||
+          (operation === 'create' && !req.user && !req.context.googleOAuth)
+        ) {
+          throw new APIError('Sign in with your @ieeeuottawa.ca Google account.', 403)
+        }
+      },
+    ],
+    beforeChange: [protectGoogleIdentity],
+  },
   fields: [
     {
       name: 'googleId',
