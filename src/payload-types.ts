@@ -628,6 +628,7 @@ export interface Category {
  */
 export interface User {
   id: number;
+  googleId?: string | null;
   name?: string | null;
   /**
    * Grants full RBAC access across collections. Base access rules still apply.
@@ -2340,6 +2341,7 @@ export interface CategoriesSelect<T extends boolean = true> {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  googleId?: T;
   name?: T;
   superAdmin?: T;
   roles?: T;

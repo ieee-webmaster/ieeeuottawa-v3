@@ -18,6 +18,13 @@ export const Users: CollectionConfig = {
   auth: true,
   fields: [
     {
+      name: 'googleId',
+      type: 'text',
+      unique: true,
+      admin: { hidden: true },
+      access: { create: () => false, update: () => false },
+    },
+    {
       name: 'name',
       type: 'text',
     },
