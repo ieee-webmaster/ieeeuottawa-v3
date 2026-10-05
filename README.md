@@ -60,6 +60,8 @@ git clone https://github.com/ieee-webmaster/ieeeuottawa-v3.git
 `PREVIEW_SECRET`: Set `<your-preview-secret>` to a long random string
 <br>
 
+`BLOB_EMULATOR_PORT` defaults to `3100`; if changed, update the three Blob URLs in `.env` to match.
+
 3. Start a local instance of the Postgres database and Vercel Blob Emulator using Docker.
 
 ```bash

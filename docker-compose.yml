@@ -13,11 +13,11 @@ services:
   vercel-blob:
     image: ghcr.io/payloadcms/vercel-blob-emulator:latest
     ports:
-      - '3100:3000'
+      - '${BLOB_EMULATOR_PORT:-3100}:3000'
     env_file:
       - .env
     environment:
-      EMULATOR_BASE_URL: http://localhost:3100
+      EMULATOR_BASE_URL: http://localhost:${BLOB_EMULATOR_PORT:-3100}
     volumes:
       - vercel_blob_data:/data
 
