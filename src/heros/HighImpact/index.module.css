@@ -10,7 +10,7 @@
 
   display: flex;
   align-items: stretch;
-  min-height: calc(var(--hero-content-height) + var(--site-header-height));
+  min-height: max(100dvh, calc(var(--hero-content-height) + var(--site-header-height)));
   margin-top: calc(-1 * var(--site-header-height));
   padding-top: var(--site-header-height);
 }
