@@ -32,6 +32,7 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   admin: {
     components: {
+      beforeDashboard: ['@/components/ContributionGuide'],
       views: {
         login: { Component: '@/components/GoogleLogin' },
         createFirstUser: { Component: '@/components/GoogleLogin' },
