@@ -82,7 +82,15 @@ export default async function CommitteePage({ params }: Args) {
           ]
         })
 
-        return data.length > 0 ? [{ title: team.name, data }] : []
+        const id =
+          team.name
+            .normalize('NFD')
+            .replace(/\p{M}/gu, '')
+            .toLowerCase()
+            .replace(/[^\p{L}\p{N}]+/gu, '-')
+            .replace(/^-+|-+$/g, '') || `team-${team.id}`
+
+        return data.length > 0 ? [{ id, title: team.name, data }] : []
       }),
     )
   ).flat()
@@ -99,10 +107,10 @@ export default async function CommitteePage({ params }: Args) {
           <h1 className="page-title">{t('titleWithYear', { year: committee.Year })}</h1>
           {sections.length > 1 && (
             <nav aria-label={t('teams')} className="mt-6 flex flex-wrap gap-2">
-              {sections.map((section, index) => (
+              {sections.map((section) => (
                 <a
-                  key={section.title}
-                  href={`#team-${index + 1}`}
+                  key={section.id}
+                  href={`#${section.id}`}
                   className="inline-flex min-h-11 items-center border border-border px-4 font-mono text-sm transition-colors hover:bg-muted focus-visible:outline focus-visible:outline-2"
                 >
                   {section.title}
@@ -133,8 +141,8 @@ export default async function CommitteePage({ params }: Args) {
         </div>
       ) : (
         <div className="space-y-12 md:space-y-16">
-          {sections.map((section, index) => (
-            <section key={section.title} id={`team-${index + 1}`} className="scroll-mt-28">
+          {sections.map((section) => (
+            <section key={section.id} id={section.id} className="scroll-mt-28">
               <header className="mb-6 flex items-baseline justify-between gap-4 border-b border-border pb-4">
                 <h2 className="font-display text-2xl font-medium md:text-3xl">{section.title}</h2>
                 <span className="font-mono text-xs text-muted-foreground">
