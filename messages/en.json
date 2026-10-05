@@ -94,12 +94,6 @@
     "memberCount": "{count, plural, one {# member} other {# members}}",
     "emailMember": "Email {name}",
     "linkedinProfile": "{name} on LinkedIn",
-    "executive": "Executive",
-    "commissioner": "Commissioner",
-    "coordinator": "Coordinator",
-    "executives": "Executives",
-    "commissioners": "Commissioners",
-    "coordinators": "Coordinators",
     "teams": "Teams"
   },
   "footer": {

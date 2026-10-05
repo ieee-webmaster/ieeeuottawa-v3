@@ -7,20 +7,12 @@ import { hasRenderableMediaSource } from '@/components/Media/hasRenderableMediaS
 type Props = {
   person: Person
   role: string
-  rank?: string
   positionEmail?: string | null
   emailLabel: string
   linkedinLabel: string
 }
 
-export function PersonCard({
-  person,
-  role,
-  rank,
-  positionEmail,
-  emailLabel,
-  linkedinLabel,
-}: Props) {
+export function PersonCard({ person, role, positionEmail, emailLabel, linkedinLabel }: Props) {
   const headshot =
     person.headshot &&
     typeof person.headshot !== 'number' &&
@@ -50,9 +42,6 @@ export function PersonCard({
       <div className="mt-3 space-y-1">
         <h3 className="font-display text-lg font-medium leading-snug">{person.fullName}</h3>
         <p className="text-sm leading-relaxed text-muted-foreground">{role}</p>
-        {rank && rank.toLocaleLowerCase() !== role.toLocaleLowerCase() && (
-          <p className="text-xs leading-relaxed text-muted-foreground">{rank}</p>
-        )}
       </div>
       {(positionEmail || person['Linkedin Profile']) && (
         <div className="-ml-2 mt-1 flex items-center">

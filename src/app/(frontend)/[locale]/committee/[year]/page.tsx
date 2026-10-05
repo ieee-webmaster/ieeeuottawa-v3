@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, UserRound } from 'lucide-react'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-import type { Committee, Person, Team, Config } from '@/payload-types'
+import type { Committee, Person, Config } from '@/payload-types'
 import { generateStaticMeta } from '@/utilities/generateMeta'
 import { Link } from '@/i18n/navigation'
 import { SectionShell } from '@/blocks/_shared'
@@ -32,7 +32,6 @@ type CommitteeMember = NonNullable<NonNullable<Committee['teams']>[number]['memb
 type ResolvedCommitteeMember = Omit<CommitteeMember, 'person'> & {
   person: Person
   positionEmail?: string | null
-  rank?: string
 }
 
 export default async function CommitteePage({ params }: Args) {
@@ -56,11 +55,6 @@ export default async function CommitteePage({ params }: Args) {
     hasRenderableMediaSource(committee.coverImage)
       ? committee.coverImage
       : null
-  const rankLabels: Record<NonNullable<NonNullable<Team['positions']>[number]['role']>, string> = {
-    exec: t('executive'),
-    commish: t('commissioner'),
-    coord: t('coordinator'),
-  }
   const sections = (
     await Promise.all(
       (committee.teams ?? []).map(async (teamEntry) => {
@@ -84,7 +78,6 @@ export default async function CommitteePage({ params }: Args) {
               person,
               role: (positionDef && getPositionTitle(positionDef, locale)) || member.role,
               positionEmail: positionDef?.positionEmail,
-              rank: positionDef?.role ? rankLabels[positionDef.role] : undefined,
             },
           ]
         })
@@ -154,7 +147,6 @@ export default async function CommitteePage({ params }: Args) {
                     key={member.id}
                     person={member.person}
                     role={member.role}
-                    rank={member.rank}
                     positionEmail={isCurrentCommittee ? member.positionEmail : undefined}
                     emailLabel={t('emailMember', { name: member.person.fullName })}
                     linkedinLabel={t('linkedinProfile', { name: member.person.fullName })}
