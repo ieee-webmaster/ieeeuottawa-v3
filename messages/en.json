@@ -57,9 +57,10 @@
     "noResults": "No results found for “{query}”."
   },
   "notFound": {
-    "title": "Page not found",
-    "description": "The page you were looking for may have moved or no longer exists.",
-    "action": "Return home"
+    "title": "Page not found.",
+    "description": "The page you’re looking for may have moved, or the link may be incorrect.",
+    "action": "Back to home",
+    "events": "Browse events"
   },
   "docs": {
     "title": "Documents",
