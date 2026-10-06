@@ -57,12 +57,10 @@
     "noResults": "Aucun résultat trouvé pour « {query} »."
   },
   "notFound": {
-    "eyebrow": "Signal perdu",
-    "title": "Page introuvable",
-    "description": "Cette connexion ne mène nulle part. La page a peut-être été déplacée ou le lien est brisé. Retrouvez le chemin de la branche.",
-    "action": "Retour à l'accueil",
-    "events": "Nos événements",
-    "caption": "Un circuit ouvert. Un chemin de retour."
+    "title": "Page introuvable.",
+    "description": "La page que vous cherchez a peut-être été déplacée, ou le lien est incorrect.",
+    "action": "Retour à l’accueil",
+    "events": "Voir les événements"
   },
   "docs": {
     "title": "Documents",
