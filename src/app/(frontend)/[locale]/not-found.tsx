@@ -1,20 +1,32 @@
 import { Link } from '@/i18n/navigation'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { SectionShell } from '@/blocks/_shared'
+import styles from './not-found.module.css'
 
 export default function NotFound() {
   const t = useTranslations('notFound')
 
   return (
-    <SectionShell theme="default">
-      <p className="mb-4 font-mono text-sm text-muted-foreground">404</p>
-      <h1 className="page-title">{t('title')}</h1>
-      <p className="page-intro mt-4">{t('description')}</p>
-      <Link href="/" className="back-link mt-6">
-        <ArrowLeft aria-hidden="true" className="h-4 w-4" />
-        {t('action')}
-      </Link>
-    </SectionShell>
+    <main className={styles.page}>
+      <div className={`container ${styles.content}`}>
+        <p className={styles.code} aria-hidden="true">
+          404
+        </p>
+        <h1 className={styles.title}>
+          <span className="sr-only">404 — </span>
+          {t('title')}
+        </h1>
+        <p className={styles.description}>{t('description')}</p>
+        <div className={styles.actions}>
+          <Link href="/" className={styles.home}>
+            {t('action')}
+            <ArrowRight aria-hidden="true" size={18} />
+          </Link>
+          <Link href="/events" className={styles.events}>
+            {t('events')}
+          </Link>
+        </div>
+      </div>
+    </main>
   )
 }
