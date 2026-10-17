@@ -6,6 +6,7 @@ import * as migration_20260509_214951_genendpoint from './20260509_214951_genend
 import * as migration_20260907_164637_hero_image_framing from './20260907_164637_hero_image_framing';
 import * as migration_20260907_204839_hero_circuits from './20260907_204839_hero_circuits';
 import * as migration_20261005_143404_google_oauth from './20261005_143404_google_oauth';
+import * as migration_20261017_194903_users_reset_password_requested_at from './20261017_194903_users_reset_password_requested_at';
 
 export const migrations = [
   {
@@ -46,6 +47,11 @@ export const migrations = [
   {
     up: migration_20261005_143404_google_oauth.up,
     down: migration_20261005_143404_google_oauth.down,
-    name: '20261005_143404_google_oauth'
+    name: '20261005_143404_google_oauth',
+  },
+  {
+    up: migration_20261017_194903_users_reset_password_requested_at.up,
+    down: migration_20261017_194903_users_reset_password_requested_at.down,
+    name: '20261017_194903_users_reset_password_requested_at'
   },
 ];
